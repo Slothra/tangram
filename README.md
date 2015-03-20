@@ -1,7 +1,5 @@
-Sinatra
-=============
-
-Brought to you by Lighthouse Labs
+Tangram
+2D Platformer built with Phaser
 
 ## Getting Started
 
