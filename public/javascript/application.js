@@ -13,8 +13,9 @@ function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //  A simple background for our game
-    background = game.add.tileSprite(0, 0, game.width, game.height, 'sky');
+    background = game.add.tileSprite(0, 0, 1920, game.height, 'sky');
     game.world.setBounds(0, 0, 1920, 600);
+
 
 
     //  The platforms group contains the ground and the 2 ledges we can jump on
@@ -53,7 +54,7 @@ function create() {
     game.camera.follow(player);
 
     // deadzone
-    game.camera.deadzone = new Phaser.Rectangle(100, 100, 600, 400);
+    game.camera.deadzone = new Phaser.Rectangle(200, 100, 300, 400);
 }
 
 function update() {
