@@ -13,7 +13,9 @@ function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //  A simple background for our game
-    game.add.sprite(0, 0, 'sky');
+    background = game.add.tileSprite(0, 0, game.width, game.height, 'sky');
+    game.world.setBounds(0, 0, 1920, 600);
+
 
     //  The platforms group contains the ground and the 2 ledges we can jump on
     platforms = game.add.group();
@@ -46,6 +48,12 @@ function create() {
     player.body.collideWorldBounds = true;
 
     player.animations.add('walk', [0, 1, 2], 10, true);
+
+    // camera mechanics
+    game.camera.follow(player);
+
+    // deadzone
+    game.camera.deadzone = new Phaser.Rectangle(100, 100, 600, 400);
 }
 
 function update() {
@@ -81,6 +89,6 @@ function update() {
     //  Allow the player to jump if they are touching the ground.
     if (cursors.up.isDown && player.body.touching.down)
     {
-        player.body.velocity.y = -200;
+        player.body.velocity.y = -400;
     }
 }
