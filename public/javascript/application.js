@@ -13,8 +13,9 @@ function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //  A simple background for our game
-    background = game.add.tileSprite(0, 0, game.width, game.height, 'sky');
+    background = game.add.tileSprite(0, 0, 1920, game.height, 'sky');
     game.world.setBounds(0, 0, 1920, 600);
+
 
 
     //  The platforms group contains the ground and the 2 ledges we can jump on
@@ -27,7 +28,7 @@ function create() {
     var ground = platforms.create(0, game.world.height - 64, 'ground');
 
     //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-    ground.scale.setTo(2, 2);
+    ground.scale.setTo(5, 2);
 
     //  This stops it from falling away when you jump on it
     ground.body.immovable = true;
@@ -53,7 +54,7 @@ function create() {
     game.camera.follow(player);
 
     // deadzone
-    game.camera.deadzone = new Phaser.Rectangle(100, 100, 600, 400);
+    game.camera.deadzone = new Phaser.Rectangle(200, 100, 300, 400);
 }
 
 function update() {
