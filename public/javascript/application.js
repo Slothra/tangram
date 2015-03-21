@@ -32,11 +32,14 @@ function create() {
     ground.body.immovable = true;
 
 // Creating basic platforms
-    var ledgeTest = createPlatform(2, 4, 200, 200);
-    makeImmovable(ledgeTest);
-
-    var ledgeTest2 = createPlatform(1, 0.5, 500, 500);
-    makeImmovable(ledgeTest2);
+    var plat01 = createPlatform(0.5, 6, 300, 350);
+    makeImmovable(plat01);
+    var plat02 = createPlatform(0.2, 1, 600, 200);
+    makeImmovable(plat02);
+    var plat03 = createPlatform(0.2, 1, 700, 100);
+    makeImmovable(plat03);
+    var plat04 = createPlatform(0.5, 15, 900, 100);
+    makeImmovable(plat04);
 
 function createPlatform(widthScale, heightScale, xLoc, yLoc){
     var newPlatform = platforms.create(xLoc, yLoc, 'ground');
@@ -59,7 +62,7 @@ function makeImmovable(sprite){
 
     //  Player physics properties. Give the little guy a slight bounce.
     player.body.bounce.y = 0.2;
-    player.body.gravity.y = 300;
+    player.body.gravity.y = 400;
     player.body.collideWorldBounds = true;
 
     player.animations.add('walk', [0, 1, 2], 10, true);
