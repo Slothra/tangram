@@ -1,5 +1,5 @@
 // Application.js
-var gameWidth = 3000;
+var gameWidth = 2000;
 var gameHeight = 600;
 var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space', { preload: preload, create: create, update: update });
 
@@ -8,19 +8,19 @@ function preload() {
   game.load.image('platform', 'assets/platform_10x10.png');
   game.load.image('pigeon', 'assets/sprites/pigeons.png');
   game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 33, 37, 3);
+  game.load.image('water', 'assets/water.png')
 }
 
 function create() {
-    var xStartPos = 1300;
+    var xStartPos = 3000;
     var yStartPos = game.world.height - 100;
-    var xWorldBounds = 3000;
+    var xWorldBounds = 5000;
     var yWorldBounds = 800
 //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //  A simple background for our game
-
-    background = game.add.tileSprite(0, 0, gameWidth, game.height + 200, 'sky');
+    background = game.add.tileSprite(0, 0, xWorldBounds, game.height + 200, 'sky');
     game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
  
     //  The platforms group contains the platform and the 2 ledges we can jump on
@@ -33,7 +33,7 @@ function create() {
     var ground = platforms.create(0, game.world.height - 50, 'platform');
 
     //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-    ground.scale.setTo(gameWidth/10, 7);
+    ground.scale.setTo(xWorldBounds/10, 7);
 
     //  This stops it from falling away when you jump on it
     ground.body.immovable = true;
@@ -55,7 +55,20 @@ function create() {
     makeImmovable(plat07);
     var plat08 = createPlatform(9, 18, 1580, 380);
     makeImmovable(plat08);
-
+    var plat09 = createPlatform(12, 3, 1800, 380);
+    makeImmovable(plat09);
+    var plat10 = createPlatform(15, 3, 2000, 500);
+    makeImmovable(plat10);
+    var plat11 = createPlatform(18, 3, 2400, 440);
+    makeImmovable(plat11);
+    var plat12 = createPlatform(30, 50, 2700, 350);
+    makeImmovable(plat12);
+    var plat13 = createPlatform(12, 3, 3200, 450);
+    makeImmovable(plat13);
+    var plat14 = createPlatform(12, 3, 3500, 470);
+    makeImmovable(plat14);
+    var plat15 = createPlatform((xWorldBounds/10 + 3900), 50, 3900, 350);
+    makeImmovable(plat15);    
 
 function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
     var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
