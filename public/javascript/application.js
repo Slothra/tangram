@@ -5,17 +5,17 @@ var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space', { p
 
 function preload() {
   game.load.image('sky', 'assets/sky.png');
+  game.load.image('water', 'assets/water.png');
   game.load.image('platform', 'assets/platform_10x10.png');
   game.load.image('pigeon', 'assets/sprites/pigeons.png');
   game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 33, 37, 3);
-  game.load.image('water', 'assets/water.png')
 }
 
 function create() {
-    var xStartPos = 3000;
+    var xStartPos = 1500;
     var yStartPos = game.world.height - 100;
     var xWorldBounds = 5000;
-    var yWorldBounds = 800
+    var yWorldBounds = 800;
 //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -24,10 +24,13 @@ function create() {
     game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
  
     //  The platforms group contains the platform and the 2 ledges we can jump on
+    // MAKE SURE waters GROUP IS BEFORE platforms
+    waters = game.add.group();
     platforms = game.add.group();
 
     //  We will enable physics for any object that is created in this group
     platforms.enableBody = true;
+    // waters.enableBody = true;
 
     // Here we create the ground.
     var ground = platforms.create(0, game.world.height - 50, 'platform');
@@ -38,7 +41,24 @@ function create() {
     //  This stops it from falling away when you jump on it
     ground.body.immovable = true;
 
-// Creating basic platforms
+// Creating layout
+    function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
+        var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
+        newPlatform.scale.setTo(widthScale, heightScale);
+        return newPlatform;
+    }
+
+    function createWater(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
+        var newWater = waters.create(xPixFromLeft, game.world.height - yPixFromBottom, 'water');
+        newWater.scale.setTo(widthScale, heightScale);
+        return newWater;
+    }
+
+    function makeImmovable(sprite){
+        sprite.body.immovable = true;
+    }
+    
+    var water01 = createWater((xWorldBounds/10 + 1000), 25, 1000, 300);
     var plat01 = createPlatform(20, 40, 300, 250);
     makeImmovable(plat01);
     var plat02 = createPlatform(6, 3, 600, 400);
@@ -59,7 +79,7 @@ function create() {
     makeImmovable(plat09);
     var plat10 = createPlatform(15, 3, 2000, 500);
     makeImmovable(plat10);
-    var plat11 = createPlatform(18, 3, 2400, 440);
+    var plat11 = createPlatform(12, 3, 2400, 440);
     makeImmovable(plat11);
     var plat12 = createPlatform(30, 50, 2700, 350);
     makeImmovable(plat12);
@@ -68,17 +88,7 @@ function create() {
     var plat14 = createPlatform(12, 3, 3500, 470);
     makeImmovable(plat14);
     var plat15 = createPlatform((xWorldBounds/10 + 3900), 50, 3900, 350);
-    makeImmovable(plat15);    
-
-function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
-    var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
-    newPlatform.scale.setTo(widthScale, heightScale);
-    return newPlatform;
-}
-
-    function makeImmovable(sprite){
-        sprite.body.immovable = true;
-    }
+    makeImmovable(plat15);
 
     player = game.add.sprite(xStartPos, yStartPos, 'brick')
     game.physics.arcade.enable(player);
