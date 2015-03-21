@@ -1,5 +1,5 @@
 // Application.js
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game-space', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(900, 600, Phaser.AUTO, 'game-space', { preload: preload, create: create, update: update });
 
 function preload() {
   game.load.image('sky', 'assets/sky.png');
@@ -31,23 +31,12 @@ function create() {
     //  This stops it from falling away when you jump on it
     ground.body.immovable = true;
 
-    var ledge = platforms.create(400, 400, 'ground');
-
-    ledge.body.immovable = true;
-
-    ledge = platforms.create(-150, 250, 'ground');
-
-    ledge.body.immovable = true;
-
-    // console.debug(ledge);
-
+// Creating basic platforms
     var ledgeTest = createPlatform(2, 4, 200, 200);
     makeImmovable(ledgeTest);
 
     var ledgeTest2 = createPlatform(1, 0.5, 500, 500);
     makeImmovable(ledgeTest2);
-
-
 
 function createPlatform(widthScale, heightScale, xLoc, yLoc){
     var newPlatform = platforms.create(xLoc, yLoc, 'ground');
