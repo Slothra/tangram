@@ -4,6 +4,7 @@ var game = new Phaser.Game(900, 600, Phaser.AUTO, 'game-space', { preload: prelo
 function preload() {
   game.load.image('sky', 'assets/sky.png');
   game.load.image('ground', 'assets/platform.png');
+  game.load.image('pigeon', 'assets/sprites/pigeons.png');
   game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 33, 37, 3);
 
 }
@@ -72,13 +73,24 @@ function makeImmovable(sprite){
 
     // deadzone
     game.camera.deadzone = new Phaser.Rectangle(200, 100, 300, 400);
+
+    // enemies
+    enemy = game.add.sprite(200,200,'pigeon');
+    game.physics.arcade.enable(enemy);
+    enemy.body.gravity.y = 300;
+
 }
 
 
 
 function update() {
+
     //  Collide the player and the stars with the platforms
     game.physics.arcade.collide(player, platforms);
+    game.physics.arcade.collide(enemy, platforms);
+    if (game.physics.arcade.collide(enemy, player) == true){
+        die(player)
+    };
 
     cursors = game.input.keyboard.createCursorKeys();
     //  Reset the players velocity (movement)
@@ -111,4 +123,10 @@ function update() {
     {
         player.body.velocity.y = -400;
     }
+
+}
+
+function die (player){
+    player.kill();
+    console.log("BYE");
 }
