@@ -4,6 +4,7 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game-space', { preload: prelo
 function preload() {
   game.load.image('sky', 'assets/sky.png');
   game.load.image('ground', 'assets/platform.png');
+  game.load.image('pigeon', 'assets/sprites/pigeons.png');
   game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 33, 37, 3);
 
 }
@@ -15,8 +16,6 @@ function create() {
     //  A simple background for our game
     background = game.add.tileSprite(0, 0, 1920, game.height, 'sky');
     game.world.setBounds(0, 0, 1920, 600);
-
-
 
     //  The platforms group contains the ground and the 2 ledges we can jump on
     platforms = game.add.group();
@@ -45,7 +44,7 @@ function create() {
 
     //  Player physics properties. Give the little guy a slight bounce.
     player.body.bounce.y = 0.2;
-    player.body.gravity.y = 300;
+    player.body.gravity.y = 400;
     player.body.collideWorldBounds = true;
 
     player.animations.add('walk', [0, 1, 2], 10, true);
@@ -55,11 +54,22 @@ function create() {
 
     // deadzone
     game.camera.deadzone = new Phaser.Rectangle(200, 100, 300, 400);
+
+    // enemies
+    enemy = game.add.sprite(200,200,'pigeon');
+    game.physics.arcade.enable(enemy);
+    enemy.body.gravity.y = 300;
+
 }
 
 function update() {
+
     //  Collide the player and the stars with the platforms
     game.physics.arcade.collide(player, platforms);
+    game.physics.arcade.collide(enemy, platforms);
+    if (game.physics.arcade.collide(enemy, player) == true){
+        die(player)
+    };
 
     cursors = game.input.keyboard.createCursorKeys();
     //  Reset the players velocity (movement)
@@ -92,4 +102,10 @@ function update() {
     {
         player.body.velocity.y = -400;
     }
+
+}
+
+function die (player){
+    player.kill();
+    console.log("BYE");
 }
