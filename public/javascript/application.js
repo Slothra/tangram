@@ -16,8 +16,6 @@ function create() {
     background = game.add.tileSprite(0, 0, 1920, game.height, 'sky');
     game.world.setBounds(0, 0, 1920, 600);
 
-
-
     //  The platforms group contains the ground and the 2 ledges we can jump on
     platforms = game.add.group();
 
@@ -32,6 +30,7 @@ function create() {
 
     //  This stops it from falling away when you jump on it
     ground.body.immovable = true;
+
     var ledge = platforms.create(400, 400, 'ground');
 
     ledge.body.immovable = true;
@@ -39,6 +38,32 @@ function create() {
     ledge = platforms.create(-150, 250, 'ground');
 
     ledge.body.immovable = true;
+
+    // console.debug(ledge);
+
+    var ledgeTest = createPlatform(2, 4, 200, 200);
+    makeImmovable(ledgeTest);
+
+    var ledgeTest2 = createPlatform(1, 0.5, 500, 500);
+    makeImmovable(ledgeTest2);
+
+
+
+function createPlatform(widthScale, heightScale, xLoc, yLoc){
+    var newPlatform = platforms.create(xLoc, yLoc, 'ground');
+    newPlatform.scale.setTo(widthScale, heightScale);
+    return newPlatform;
+}
+
+function makeImmovable(sprite){
+    sprite.body.immovable = true;
+}
+
+
+
+
+
+
 
     player = game.add.sprite(32, game.world.height - 100, 'brick')
     game.physics.arcade.enable(player);
@@ -56,6 +81,8 @@ function create() {
     // deadzone
     game.camera.deadzone = new Phaser.Rectangle(200, 100, 300, 400);
 }
+
+
 
 function update() {
     //  Collide the player and the stars with the platforms
