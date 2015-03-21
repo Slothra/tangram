@@ -1,5 +1,5 @@
 // Application.js
-var game = new Phaser.Game(900, 600, Phaser.AUTO, 'game-space', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(1920, 600, Phaser.AUTO, 'game-space', { preload: preload, create: create, update: update });
 
 function preload() {
   game.load.image('sky', 'assets/sky.png');
@@ -33,17 +33,23 @@ function create() {
     ground.body.immovable = true;
 
 // Creating basic platforms
-    var plat01 = createPlatform(0.5, 6, 300, 350);
+    var plat01 = createPlatform(0.5, 6, 300, 250);
     makeImmovable(plat01);
-    var plat02 = createPlatform(0.2, 1, 600, 200);
+    var plat02 = createPlatform(0.2, 1, 600, 400);
     makeImmovable(plat02);
-    var plat03 = createPlatform(0.2, 1, 700, 100);
+    var plat03 = createPlatform(0.2, 1, 700, 500);
     makeImmovable(plat03);
-    var plat04 = createPlatform(0.5, 15, 900, 100);
+    var plat04 = createPlatform(0.5, 15, 900, 500);
     makeImmovable(plat04);
+    var plat05 = createPlatform(0.5, 7.5, 1500, 250);
+    makeImmovable(plat05);
+    var plat06 = createPlatform(0.1, 5, 1660, 400);
+    makeImmovable(plat06);
+     var plat05 = createPlatform(0.1, 5, 1660, 400);
+    makeImmovable(plat05);
 
-function createPlatform(widthScale, heightScale, xLoc, yLoc){
-    var newPlatform = platforms.create(xLoc, yLoc, 'ground');
+function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
+    var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'ground');
     newPlatform.scale.setTo(widthScale, heightScale);
     return newPlatform;
 }
@@ -87,10 +93,10 @@ function update() {
 
     //  Collide the player and the stars with the platforms
     game.physics.arcade.collide(player, platforms);
-    game.physics.arcade.collide(enemy, platforms);
-    if (game.physics.arcade.collide(enemy, player) == true){
-        die(player)
-    };
+    // game.physics.arcade.collide(enemy, platforms);
+    // if (game.physics.arcade.collide(enemy, player) == true){
+    //     die(player)
+    // };
 
     cursors = game.input.keyboard.createCursorKeys();
     //  Reset the players velocity (movement)
@@ -126,7 +132,7 @@ function update() {
 
 }
 
-function die (player){
-    player.kill();
-    console.log("BYE");
-}
+// function die (player){
+//     player.kill();
+//     console.log("BYE");
+// }
