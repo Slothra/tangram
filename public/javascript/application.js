@@ -10,6 +10,8 @@ function preload() {
 }
 
 function create() {
+    var xStartPos = 1300;
+    var yStartPos = game.world.height - 100;
 //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -35,18 +37,21 @@ function create() {
 // Creating basic platforms
     var plat01 = createPlatform(20, 40, 300, 250);
     makeImmovable(plat01);
-    var plat02 = createPlatform(0.2, 1, 600, 400);
+    var plat02 = createPlatform(6, 3, 600, 400);
     makeImmovable(plat02);
-    var plat03 = createPlatform(0.2, 1, 700, 500);
+    var plat03 = createPlatform(6, 3, 700, 500);
     makeImmovable(plat03);
-    var plat04 = createPlatform(0.5, 15, 900, 500);
+    var plat04 = createPlatform(16, 45, 900, 500);
     makeImmovable(plat04);
-    var plat05 = createPlatform(0.5, 7.5, 1500, 250);
+    var plat05 = createPlatform(17, 7, 1500, 500);
     makeImmovable(plat05);
-    var plat06 = createPlatform(0.125, 5, 1650, 400);
+    var plat06 = createPlatform(4, 19, 1500, 430);
     makeImmovable(plat06);
-     var plat05 = createPlatform(0.1, 5, 1640, 400);
-    makeImmovable(plat05);
+    var plat07 = createPlatform(17, 15, 1500, 200);
+    makeImmovable(plat07);
+    var plat08 = createPlatform(7, 18, 1600, 380);
+    makeImmovable(plat08);
+
 
 function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
     var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
@@ -64,7 +69,7 @@ function makeImmovable(sprite){
 
 
 
-    player = game.add.sprite(32, game.world.height - 100, 'brick')
+    player = game.add.sprite(xStartPos, yStartPos, 'brick')
     game.physics.arcade.enable(player);
 
     //  Player physics properties. Give the little guy a slight bounce.
@@ -78,7 +83,7 @@ function makeImmovable(sprite){
     game.camera.follow(player);
 
     // deadzone
-    game.camera.deadzone = new Phaser.Rectangle(200, 100, 300, 400);
+    game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
 
     // enemies
     enemy = game.add.sprite(200,200,'pigeon');
