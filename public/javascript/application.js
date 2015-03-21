@@ -12,8 +12,8 @@ function preload() {
 }
 
 function create() {
-    var xStartPos = 1500;
-    var yStartPos = game.world.height - 100;
+    var xStartPos = 2900;
+    var yStartPos = game.world.height - 200;
     var xWorldBounds = 5000;
     var yWorldBounds = 800;
 //  We're going to be using physics, so enable the Arcade Physics system
@@ -22,15 +22,18 @@ function create() {
     //  A simple background for our game
     background = game.add.tileSprite(0, 0, xWorldBounds, game.height + 200, 'sky');
     game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
- 
-    //  The platforms group contains the platform and the 2 ledges we can jump on
+
     // MAKE SURE waters GROUP IS BEFORE platforms
     waters = game.add.group();
+    waters.enableBody = true;
+    waters.moves = false;
+ 
+    //  The platforms group contains the platform and the 2 ledges we can jump on
     platforms = game.add.group();
 
     //  We will enable physics for any object that is created in this group
     platforms.enableBody = true;
-    // waters.enableBody = true;
+ 
 
     // Here we create the ground.
     var ground = platforms.create(0, game.world.height - 50, 'platform');
@@ -121,6 +124,9 @@ function update() {
     
 
     //  Collide the player and the stars with the platforms
+    if (game.physics.arcade.overlap(player, waters) == true){
+        console.log("I forgot my swimsuit!");
+    };
     game.physics.arcade.collide(player, platforms);
     game.physics.arcade.collide(enemies, platforms);
     if (game.physics.arcade.collide(enemies, player) == true){
