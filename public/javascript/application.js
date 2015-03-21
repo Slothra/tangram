@@ -19,17 +19,11 @@ function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //  A simple background for our game
-<<<<<<< HEAD
-    background = game.add.tileSprite(0, 0, 1920, 800, 'sky');
-    game.world.setBounds(0, 0, 1920, 800);
 
-    //  The platforms group contains the ground and the 2 ledges we can jump on
-=======
     background = game.add.tileSprite(0, 0, gameWidth, game.height + 200, 'sky');
     game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
  
     //  The platforms group contains the platform and the 2 ledges we can jump on
->>>>>>> 4e63a1f4290dcacdeaff411ceefb8d4c6f643c38
     platforms = game.add.group();
 
     //  We will enable physics for any object that is created in this group
@@ -63,19 +57,11 @@ function create() {
     makeImmovable(plat08);
 
 
-<<<<<<< HEAD
-    function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
-        var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'ground');
-        newPlatform.scale.setTo(widthScale, heightScale);
-        return newPlatform;
-    }   
-=======
 function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
     var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
     newPlatform.scale.setTo(widthScale, heightScale);
     return newPlatform;
 }
->>>>>>> 4e63a1f4290dcacdeaff411ceefb8d4c6f643c38
 
     function makeImmovable(sprite){
         sprite.body.immovable = true;
