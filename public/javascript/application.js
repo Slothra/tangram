@@ -21,7 +21,7 @@ function create() {
     //  A simple background for our game
     background = game.add.tileSprite(0, 0, gameWidth, game.height + 200, 'sky');
     game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
-
+ 
     //  The platforms group contains the platform and the 2 ledges we can jump on
     platforms = game.add.group();
 
