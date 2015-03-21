@@ -22,7 +22,7 @@ function create() {
     //  A simple background for our game
     background = game.add.tileSprite(0, 0, xWorldBounds, game.height + 200, 'sky');
     game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
-
+ 
     //  The platforms group contains the platform and the 2 ledges we can jump on
     platforms = game.add.group();
 
@@ -76,9 +76,9 @@ function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
     return newPlatform;
 }
 
-function makeImmovable(sprite){
-    sprite.body.immovable = true;
-}
+    function makeImmovable(sprite){
+        sprite.body.immovable = true;
+    }
 
     player = game.add.sprite(xStartPos, yStartPos, 'brick')
     game.physics.arcade.enable(player);
@@ -97,22 +97,25 @@ function makeImmovable(sprite){
     game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
 
     // enemies
-    enemy = game.add.sprite(200,200,'pigeon');
-    game.physics.arcade.enable(enemy);
-    enemy.body.gravity.y = 300;
+    enemies = game.add.group();
+    enemies.enableBody = true;
+    enemies.physicsBodyType = Phaser.Physics.ARCADE;
+    // pigeons = enemies.create(100,600,'pigeon');
+    // pigeons.body.gravity.y = 400;
 
 }
 
 
 
 function update() {
+    
 
     //  Collide the player and the stars with the platforms
     game.physics.arcade.collide(player, platforms);
-    // game.physics.arcade.collide(enemy, platforms);
-    // if (game.physics.arcade.collide(enemy, player) == true){
-    //     die(player)
-    // };
+    game.physics.arcade.collide(enemies, platforms);
+    if (game.physics.arcade.collide(enemies, player) == true){
+        die(player)
+    };
 
     cursors = game.input.keyboard.createCursorKeys();
     //  Reset the players velocity (movement)
@@ -148,7 +151,7 @@ function update() {
 
 }
 
-// function die (player){
-//     player.kill();
-//     console.log("BYE");
-// }
+function die (player){
+    player.kill();
+    console.log("BYE");
+}
