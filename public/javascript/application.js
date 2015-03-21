@@ -1,24 +1,25 @@
 // Application.js
-var game = new Phaser.Game(1920, 600, Phaser.AUTO, 'game-space', { preload: preload, create: create, update: update });
+var gameWidth = 3000;
+var gameHeight = 600;
+var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space', { preload: preload, create: create, update: update });
 
 function preload() {
   game.load.image('sky', 'assets/sky.png');
   game.load.image('platform', 'assets/platform_10x10.png');
   game.load.image('pigeon', 'assets/sprites/pigeons.png');
   game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 33, 37, 3);
-
 }
 
 function create() {
     var xStartPos = 1300;
     var yStartPos = game.world.height - 100;
-    var xWorldBounds = 1920;
+    var xWorldBounds = 3000;
     var yWorldBounds = 800
 //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //  A simple background for our game
-    background = game.add.tileSprite(0, 0, 1920, game.height + 200, 'sky');
+    background = game.add.tileSprite(0, 0, gameWidth, game.height + 200, 'sky');
     game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
 
     //  The platforms group contains the platform and the 2 ledges we can jump on
@@ -27,14 +28,14 @@ function create() {
     //  We will enable physics for any object that is created in this group
     platforms.enableBody = true;
 
-    // Here we create the platform.
-    var platform = platforms.create(0, game.world.height - 50, 'platform');
+    // Here we create the ground.
+    var ground = platforms.create(0, game.world.height - 50, 'platform');
 
     //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-    platform.scale.setTo(192, 7);
+    ground.scale.setTo(gameWidth/10, 7);
 
     //  This stops it from falling away when you jump on it
-    platform.body.immovable = true;
+    ground.body.immovable = true;
 
 // Creating basic platforms
     var plat01 = createPlatform(20, 40, 300, 250);
