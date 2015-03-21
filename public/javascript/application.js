@@ -12,12 +12,14 @@ function preload() {
 function create() {
     var xStartPos = 1300;
     var yStartPos = game.world.height - 100;
+    var xWorldBounds = 1920;
+    var yWorldBounds = 800
 //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //  A simple background for our game
     background = game.add.tileSprite(0, 0, 1920, game.height + 200, 'sky');
-    game.world.setBounds(0, 0, 1920, 800);
+    game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
 
     //  The platforms group contains the platform and the 2 ledges we can jump on
     platforms = game.add.group();
@@ -49,7 +51,7 @@ function create() {
     makeImmovable(plat06);
     var plat07 = createPlatform(17, 15, 1500, 200);
     makeImmovable(plat07);
-    var plat08 = createPlatform(7, 18, 1600, 380);
+    var plat08 = createPlatform(9, 18, 1580, 380);
     makeImmovable(plat08);
 
 
@@ -62,12 +64,6 @@ function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
 function makeImmovable(sprite){
     sprite.body.immovable = true;
 }
-
-
-
-
-
-
 
     player = game.add.sprite(xStartPos, yStartPos, 'brick')
     game.physics.arcade.enable(player);
