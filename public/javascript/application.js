@@ -14,7 +14,7 @@ function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //  A simple background for our game
-    background = game.add.tileSprite(0, 0, 1920, game.height, 'sky');
+    background = game.add.tileSprite(0, 0, 1920, 800, 'sky');
     game.world.setBounds(0, 0, 1920, 800);
 
     //  The platforms group contains the ground and the 2 ledges we can jump on
@@ -48,15 +48,15 @@ function create() {
      var plat05 = createPlatform(0.1, 5, 1660, 400);
     makeImmovable(plat05);
 
-function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
-    var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'ground');
-    newPlatform.scale.setTo(widthScale, heightScale);
-    return newPlatform;
-}
+    function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
+        var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'ground');
+        newPlatform.scale.setTo(widthScale, heightScale);
+        return newPlatform;
+    }   
 
-function makeImmovable(sprite){
-    sprite.body.immovable = true;
-}
+    function makeImmovable(sprite){
+        sprite.body.immovable = true;
+    }
 
 
 
@@ -78,25 +78,28 @@ function makeImmovable(sprite){
     game.camera.follow(player);
 
     // deadzone
-    game.camera.deadzone = new Phaser.Rectangle(200, 100, 300, 400);
+    game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
 
     // enemies
-    enemy = game.add.sprite(200,200,'pigeon');
-    game.physics.arcade.enable(enemy);
-    enemy.body.gravity.y = 300;
+    enemies = game.add.group();
+    enemies.enableBody = true;
+    enemies.physicsBodyType = Phaser.Physics.ARCADE;
+    // pigeons = enemies.create(100,600,'pigeon');
+    // pigeons.body.gravity.y = 400;
 
 }
 
 
 
 function update() {
+    
 
     //  Collide the player and the stars with the platforms
     game.physics.arcade.collide(player, platforms);
-    // game.physics.arcade.collide(enemy, platforms);
-    // if (game.physics.arcade.collide(enemy, player) == true){
-    //     die(player)
-    // };
+    game.physics.arcade.collide(enemies, platforms);
+    if (game.physics.arcade.collide(enemies, player) == true){
+        die(player)
+    };
 
     cursors = game.input.keyboard.createCursorKeys();
     //  Reset the players velocity (movement)
@@ -132,7 +135,7 @@ function update() {
 
 }
 
-// function die (player){
-//     player.kill();
-//     console.log("BYE");
-// }
+function die (player){
+    player.kill();
+    console.log("BYE");
+}
