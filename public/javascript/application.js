@@ -1,70 +1,87 @@
 // Application.js
-var game = new Phaser.Game(1920, 600, Phaser.AUTO, 'game-space', { preload: preload, create: create, update: update });
+var gameWidth = 3000;
+var gameHeight = 600;
+var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space', { preload: preload, create: create, update: update });
 
 function preload() {
   game.load.image('sky', 'assets/sky.png');
-  game.load.image('ground', 'assets/platform.png');
+  game.load.image('platform', 'assets/platform_10x10.png');
   game.load.image('pigeon', 'assets/sprites/pigeons.png');
   game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 33, 37, 3);
-
 }
 
 function create() {
+    var xStartPos = 1300;
+    var yStartPos = game.world.height - 100;
+    var xWorldBounds = 3000;
+    var yWorldBounds = 800
 //  We're going to be using physics, so enable the Arcade Physics system
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     //  A simple background for our game
+<<<<<<< HEAD
     background = game.add.tileSprite(0, 0, 1920, 800, 'sky');
     game.world.setBounds(0, 0, 1920, 800);
 
     //  The platforms group contains the ground and the 2 ledges we can jump on
+=======
+    background = game.add.tileSprite(0, 0, gameWidth, game.height + 200, 'sky');
+    game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
+ 
+    //  The platforms group contains the platform and the 2 ledges we can jump on
+>>>>>>> 4e63a1f4290dcacdeaff411ceefb8d4c6f643c38
     platforms = game.add.group();
 
     //  We will enable physics for any object that is created in this group
     platforms.enableBody = true;
 
     // Here we create the ground.
-    var ground = platforms.create(0, game.world.height - 64, 'ground');
+    var ground = platforms.create(0, game.world.height - 50, 'platform');
 
     //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-    ground.scale.setTo(5, 2);
+    ground.scale.setTo(gameWidth/10, 7);
 
     //  This stops it from falling away when you jump on it
     ground.body.immovable = true;
 
 // Creating basic platforms
-    var plat01 = createPlatform(0.5, 6, 300, 250);
+    var plat01 = createPlatform(20, 40, 300, 250);
     makeImmovable(plat01);
-    var plat02 = createPlatform(0.2, 1, 600, 400);
+    var plat02 = createPlatform(6, 3, 600, 400);
     makeImmovable(plat02);
-    var plat03 = createPlatform(0.2, 1, 700, 500);
+    var plat03 = createPlatform(6, 3, 700, 500);
     makeImmovable(plat03);
-    var plat04 = createPlatform(0.5, 15, 900, 500);
+    var plat04 = createPlatform(16, 45, 900, 500);
     makeImmovable(plat04);
-    var plat05 = createPlatform(0.5, 7.5, 1500, 250);
+    var plat05 = createPlatform(17, 7, 1500, 500);
     makeImmovable(plat05);
-    var plat06 = createPlatform(0.1, 5, 1660, 400);
+    var plat06 = createPlatform(4, 19, 1500, 430);
     makeImmovable(plat06);
-     var plat05 = createPlatform(0.1, 5, 1660, 400);
-    makeImmovable(plat05);
+    var plat07 = createPlatform(17, 15, 1500, 200);
+    makeImmovable(plat07);
+    var plat08 = createPlatform(9, 18, 1580, 380);
+    makeImmovable(plat08);
 
+
+<<<<<<< HEAD
     function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
         var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'ground');
         newPlatform.scale.setTo(widthScale, heightScale);
         return newPlatform;
     }   
+=======
+function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
+    var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
+    newPlatform.scale.setTo(widthScale, heightScale);
+    return newPlatform;
+}
+>>>>>>> 4e63a1f4290dcacdeaff411ceefb8d4c6f643c38
 
     function makeImmovable(sprite){
         sprite.body.immovable = true;
     }
 
-
-
-
-
-
-
-    player = game.add.sprite(32, game.world.height - 100, 'brick')
+    player = game.add.sprite(xStartPos, yStartPos, 'brick')
     game.physics.arcade.enable(player);
 
     //  Player physics properties. Give the little guy a slight bounce.
