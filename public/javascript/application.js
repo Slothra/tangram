@@ -27,6 +27,7 @@ Tan.LevelOne.prototype = {
         game.load.image('pigeon', 'assets/sprites/pigeons.png');
         game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 33, 37, 3);
         game.load.image('water', 'assets/water.png')
+    
     },
     create: function(){
 
@@ -152,8 +153,13 @@ Tan.LevelOne.prototype = {
         };
         cursors = game.input.keyboard.createCursorKeys();
 
-        if (game.physics.arcade.collide(enemies, player) == true){
-            die(player)
+        if (game.physics.arcade.collide(enemies, player) == true && createdEnemy.body.touching.up == true){
+            createdEnemy.kill();
+            console.log('he dead');
+            player.body.velocity.y = -200;
+        } else if (game.physics.arcade.collide(enemies, player)){
+            console.log('you dead');
+            die(player);
         };
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
@@ -199,7 +205,7 @@ Tan.LevelOne.prototype = {
 
         function die(){
             player.kill();
-            game.state.start('LevelOne');
+            game.state.start('GameOver');
         };
 
     }
@@ -229,7 +235,34 @@ Tan.PauseMenu.prototype = {
     }
 }
 
+Tan.GameOver = function(game){};
+
+Tan.GameOver.prototype = {
+    preload: function(){
+        // load death screen images
+    },
+    create: function(){
+        // place dead screen
+        // ask to restart
+        
+    },
+    update: function(){
+        var restartKey = game.input.keyboard.addKey(Phaser.Keyboard.Y);
+        var endKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
+        // restart from last checkpoint (start of level, boss)
+        if (restartKey.isDown){
+            game.state.start('LevelOne')
+        }
+        if (endKey.isDown){
+            console.Log("Bye!")
+        }
+
+    }
+}
+
+
+
 game.state.add('LevelOne', Tan.LevelOne);
 game.state.add('PauseMenu', Tan.PauseMenu);
-
+game.state.add('GameOver', Tan.GameOver);
 game.state.start('LevelOne');
