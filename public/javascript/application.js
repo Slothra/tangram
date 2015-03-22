@@ -115,7 +115,7 @@ Tan.LevelOne.prototype = {
         game.physics.arcade.collide(player, platforms);
         // Checks if player is collides with water;
         if (game.physics.arcade.overlap(player, waters) == true){
-            console.log("I forgot my swimsuit!");
+            // console.log("I forgot my swimsuit!");
         };
         cursors = game.input.keyboard.createCursorKeys();
         //  Reset the players velocity (movement)
