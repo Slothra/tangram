@@ -85,6 +85,10 @@ Tan.LevelOne.prototype = {
         makeImmovable(plat14);
         var plat15 = createPlatform((xWorldBounds/10 + 3900), 50, 3900, 350);
         makeImmovable(plat15);
+        var plat16 = createPlatform(8, 3, 3000, 200);
+        makeImmovable(plat16);
+        var plat17 = createPlatform(8, 3, 1700, 200);
+        makeImmovable(plat17);
 
         platformMovementTriggers = game.add.group();
         platformMovementTriggers.enableBody = true;
@@ -122,11 +126,12 @@ Tan.LevelOne.prototype = {
         game.physics.arcade.enable(player);
 
         //  Player physics properties. Give the little guy a slight bounce.
-        player.body.bounce.y = 0.2;
+        player.body.bounce.y = 0;
         player.body.gravity.y = 400;
         player.body.collideWorldBounds = true;
 
         player.animations.add('walk', [0, 1, 2], 10, true);
+        player.animations.add('jump', [1])
 
         // camera mechanics
         game.camera.follow(player);
@@ -176,7 +181,7 @@ Tan.LevelOne.prototype = {
             createdEnemy.kill();
             console.log('he dead');
             player.body.velocity.y = -200;
-        } else if (game.physics.arcade.collide(enemies, player)){
+        } else if (game.physics.arcade.collide(player, enemies) || game.physics.arcade.collide(player, enemies)){
             console.log('you dead');
             die(player);
         };
@@ -186,11 +191,15 @@ Tan.LevelOne.prototype = {
         if (cursors.left.isDown){
             //  Move to the left
             player.body.velocity.x = -150;
-            player.animations.play('walk');
+            if (player.body.touching.down){
+                player.animations.play('walk');
+            }
         } else if (cursors.right.isDown) {
             //  Move to the right
             player.body.velocity.x = 150;
-            player.animations.play('walk');
+            if (player.body.touching.down){
+                player.animations.play('walk');
+            }
 
         } else {
             //  Stand still
@@ -201,6 +210,10 @@ Tan.LevelOne.prototype = {
         //  Allow the player to jump if they are touching the ground.
         if (cursors.up.isDown && player.body.touching.down){
             player.body.velocity.y = -400;
+        }
+
+        if (!player.body.touching.down){
+            player.animations.play('jump')
         }
 
         if (pauseKey.isDown){
