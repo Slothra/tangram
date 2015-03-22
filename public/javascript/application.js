@@ -11,6 +11,7 @@ var pauseKey;
 var unpauseKey;
 var xStartPos = 0;
 var yStartPos = gameHeight - 100;
+var player;
 
 Tan.LevelOne = function(game){};
 
@@ -96,11 +97,20 @@ Tan.LevelOne.prototype = {
 
         // deadzone
         game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
+
+        enemies = game.add.group();
+        enemies.enableBody = true;
+        enemies.physicsBodyType = Phaser.Physics.ARCADE;
     },
 
     update: function(){
-            game.physics.arcade.collide(player, platforms);
-            cursors = game.input.keyboard.createCursorKeys();
+        cursors = game.input.keyboard.createCursorKeys();
+
+        game.physics.arcade.collide(player, platforms);
+        game.physics.arcade.collide(enemies, platforms);
+        if (game.physics.arcade.collide(enemies, player) == true){
+            die(player)
+        };
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
 
@@ -224,9 +234,7 @@ game.state.start('LevelOne');
 //     game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
 
 //     // enemies
-//     enemies = game.add.group();
-//     enemies.enableBody = true;
-//     enemies.physicsBodyType = Phaser.Physics.ARCADE;
+
 //     // pigeons = enemies.create(100,600,'pigeon');
 //     // pigeons.body.gravity.y = 400;
     
@@ -249,11 +257,11 @@ game.state.start('LevelOne');
 //     // }
 
 //     //  Collide the player and the stars with the platforms
-//     game.physics.arcade.collide(player, platforms);
-//     game.physics.arcade.collide(enemies, platforms);
-//     if (game.physics.arcade.collide(enemies, player) == true){
-//         die(player)
-//     };
+    game.physics.arcade.collide(player, platforms);
+    game.physics.arcade.collide(enemies, platforms);
+    if (game.physics.arcade.collide(enemies, player) == true){
+        die(player)
+    };
 
 //     cursors = game.input.keyboard.createCursorKeys();
 //     //  Reset the players velocity (movement)
