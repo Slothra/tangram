@@ -81,7 +81,9 @@ Tan.LevelOne.prototype = {
         var plat15 = createPlatform((xWorldBounds/10 + 3900), 50, 3900, 350);
         makeImmovable(plat15);
 
-        var triangle = grams.create(850, game.world.height - 70, 'sm_triangle');
+        var triGram = grams.create(850, game.world.height - 70, 'sm_triangle');
+        triGram.body.gravity.y = 6;
+        triGram.body.bounce.y = 0.7 + Math.random() * 0.2;
 
 
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
@@ -118,7 +120,8 @@ Tan.LevelOne.prototype = {
     },
 
     update: function(){
-
+        game.physics.arcade.collide(grams, platforms);
+        game.physics.arcade.overlap(player, grams, collectGram, null, this);
         game.physics.arcade.collide(player, platforms);
         // Checks if player is collides with water;
         if (game.physics.arcade.overlap(player, waters) == true){
@@ -154,6 +157,10 @@ Tan.LevelOne.prototype = {
             yStartPos = player.position.y;
             game.state.start('PauseMenu')
 
+        }
+
+        function collectGram(player, gram){
+            gram.kill();
         }
 
     }
