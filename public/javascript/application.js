@@ -17,6 +17,10 @@ var player;
 var enemyMovementTriggers;
 var enemies;
 var createdEnemy;
+var platformMovementTriggers;
+var platformRightTrigger;
+var platformLeftTrigger;
+var movPlat;
 
 Tan.LevelOne = function(game){};
 
@@ -27,7 +31,7 @@ Tan.LevelOne.prototype = {
         game.load.image('pigeon', 'assets/sprites/pigeons.png');
         game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 33, 37, 3);
         game.load.image('water', 'assets/water.png')
-    
+
     },
     create: function(){
 
@@ -80,7 +84,25 @@ Tan.LevelOne.prototype = {
         var plat14 = createPlatform(12, 3, 3500, 470);
         makeImmovable(plat14);
         var plat15 = createPlatform((xWorldBounds/10 + 3900), 50, 3900, 350);
-        makeImmovable(plat15);    
+        makeImmovable(plat15);
+
+        platformMovementTriggers = game.add.group();
+        platformMovementTriggers.enableBody = true;
+        platformMovementTriggers.allowGravity = false;
+        platformMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
+
+
+
+        platformLeftTrigger = game.add.sprite(1200, 300, null, 0, platformMovementTriggers);
+        platformLeftTrigger.body.setSize(40, 500, 0, 0);
+        platformRightTrigger = game.add.sprite(1400, 300, null, 0, platformMovementTriggers);
+        platformRightTrigger.body.setSize(40, 100, 0, 0);
+
+        movPlat = createPlatform(10,3, 1300, 500);
+        game.physics.enable(movPlat, Phaser.Physics.ARCADE);
+        movPlat.allowGravity = false;
+        movPlat.body.velocity.x = 50;
+        movPlat.body.immovable = true;
 
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
@@ -138,22 +160,21 @@ Tan.LevelOne.prototype = {
         game.physics.enable(createdEnemy, Phaser.Physics.ARCADE);
         createdEnemy.body.velocity.x = 100;
 
+
     },
 
     update: function(){
 
         game.physics.arcade.collide(player, platforms);
         game.physics.arcade.collide(enemies, platforms);
-        // if (game.physics.arcade.collide(enemies, player) == true){
-        //     die(player)
-        // };
+
         // Checks if player is collides with water;
         if (game.physics.arcade.overlap(player, waters) == true){
             // console.log("I forgot my swimsuit!");
         };
         cursors = game.input.keyboard.createCursorKeys();
 
-        if (game.physics.arcade.collide(enemies, player) == true && createdEnemy.body.touching.up == true){
+        if (game.physics.arcade.collide(enemies, player) && createdEnemy.body.touching.up){
             createdEnemy.kill();
             console.log('he dead');
             player.body.velocity.y = -200;
@@ -200,6 +221,17 @@ Tan.LevelOne.prototype = {
                 enemy.scale.x *= -1;
                 enemy.body.velocity.x *= -1;
                 enemy.lastTrigger = trigger;
+            }
+        });
+
+        game.physics.arcade.overlap(platforms, platformMovementTriggers, function(platform, trigger) {
+        // Do a simple check to ensure the trigger only changes the enemy's direction
+        // once by storing it in a property on the enemy. This prevents enemies getting
+        // 'stuck' inside a trigger if they overlap into it too far.
+            if (platform.lastTrigger !== trigger) {
+                // Reverse the velocity of the enemy and remember the last trigger.
+                platform.body.velocity.x *= -1;
+                platform.lastTrigger = trigger;
             }
         });
 
