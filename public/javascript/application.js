@@ -4,7 +4,7 @@ var Tan = {
     _HEIGHT: 600
 
 };
-var gameWidth = 2000;
+var gameWidth = 800;
 var gameHeight = 600;
 
 var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space');
@@ -90,8 +90,6 @@ Tan.LevelOne.prototype = {
         platformMovementTriggers.enableBody = true;
         platformMovementTriggers.allowGravity = false;
         platformMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
-
-
 
         platformLeftTrigger = game.add.sprite(1200, 300, null, 0, platformMovementTriggers);
         platformLeftTrigger.body.setSize(40, 500, 0, 0);
