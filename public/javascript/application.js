@@ -22,6 +22,7 @@ Tan.LevelOne.prototype = {
         game.load.image('platform', 'assets/platform_10x10.png');
         game.load.image('pigeon', 'assets/sprites/pigeons.png');
         game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 33, 37, 3);
+        game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('water', 'assets/water.png')
     },
     create: function(){
@@ -40,6 +41,9 @@ Tan.LevelOne.prototype = {
 
         platforms = game.add.group();
         platforms.enableBody = true;
+
+        grams = game.add.group();
+        grams.enableBody = true;
 
         var ground = platforms.create(0, game.world.height - 50, 'platform');
         ground.scale.setTo(xWorldBounds/10, 7);
@@ -75,7 +79,10 @@ Tan.LevelOne.prototype = {
         var plat14 = createPlatform(12, 3, 3500, 470);
         makeImmovable(plat14);
         var plat15 = createPlatform((xWorldBounds/10 + 3900), 50, 3900, 350);
-        makeImmovable(plat15);    
+        makeImmovable(plat15);
+
+        var triangle = grams.create(850, game.world.height - 70, 'sm_triangle');
+
 
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
