@@ -125,8 +125,9 @@ function update() {
 
     //  Collide the player and the stars with the platforms
     if (game.physics.arcade.overlap(player, waters) == true){
-        console.log("I forgot my swimsuit!");
+        // console.log("I forgot my swimsuit!");
     };
+    
     game.physics.arcade.collide(player, platforms);
     game.physics.arcade.collide(enemies, platforms);
     if (game.physics.arcade.collide(enemies, player) == true){
