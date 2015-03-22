@@ -4,7 +4,7 @@ var Tan = {
     _HEIGHT: 600
 
 };
-var gameWidth = 2000;
+var gameWidth = 800;
 var gameHeight = 600;
 
 var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space');
@@ -21,6 +21,7 @@ var platformMovementTriggers;
 var platformRightTrigger;
 var platformLeftTrigger;
 var movPlat;
+var underwater = false;
 
 Tan.LevelOne = function(game){};
 
@@ -85,13 +86,15 @@ Tan.LevelOne.prototype = {
         makeImmovable(plat14);
         var plat15 = createPlatform((xWorldBounds/10 + 3900), 50, 3900, 350);
         makeImmovable(plat15);
+        var plat16 = createPlatform(8, 3, 3000, 200);
+        makeImmovable(plat16);
+        var plat17 = createPlatform(8, 3, 1700, 200);
+        makeImmovable(plat17);
 
         platformMovementTriggers = game.add.group();
         platformMovementTriggers.enableBody = true;
         platformMovementTriggers.allowGravity = false;
         platformMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
-
-
 
         platformLeftTrigger = game.add.sprite(1200, 300, null, 0, platformMovementTriggers);
         platformLeftTrigger.body.setSize(40, 500, 0, 0);
@@ -124,11 +127,12 @@ Tan.LevelOne.prototype = {
         game.physics.arcade.enable(player);
 
         //  Player physics properties. Give the little guy a slight bounce.
-        player.body.bounce.y = 0.2;
+        player.body.bounce.y = 0;
         player.body.gravity.y = 400;
         player.body.collideWorldBounds = true;
 
         player.animations.add('walk', [0, 1, 2], 10, true);
+        player.animations.add('jump', [1])
 
         // camera mechanics
         game.camera.follow(player);
@@ -170,7 +174,9 @@ Tan.LevelOne.prototype = {
 
         // Checks if player is collides with water;
         if (game.physics.arcade.overlap(player, waters) == true){
-            // console.log("I forgot my swimsuit!");
+            underwater = true;
+        } else {
+            underwater = false;
         };
         cursors = game.input.keyboard.createCursorKeys();
 
@@ -178,31 +184,65 @@ Tan.LevelOne.prototype = {
             createdEnemy.kill();
             console.log('he dead');
             player.body.velocity.y = -200;
-        } else if (game.physics.arcade.collide(enemies, player)){
+        } else if (game.physics.arcade.collide(player, enemies) || game.physics.arcade.collide(player, enemies)){
             console.log('you dead');
             die(player);
         };
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
+        if (underwater) {
+            if (cursors.left.isDown){
+                //  Move to the left
+                player.body.velocity.x = -100;
+                if (player.body.touching.down){
+                    player.animations.play('walk');
+                }
+            } else if (cursors.right.isDown) {
+                //  Move to the right
+                player.body.velocity.x = 100;
+                if (player.body.touching.down){
+                    player.animations.play('walk');
+                }
 
-        if (cursors.left.isDown){
-            //  Move to the left
-            player.body.velocity.x = -150;
-            player.animations.play('walk');
-        } else if (cursors.right.isDown) {
-            //  Move to the right
-            player.body.velocity.x = 150;
-            player.animations.play('walk');
-
+            } else {
+                //  Stand still
+                player.animations.stop();
+                player.frame = 0;
+            }
+            
+            //  Allow the player to swim.
+            if (cursors.up.isDown){
+                player.body.velocity.y = -300;
+            }
         } else {
-            //  Stand still
-            player.animations.stop();
-            player.frame = 0;
+            if (cursors.left.isDown){
+                //  Move to the left
+                player.body.velocity.x = -150;
+                if (player.body.touching.down){
+                    player.animations.play('walk');
+                }
+            } else if (cursors.right.isDown) {
+                //  Move to the right
+                player.body.velocity.x = 150;
+                if (player.body.touching.down){
+                    player.animations.play('walk');
+                }
+
+            } else {
+                //  Stand still
+                player.animations.stop();
+                player.frame = 0;
+            }
+            
+            //  Allow the player to jump if they are touching the ground.
+            if (cursors.up.isDown && player.body.touching.down){
+                player.body.velocity.y = -400;
+            }
+
         }
-        
-        //  Allow the player to jump if they are touching the ground.
-        if (cursors.up.isDown && player.body.touching.down){
-            player.body.velocity.y = -400;
+
+        if (!player.body.touching.down){
+            player.animations.play('jump')
         }
 
         if (pauseKey.isDown){
