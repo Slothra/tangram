@@ -12,8 +12,11 @@ var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space');
 var pauseKey;
 var unpauseKey;
 var xStartPos = 0;
-var yStartPos = gameHeight - 100;
+var yStartPos = gameHeight;
 var player;
+var enemyMovementTriggers;
+var enemies;
+var createdEnemy;
 
 Tan.LevelOne = function(game){};
 
@@ -24,6 +27,7 @@ Tan.LevelOne.prototype = {
         game.load.image('pigeon', 'assets/sprites/pigeons.png');
         game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 33, 37, 3);
         game.load.image('water', 'assets/water.png')
+    
     },
     create: function(){
 
@@ -113,9 +117,31 @@ Tan.LevelOne.prototype = {
         enemies = game.add.group();
         enemies.enableBody = true;
         enemies.physicsBodyType = Phaser.Physics.ARCADE;
+
+        // Enemy movement triggers
+        enemyMovementTriggers = game.add.group();
+        enemyMovementTriggers.enableBody = true;
+        enemyMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
+
+        leftTrigger = game.add.sprite(100, yWorldBounds - 65, null, 0, enemyMovementTriggers);
+        leftTrigger.body.setSize(4, 32, 0, 0);
+        rightTrigger = game.add.sprite(210, yWorldBounds - 65, null, 0, enemyMovementTriggers);
+        rightTrigger.body.setSize(4, 32, 0, 0);
+
+        // creates enemy with triggers
+        createdEnemy = game.add.sprite(200, yWorldBounds - 65, 'pigeon', 0, enemies);
+        createdEnemy.anchor.setTo(.5, 0); //so it flips around its middle
+ 
+        // createdEnemy.animations.add('birdwalk', [0], 10, true);
+
+        // enemy = game.add.sprite(75,yWorldBounds - 65,'pigeon', 0, enemies);
+        game.physics.enable(createdEnemy, Phaser.Physics.ARCADE);
+        createdEnemy.body.velocity.x = 100;
+
     },
 
     update: function(){
+
         game.physics.arcade.collide(player, platforms);
         game.physics.arcade.collide(enemies, platforms);
         // if (game.physics.arcade.collide(enemies, player) == true){
@@ -127,8 +153,13 @@ Tan.LevelOne.prototype = {
         };
         cursors = game.input.keyboard.createCursorKeys();
 
-        if (game.physics.arcade.collide(enemies, player) == true){
-            die(player)
+        if (game.physics.arcade.collide(enemies, player) == true && createdEnemy.body.touching.up == true){
+            createdEnemy.kill();
+            console.log('he dead');
+            player.body.velocity.y = -200;
+        } else if (game.physics.arcade.collide(enemies, player)){
+            console.log('you dead');
+            die(player);
         };
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
@@ -154,12 +185,28 @@ Tan.LevelOne.prototype = {
         }
 
         if (pauseKey.isDown){
-            debugger;
             xStartPos = player.position.x;
             yStartPos = player.position.y;
             game.state.start('PauseMenu')
 
         }
+
+        game.physics.arcade.overlap(enemies, enemyMovementTriggers, function(enemy, trigger) {
+        // Do a simple check to ensure the trigger only changes the enemy's direction
+        // once by storing it in a property on the enemy. This prevents enemies getting
+        // 'stuck' inside a trigger if they overlap into it too far.
+            if (enemy.lastTrigger !== trigger) {
+                // Reverse the velocity of the enemy and remember the last trigger.
+                enemy.scale.x *= -1;
+                enemy.body.velocity.x *= -1;
+                enemy.lastTrigger = trigger;
+            }
+        });
+
+        function die(){
+            player.kill();
+            game.state.start('GameOver');
+        };
 
     }
 
@@ -188,7 +235,34 @@ Tan.PauseMenu.prototype = {
     }
 }
 
+Tan.GameOver = function(game){};
+
+Tan.GameOver.prototype = {
+    preload: function(){
+        // load death screen images
+    },
+    create: function(){
+        // place dead screen
+        // ask to restart
+        
+    },
+    update: function(){
+        var restartKey = game.input.keyboard.addKey(Phaser.Keyboard.Y);
+        var endKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
+        // restart from last checkpoint (start of level, boss)
+        if (restartKey.isDown){
+            game.state.start('LevelOne')
+        }
+        if (endKey.isDown){
+            console.Log("Bye!")
+        }
+
+    }
+}
+
+
+
 game.state.add('LevelOne', Tan.LevelOne);
 game.state.add('PauseMenu', Tan.PauseMenu);
-
+game.state.add('GameOver', Tan.GameOver);
 game.state.start('LevelOne');
