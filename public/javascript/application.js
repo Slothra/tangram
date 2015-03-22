@@ -13,6 +13,8 @@ var pauseKey;
 var unpauseKey;
 var xStartPos = 0;
 var yStartPos = gameHeight - 100;
+var player;
+var playerGrams = [];
 
 Tan.LevelOne = function(game){};
 
@@ -81,9 +83,12 @@ Tan.LevelOne.prototype = {
         var plat15 = createPlatform((xWorldBounds/10 + 3900), 50, 3900, 350);
         makeImmovable(plat15);
 
+        // Create a gram
         var triGram = grams.create(850, game.world.height - 70, 'sm_triangle');
         triGram.body.gravity.y = 6;
-        triGram.body.bounce.y = 0.7 + Math.random() * 0.2;
+
+        console.debug(playerGrams)
+
 
 
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
@@ -117,17 +122,29 @@ Tan.LevelOne.prototype = {
 
         // deadzone
         game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
+
+        enemies = game.add.group();
+        enemies.enableBody = true;
+        enemies.physicsBodyType = Phaser.Physics.ARCADE;
     },
 
     update: function(){
         game.physics.arcade.collide(grams, platforms);
         game.physics.arcade.overlap(player, grams, collectGram, null, this);
         game.physics.arcade.collide(player, platforms);
+        game.physics.arcade.collide(enemies, platforms);
+        // if (game.physics.arcade.collide(enemies, player) == true){
+        //     die(player)
+        // };
         // Checks if player is collides with water;
         if (game.physics.arcade.overlap(player, waters) == true){
             // console.log("I forgot my swimsuit!");
         };
         cursors = game.input.keyboard.createCursorKeys();
+
+        if (game.physics.arcade.collide(enemies, player) == true){
+            die(player)
+        };
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
 
@@ -160,7 +177,9 @@ Tan.LevelOne.prototype = {
         }
 
         function collectGram(player, gram){
+            playerGrams.push(gram);
             gram.kill();
+            console.debug(playerGrams);
         }
 
     }
