@@ -180,9 +180,8 @@ Tan.LevelOne.prototype = {
             player.body.bounce.y = 0;
             player.body.gravity.y = 400;
             player.body.collideWorldBounds = true;
-
-            // player.animations.add('walk', [0, 1, 2], 10, true);
-            // player.animations.add('jump', [1])
+            player.body.setSize(32, 32, 0, 32);
+            player.anchor.setTo(.5, 0);
         }
 
         function initializeCamera(){
@@ -241,61 +240,66 @@ Tan.LevelOne.prototype = {
         }
 
         function moveAsBrick(){
-          if (cursors.left.isDown){
-            //  Move to the left
-            player.body.velocity.x = -150;
-            if (player.body.touching.down){
-                player.animations.play('walk');
-            }
-          } else if (cursors.right.isDown) {
+            if (cursors.left.isDown){
+                //  Move to the left
+                player.body.velocity.x = -(playerSpeed);
+                if (player.scale.x == -1){
+                    player.animations.play('walk');
+                } else {
+                    player.scale.x *= -1; 
+                }
+            } else if (cursors.right.isDown) {
               //  Move to the right
-              player.body.velocity.x = 150;
-              if (player.body.touching.down){
-                  player.animations.play('walk');
-              }
-          } else {
+                player.body.velocity.x = (playerSpeed);
+                if (player.scale.x == 1){
+                    player.animations.play('walk');
+                } else {
+                    player.scale.x *= -1; 
+                }
+            } else {
               //  Stand still
               player.animations.stop();
               player.frame = 0;
-          }
-          //  Allow the player to jump if they are touching the ground.
-          if (cursors.up.isDown && player.body.touching.down){
-              player.body.velocity.y = -400;
-          }
-          if (!player.body.touching.down){
-            player.animations.play('jump');
-          }
+              }
+              //  Allow the player to jump if they are touching the ground.
+            if (cursors.up.isDown && player.body.touching.down){
+                player.body.velocity.y = -400;
+            }
+            if (!player.body.touching.down){
+                player.animations.play('jump');
+            }
         }
 
         function moveAsBrickHat(){
-          game.physics.arcade.collide(player, platforms);
-
-          if (cursors.left.isDown){
-            //  Move to the left
-            player.body.velocity.x = -150;
-            if (player.body.touching.down){
-                player.animations.play('walkHat');
-            }
-          } else if (cursors.right.isDown) {
+            if (cursors.left.isDown){
+                //  Move to the left
+                player.body.velocity.x = -(playerSpeed);
+                if (player.scale.x == -1){
+                    player.animations.play('walkHat');
+                } else {
+                    player.scale.x *= -1; 
+                }
+            } else if (cursors.right.isDown) {
               //  Move to the right
-              player.body.velocity.x = 150;
-              if (player.body.touching.down){
-                  player.animations.play('walkHat');
-              }
-          } else {
+                player.body.velocity.x = (playerSpeed);
+                if (player.scale.x == 1){
+                    player.animations.play('walkHat');
+                } else {
+                    player.scale.x *= -1; 
+                }
+            } else {
               //  Stand still
               player.animations.stop();
               player.frame = 3;
-          }
-          //  Allow the player to jump if they are touching the ground.
-          if (cursors.up.isDown && player.body.touching.down){
-              player.body.velocity.y = -400;
-          }
-          if (!player.body.touching.down){
-            player.animations.play('jumpHat');
-          }
-        }
-            
+              }
+              //  Allow the player to jump if they are touching the ground.
+            if (cursors.up.isDown && player.body.touching.down){
+                player.body.velocity.y = -400;
+            }
+            if (!player.body.touching.down){
+                player.animations.play('jumpHat');
+            }
+        } 
             //  Allow the player to swim.
         if (underwater && cursors.up.isDown){
             player.body.velocity.y = -300;
@@ -341,10 +345,6 @@ Tan.LevelOne.prototype = {
                 platform.lastTrigger = trigger;
             }
         });
-
-        function die(){
-            player.kill();
-        };
 
     }
 
