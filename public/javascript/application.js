@@ -14,7 +14,7 @@ var unpauseKey;
 var xStartPos = 0;
 var yStartPos = gameHeight - 100;
 var player;
-var playerGrams = [];
+var playerGrams = {};
 
 Tan.LevelOne = function(game){};
 
@@ -23,7 +23,8 @@ Tan.LevelOne.prototype = {
         game.load.image('sky', 'assets/sky.png');
         game.load.image('platform', 'assets/platform_10x10.png');
         game.load.image('pigeon', 'assets/sprites/pigeons.png');
-        game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 33, 37, 3);
+        game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 32, 37, 3);
+        game.load.spritesheet('brickHat', 'assets/sprites/spritesheet_hat.png', 33, 58, 3);
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('water', 'assets/water.png')
     },
@@ -84,12 +85,8 @@ Tan.LevelOne.prototype = {
         makeImmovable(plat15);
 
         // Create a gram
-        var triGram = grams.create(850, game.world.height - 70, 'sm_triangle');
+        var triGram = grams.create(200, game.world.height - 70, 'sm_triangle');
         triGram.body.gravity.y = 6;
-
-        console.debug(playerGrams)
-
-
 
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
@@ -107,7 +104,8 @@ Tan.LevelOne.prototype = {
             sprite.body.immovable = true;
         }
 
-        player = game.add.sprite(xStartPos, yStartPos, 'brick')
+        player = game.add.sprite(xStartPos, yStartPos, 'brickHat')
+
         game.physics.arcade.enable(player);
 
         //  Player physics properties. Give the little guy a slight bounce.
@@ -116,6 +114,7 @@ Tan.LevelOne.prototype = {
         player.body.collideWorldBounds = true;
 
         player.animations.add('walk', [0, 1, 2], 10, true);
+
 
         // camera mechanics
         game.camera.follow(player);
@@ -173,13 +172,26 @@ Tan.LevelOne.prototype = {
             xStartPos = player.position.x;
             yStartPos = player.position.y;
             game.state.start('PauseMenu')
-
         }
 
         function collectGram(player, gram){
-            playerGrams.push(gram);
+            playerGrams.hat = gram;
+            console.debug(playerGrams)
             gram.kill();
-            console.debug(playerGrams);
+            var position = player.position;
+            // player.kill()
+            // player = game.add.sprite(position.x, position.y, 'brickHat');
+
+            console.debug(positionx);
+        }
+
+        function transform(){
+            if (playerGrams.length > 0) {
+                // game.physics.moveToObject(playerGrams[0], player);
+                console.debug('grams', playerGrams);
+                console.debug('player', player);
+            }
+
         }
 
     }
