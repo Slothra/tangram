@@ -14,6 +14,7 @@ var unpauseKey;
 var xStartPos = 0;
 var yStartPos = gameHeight;
 var player;
+var playerHat;
 var playerGrams = {};
 var enemyMovementTriggers;
 var enemies;
@@ -31,8 +32,10 @@ Tan.LevelOne.prototype = {
         game.load.image('sky', 'assets/sky.png');
         game.load.image('platform', 'assets/platform_10x10.png');
         game.load.image('pigeon', 'assets/sprites/pigeons.png');
-        game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 32, 37, 3);
-        game.load.spritesheet('brickHat', 'assets/sprites/spritesheet_hat.png', 33, 58, 3);
+        game.load.spritesheet('brick', 'assets/sprites/player_spritesheet.png', 32, 64, 9);
+
+        // game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 32, 37, 3);
+        // game.load.spritesheet('brickHat', 'assets/sprites/spritesheet_hat.png', 32, 64, 3);
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('water', 'assets/water.png')
 
@@ -116,6 +119,7 @@ Tan.LevelOne.prototype = {
         // Create a gram
         var triGram = grams.create(200, game.world.height - 70, 'sm_triangle');
         triGram.body.gravity.y = 6;
+        triGram.name = 'hat'
 
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
@@ -133,7 +137,7 @@ Tan.LevelOne.prototype = {
             sprite.body.immovable = true;
         }
 
-        player = game.add.sprite(xStartPos, yStartPos, 'brickHat')
+        player = game.add.sprite(xStartPos, yStartPos, 'brick');
 
         game.physics.arcade.enable(player);
 
@@ -143,7 +147,9 @@ Tan.LevelOne.prototype = {
         player.body.collideWorldBounds = true;
 
         player.animations.add('walk', [0, 1, 2], 10, true);
-        player.animations.add('jump', [1])
+        player.animations.add('jump', [1]);
+        player.animations.add('walkHat', [3, 4, 5], 10, true);
+        player.animations.add('jumpHat', [4]);
 
 
         // camera mechanics
@@ -193,6 +199,7 @@ Tan.LevelOne.prototype = {
         };
         cursors = game.input.keyboard.createCursorKeys();
 
+        // When player collides with enemies
         if (game.physics.arcade.collide(enemies, player) && createdEnemy.body.touching.up){
             createdEnemy.kill();
             console.log('he dead');
@@ -201,8 +208,17 @@ Tan.LevelOne.prototype = {
             console.log('you dead');
             die(player);
         };
-        //  Reset the players velocity (movement)
+
+        //  Reset the players velocity (movement) if underwater
         player.body.velocity.x = 0;
+
+
+        switch (player){
+            case "playerBrick":
+
+        }
+
+
         if (underwater) {
             if (cursors.left.isDown){
                 //  Move to the left
@@ -222,11 +238,37 @@ Tan.LevelOne.prototype = {
                 player.animations.stop();
                 player.frame = 0;
             }
-            
+
             //  Allow the player to swim.
             if (cursors.up.isDown){
                 player.body.velocity.y = -300;
             }
+
+        } else if (playerHat === true) {
+            if (cursors.left.isDown){
+                //  Move to the left
+                player.body.velocity.x = -150;
+                if (player.body.touching.down){
+                    player.animations.play('walkHat');
+                }
+            } else if (cursors.right.isDown) {
+                //  Move to the right
+                player.body.velocity.x = 150;
+                if (player.body.touching.down){
+                    player.animations.play('walkHat');
+                }
+
+            } else {
+                //  Stand still
+                player.animations.stop();
+                player.frame = 3;
+            }
+            
+            //  Allow the player to jump if they are touching the ground.
+            if (cursors.up.isDown && player.body.touching.down){
+                player.body.velocity.y = -400;
+            }
+
         } else {
             if (cursors.left.isDown){
                 //  Move to the left
@@ -254,6 +296,7 @@ Tan.LevelOne.prototype = {
 
         }
 
+
         if (!player.body.touching.down){
             player.animations.play('jump')
         }
@@ -265,23 +308,9 @@ Tan.LevelOne.prototype = {
         }
 
         function collectGram(player, gram){
-            playerGrams.hat = gram;
-            console.debug(playerGrams)
+            playerGrams[gram.name] = gram;
+            // console.debug(playerGrams)
             gram.kill();
-            var position = player.position;
-            // player.kill()
-            // player = game.add.sprite(position.x, position.y, 'brickHat');
-
-            console.debug(positionx);
-        }
-
-        function transform(){
-            if (playerGrams.length > 0) {
-                // game.physics.moveToObject(playerGrams[0], player);
-                console.debug('grams', playerGrams);
-                console.debug('player', player);
-            }
-
         }
 
         game.physics.arcade.overlap(enemies, enemyMovementTriggers, function(enemy, trigger) {
