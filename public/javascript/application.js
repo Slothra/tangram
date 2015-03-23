@@ -14,6 +14,8 @@ var unpauseKey;
 var xStartPos = 0;
 var yStartPos = gameHeight;
 var player;
+// var playerHat;
+var playerGrams = {};
 var enemyMovementTriggers;
 var enemies;
 var createdEnemy;
@@ -31,7 +33,9 @@ Tan.LevelOne.prototype = {
         game.load.image('sky', 'assets/sky.png');
         game.load.image('platform', 'assets/platform_10x10.png');
         game.load.image('pigeon', 'assets/sprites/pigeons.png');
-        game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 33, 37, 3);
+        game.load.spritesheet('brick', 'assets/sprites/player_spritesheet.png', 32, 64, 9);
+        // game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 32, 37, 3);
+        game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('water', 'assets/water.png')
 
     },
@@ -51,6 +55,9 @@ Tan.LevelOne.prototype = {
 
         platforms = game.add.group();
         platforms.enableBody = true;
+
+        grams = game.add.group();
+        grams.enableBody = true;
 
         var ground = platforms.create(0, game.world.height - 50, 'platform');
         ground.scale.setTo(xWorldBounds/10, 7);
@@ -108,6 +115,11 @@ Tan.LevelOne.prototype = {
         movPlat.body.velocity.x = 50;
         movPlat.body.immovable = true;
 
+        // Create a gram
+        var triGram = grams.create(200, game.world.height - 70, 'sm_triangle');
+        triGram.body.gravity.y = 6;
+        triGram.name = 'hat'
+
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
             newPlatform.scale.setTo(widthScale, heightScale);
@@ -127,6 +139,16 @@ Tan.LevelOne.prototype = {
         initializePlayer();
         initializeCamera();
 
+        player.animations.add('walk', [0, 1, 2], 10, true);
+        player.animations.add('jump', [1]);
+        player.animations.add('walkHat', [3, 4, 5], 10, true);
+        player.animations.add('jumpHat', [4]);
+
+        // camera mechanics
+        game.camera.follow(player);
+
+        // deadzone
+        game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
 
         //enemies to be DRY'ed out
         enemies = game.add.group();
@@ -169,11 +191,11 @@ Tan.LevelOne.prototype = {
             game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
         }
 
-
     },
 
     update: function(){
-
+        game.physics.arcade.collide(grams, platforms);
+        game.physics.arcade.overlap(player, grams, collectGram, null, this);
         game.physics.arcade.collide(player, platforms);
         game.physics.arcade.collide(enemies, platforms);
 
@@ -188,6 +210,7 @@ Tan.LevelOne.prototype = {
 
         cursors = game.input.keyboard.createCursorKeys();
         game.physics.arcade.collide(enemies, player, collisionHandler, null, this);
+
         function collisionHandler (player, enemy) {
             console.log(player, enemy)
             if (enemy.body.touching.up){
@@ -197,7 +220,6 @@ Tan.LevelOne.prototype = {
                 player.kill();
                 game.state.start('GameOver');
             }
-
         }
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
@@ -208,12 +230,14 @@ Tan.LevelOne.prototype = {
             if (player.body.touching.down){
                 player.animations.play('walk');
             }
+
         } else if (cursors.right.isDown) {
             //  Move to the right
             player.body.velocity.x = playerSpeed;
             if (player.body.touching.down){
                 player.animations.play('walk');
             }
+
         } else {
             //  Stand still
             player.animations.stop();
@@ -230,6 +254,7 @@ Tan.LevelOne.prototype = {
             player.body.velocity.y = -400;
         }
 
+
         if (!player.body.touching.down){
             player.animations.play('jump')
         }
@@ -238,7 +263,12 @@ Tan.LevelOne.prototype = {
             xStartPos = player.position.x;
             yStartPos = player.position.y;
             game.state.start('PauseMenu')
+        }
 
+        function collectGram(player, gram){
+            playerGrams[gram.name] = gram;
+            // console.debug(playerGrams)
+            gram.kill();
         }
 
         game.physics.arcade.overlap(enemies, enemyMovementTriggers, function(enemy, trigger) {
