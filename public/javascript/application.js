@@ -277,35 +277,7 @@ Tan.LevelOne.prototype = {
         function moveAsBrickHat(){
             movePlayer(3, 'walkHat', 'jumpHat');
         }
-        //     // if (cursors.left.isDown){
-        //     //     //  Move to the left
-        //     //     player.body.velocity.x = -(playerSpeed);
-        //     //     if (player.scale.x == -1){
-        //     //         player.animations.play('walkHat');
-        //     //     } else {
-        //     //         player.scale.x *= -1; 
-        //     //     }
-        //     // } else if (cursors.right.isDown) {
-        //     //   //  Move to the right
-        //     //     player.body.velocity.x = (playerSpeed);
-        //     //     if (player.scale.x == 1){
-        //     //         player.animations.play('walkHat');
-        //     //     } else {
-        //     //         player.scale.x *= -1; 
-        //     //     }
-        //     // } else {
-        //     //   //  Stand still
-        //     //   player.animations.stop();
-        //     //   player.frame = 3;
-        //     //   }
-        //     //   //  Allow the player to jump if they are touching the ground.
-        //     // if (cursors.up.isDown && player.body.touching.down){
-        //     //     player.body.velocity.y = -400;
-        //     // }
-        //     // if (!player.body.touching.down){
-        //     //     player.animations.play('jumpHat');
-        //     // }
-        // } 
+    
             //  Allow the player to swim.
         if (underwater && cursors.up.isDown){
             player.body.velocity.y = -300;
