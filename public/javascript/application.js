@@ -182,8 +182,8 @@ Tan.LevelOne.prototype = {
             player.body.gravity.y = 400;
             player.body.collideWorldBounds = true;
 
-            player.animations.add('walk', [0, 1, 2], 10, true);
-            player.animations.add('jump', [1])
+            player.body.setSize(32, 32, 0, 32);
+            player.anchor.setTo(.5, 0);
         }
 
         function initializeCamera(){
@@ -227,15 +227,19 @@ Tan.LevelOne.prototype = {
         if (cursors.left.isDown){
             //  Move to the left
             player.body.velocity.x = -(playerSpeed);
-            if (player.body.touching.down){
+            if (player.scale.x == -1){
                 player.animations.play('walk');
+            } else {
+                player.scale.x *= -1; 
             }
 
         } else if (cursors.right.isDown) {
             //  Move to the right
             player.body.velocity.x = playerSpeed;
-            if (player.body.touching.down){
+            if (player.scale.x == 1){
                 player.animations.play('walk');
+            } else {
+                player.scale.x *= -1; 
             }
 
         } else {
@@ -293,10 +297,6 @@ Tan.LevelOne.prototype = {
                 platform.lastTrigger = trigger;
             }
         });
-
-        function die(){
-            player.kill();
-        };
 
     }
 
