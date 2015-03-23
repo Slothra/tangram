@@ -152,7 +152,7 @@ Tan.LevelOne.prototype = {
         createdEnemy.body.velocity.x = 100;
 
         function initializePlayer(){
-            //could probably be moved outside of create function
+            //could probably be moved outside of create
             player = game.add.sprite(xStartPos, yStartPos, 'brick')
             game.physics.arcade.enable(player);
 
@@ -187,15 +187,18 @@ Tan.LevelOne.prototype = {
         };
 
         cursors = game.input.keyboard.createCursorKeys();
+        game.physics.arcade.collide(enemies, player, collisionHandler, null, this);
+        function collisionHandler (player, enemy) {
+            console.log(player, enemy)
+            if (enemy.body.touching.up){
+                enemy.kill();
+                player.body.velocity.y = -200;
+            } else {
+                player.kill();
+                game.state.start('GameOver');
+            }
 
-        if (game.physics.arcade.collide(enemies, player) && createdEnemy.body.touching.up){
-            createdEnemy.kill();
-            console.log('he dead');
-            player.body.velocity.y = -200;
-        } else if (game.physics.arcade.collide(player, enemies) || game.physics.arcade.collide(player, enemies)){
-            console.log('you dead');
-            die(player);
-        };
+        }
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
 
@@ -263,7 +266,6 @@ Tan.LevelOne.prototype = {
 
         function die(){
             player.kill();
-            game.state.start('GameOver');
         };
 
     }
