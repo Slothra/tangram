@@ -233,6 +233,15 @@ Tan.LevelOne.prototype = {
         }
 
 
+//////// Create pause menu
+
+
+            // menu = game.add.sprite(gameWidth/2, gameHeight/2 + gamePadding, 'menu');
+            // menu.anchor.setTo(0.5, 0.5);
+
+            // menuText = game.add.text(gameWidth/2, gameHeight/2 + gamePadding, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
+            // menuText.anchor.setTo(0.5, 0.5);
+
     },
 
 
@@ -333,21 +342,54 @@ Tan.LevelOne.prototype = {
             player.body.velocity.y = -400;
         }
 
+ ///////////////////////////       
+
 
         // PAUSE MENU
         if (pauseKey.isDown){
             game.input.onDown.add(unpause, self);
-            pause();
+
+            showMenu();
+
+
+
+
+
+
+
+
+            // showMenu();
+        }
+
+        function showMenu(){
+            var menu;
+            var tween;
+            menu = game.add.sprite(gameWidth/2, gameHeight/2 - gamePadding, 'menu');
+
+            // // Set origin to the center to make the rotation look better.
+            menu.anchor.setTo(0.5, 0.5);
+
+            // Add a simple bounce tween to each character's position.
+            game.add.tween(menu).to( { y: gameHeight/2 + gamePadding }, 400, Phaser.Easing.Bounce.Out, true);
+
+            game.time.events.add(Phaser.Timer.SECOND * 0.4, pause, this);
+
+
+            
+
+
+
+
+            
+            // menu = game.add.sprite(gameWidth/2, gameHeight/2 + gamePadding, 'menu');
+            // menu.anchor.setTo(0.5, 0.5);
+
+            // menuText = game.add.text(gameWidth/2, gameHeight/2 + gamePadding, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
+            // menuText.anchor.setTo(0.5, 0.5);
         }
 
         function pause(){
-            game.paused = true;
-            
-            menu = game.add.sprite(gameWidth/2, gameHeight/2 + gamePadding, 'menu');
-            menu.anchor.setTo(0.5, 0.5);
-
-            menuText = game.add.text(gameWidth/2, gameHeight/2 + gamePadding, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
-            menuText.anchor.setTo(0.5, 0.5);
+            game.paused = true;    
         }
 
         function unpause(event){
@@ -372,6 +414,7 @@ Tan.LevelOne.prototype = {
                     menuText.text = 'You chose menu item: ' + menuList[menuItem];
                 }
                 else{
+
                     menu.destroy();
                     menuText.destroy();
 
@@ -382,6 +425,7 @@ Tan.LevelOne.prototype = {
 
 
 
+///////////////////////////////////
 
 
 
