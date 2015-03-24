@@ -14,8 +14,12 @@ var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space');
 
 var pauseKey;
 var unpauseKey;
+var menuKey;
+var menu;
+
+var gamePaused = false;
 var xStartPos = 0;
-var yStartPos = 200;
+var yStartPos = gameHeight;
 var player;
 var playerGrams = {};
 var playerForm = 'brick';
@@ -28,21 +32,10 @@ var platformLeftTrigger;
 var movPlat;
 var underwater = false;
 var playerSpeed = 150;
-var crabbyCrab;
-var leftPincer;
-var rightPincer;
-var pincers;
-var originPosition;
-var countdown = false;
-var pincer;
 
 Tan.LevelOne = function(game){};
 
 Tan.LevelOne.prototype = {
-    init: function () {
-        console.log("This Happens")
-
-    },
     preload: function(){
         game.load.image('sky', 'assets/sky.png');
         game.load.image('platform', 'assets/platform_10x10.png');
@@ -50,18 +43,20 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet.png', 32, 64, 9);
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('water', 'assets/water.png');
-        game.load.image('crab', 'assets/sprites/block.png')
+
+        game.load.image('diamond', 'assets/sprites/tan-square.png');
         game.load.image('menu', 'assets/sprites/block.png');
-
     },
-
     create: function(){
+
+        // var xWorldBounds = 5000;
+        // var yWorldBounds = 800
         pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.P);
         unpauseKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
-        background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + gamePadding, 'sky');
+        background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
 
         waters = game.add.group();
@@ -187,34 +182,6 @@ Tan.LevelOne.prototype = {
         game.physics.enable(enemies, Phaser.Physics.ARCADE);
         createdEnemy.body.velocity.x = 100;
 
-        pincers = game.add.group();
-        pincers.enableBody = true;
-        pincers.physicsBodyType = Phaser.Physics.ARCADE;
-
-
-        crabbyCrab = game.add.sprite(3500, yWorldBounds - 200, 'crab', 0, enemies);
-        crabbyCrab.scale.x = 1;
-        crabbyCrab.scale.y = .5;
-        crabbyCrab.anchor.setTo(.5, 0);
-        crabbyCrab.body.velocity.x = -50;
-
-        leftTriggerCrabby = game.add.sprite(3200, yWorldBounds - 200, null, 0, enemyMovementTriggers);
-        leftTriggerCrabby.body.setSize(4, 32, 0, 0);
-        rightTriggerCrabby = game.add.sprite(3885, yWorldBounds - 200, null, 0, enemyMovementTriggers);
-        rightTriggerCrabby.body.setSize(4, 32, 0, 0);
-
-        leftPincer = game.add.sprite(3400, yWorldBounds - 250, 'platform', 0, pincers);
-        rightPincer = game.add.sprite(3600, yWorldBounds - 300, 'platform', 0, pincers);
-        
-        // leftPincer.scale.x = .4;
-        // leftPincer.scale.y = .2;
-        leftPincer.body.immovable = true;
-
-        
-        // rightPincer.scale.x = .5;
-        // rightPincer.scale.y = .25;
-        rightPincer.body.immovable = true;
-
         function initializePlayer(){
             //could probably be moved outside of create
             player = game.add.sprite(xStartPos, yStartPos, 'brick')
@@ -231,16 +198,6 @@ Tan.LevelOne.prototype = {
             game.camera.follow(player);
             game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
         }
-
-
-//////// Create pause menu
-
-
-            // menu = game.add.sprite(gameWidth/2, gameHeight/2 + gamePadding, 'menu');
-            // menu.anchor.setTo(0.5, 0.5);
-
-            // menuText = game.add.text(gameWidth/2, gameHeight/2 + gamePadding, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
-            // menuText.anchor.setTo(0.5, 0.5);
 
     },
 
@@ -264,8 +221,9 @@ Tan.LevelOne.prototype = {
 
         cursors = game.input.keyboard.createCursorKeys();
         game.physics.arcade.collide(enemies, player, collisionHandler, null, this);
-        game.physics.arcade.collide(pincers, player, bossCollisionHandler, null, this);
+
         function collisionHandler (player, enemy) {
+            console.log(player, enemy)
             if (enemy.body.touching.up){
                 enemy.kill();
                 player.body.velocity.y = -200;
@@ -273,11 +231,6 @@ Tan.LevelOne.prototype = {
                 player.kill();
                 game.state.start('GameOver');
             }
-        }
-
-        function bossCollisionHandler (player, enemy) {
-            player.kill();
-            game.state.start('GameOver');
         }
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
@@ -342,57 +295,31 @@ Tan.LevelOne.prototype = {
             player.body.velocity.y = -400;
         }
 
- ///////////////////////////       
-
-
         // PAUSE MENU
         if (pauseKey.isDown){
-            game.input.onDown.add(unpause, self);
-
-            showMenu();
-
-
-
-
-
-
-
-
-            // showMenu();
+            pauseMenu();
         }
 
-        function showMenu(){
-            var menu;
-            var tween;
-            menu = game.add.sprite(gameWidth/2, gameHeight/2 - gamePadding, 'menu');
-
-            // // Set origin to the center to make the rotation look better.
+        function pauseMenu(){
+            menu = game.add.sprite(gameWidth/2, gameHeight/2 + gamePadding, 'menu');
             menu.anchor.setTo(0.5, 0.5);
+            // game.add.tween(menu).to( { y: gameHeight/2 + gamePadding }, 10, Phaser.Easing.Bounce.Out, true);
 
-            // Add a simple bounce tween to each character's position.
-            game.add.tween(menu).to( { y: gameHeight/2 + gamePadding }, 400, Phaser.Easing.Bounce.Out, true);
-
-            game.time.events.add(Phaser.Timer.SECOND * 0.4, pause, this);
-
-
-            
-
-
-
-
-            
-            // menu = game.add.sprite(gameWidth/2, gameHeight/2 + gamePadding, 'menu');
-            // menu.anchor.setTo(0.5, 0.5);
-
-            // menuText = game.add.text(gameWidth/2, gameHeight/2 + gamePadding, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
-            // menuText.anchor.setTo(0.5, 0.5);
+            menuText = game.add.text(gameWidth/2, gameHeight/2 + gamePadding, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
+            menuText.anchor.setTo(0.5, 0.5);
+            game.paused = true;
+            // var timer = game.time.events.add(Phaser.Timer.SECOND * 0.25, pause, this;
+            // console.debug(this);
         }
 
-        function pause(){
-            game.paused = true;    
+        function pause(timer){
+          game.paused = true;
         }
+
+        game.input.onDown.add(unpause, self);
 
         function unpause(event){
+            // Only act if paused
             if(game.paused){
                 // Calculate the corners of the menu
                 var x1 = gameWidth/2 - 270/2, x2 = gameWidth/2 + 270/2,
@@ -400,76 +327,23 @@ Tan.LevelOne.prototype = {
 
                 // Check if the click was inside the menu
                 if(event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2 ){
-                    // The choicemap is an array that will help us see which item was clicked
-                    var menuList = ['one', 'two', 'three', 'four', 'five', 'six'];
-
-                    // Get menu local coordinates for the click
-                    var x = event.x - x1,
-                        y = event.y - y1;
-
-                    // Calculate the choice 
-                    var menuItem = Math.floor(x / 90) + 3*Math.floor(y / 90);
-
-                    // Display the choice
-                    menuText.text = 'You chose menu item: ' + menuList[menuItem];
                 }
                 else{
-
+                    // Remove the menu and the label
                     menu.destroy();
                     menuText.destroy();
 
+                    // Unpause the game
                     game.paused = false;
                 }
             }
         };
-
-
-
-///////////////////////////////////
-
-
 
         function collectGram(player, gram){
             playerGrams[gram.name] = gram;
             console.debug(playerGrams)
             gram.kill();
             playerForm = gram.name;
-        }
-        
-        // Claw moves to platform (needs animations)
-        if (player.position.x > 3200 && countdown == false){
-            countdown = true;
-            game.time.events.add(Phaser.Timer.SECOND * 3, pinch, this);
-        }
-
-        function pinch(){
-            if (player.position.x > 3600){
-                game.physics.arcade.moveToXY(rightPincer,3600,400);
-                pincer = 1;
-            } else {
-                game.physics.arcade.moveToXY(leftPincer,3300,400);
-                pincer = -1;
-            }
-            game.time.events.add(Phaser.Timer.SECOND * 4.5, returnPinch, this);
-        }
-
-        function returnPinch(){
-            if (pincer === 1){
-                game.physics.arcade.moveToXY(rightPincer,3600,500);   
-            } else if (pincer === -1){
-                game.physics.arcade.moveToXY(leftPincer,3400,550);
-            }
-            game.time.events.add(Phaser.Timer.SECOND * 4.5, pausePinch, this);
-        }
-
-        function pausePinch(){
-            if (countdown == true){
-                leftPincer.body.velocity.y = 0;
-                leftPincer.body.velocity.x = 0;
-                rightPincer.body.velocity.y = 0;
-                rightPincer.body.velocity.x = 0;
-                countdown = false;
-            }
         }
 
         game.physics.arcade.overlap(enemies, enemyMovementTriggers, function(enemy, trigger) {
@@ -494,62 +368,10 @@ Tan.LevelOne.prototype = {
                 platform.lastTrigger = trigger;
             }
         });
+
     }
 
 };
-
-
-function pinch(){
-    if (player.position.x > 3600){
-        game.physics.arcade.moveToXY(rightPincer,3600,400);
-        pincer = 1;
-    } else {
-        game.physics.arcade.moveToXY(leftPincer,3300,400);
-        pincer = -1;
-    }
-    game.time.events.add(Phaser.Timer.SECOND * 4.5, returnPinch, this);
-}
-
-function returnPinch(){
-    if (pincer === 1){
-        game.physics.arcade.moveToXY(rightPincer,3600,500);   
-    } else if (pincer === -1){
-        game.physics.arcade.moveToXY(leftPincer,3400,550);
-    }
-    game.time.events.add(Phaser.Timer.SECOND * 4.5, pausePinch, this);
-}
-
-function pausePinch(){
-    if (countdown == true){
-        leftPincer.body.velocity.y = 0;
-        leftPincer.body.velocity.x = 0;
-        rightPincer.body.velocity.y = 0;
-        rightPincer.body.velocity.x = 0;
-        countdown = false;
-    }
-}
-// Tan.PauseMenu = function(game){};
-
-// Tan.PauseMenu.prototype = {
-//     preload: function(){
-//         // Load a menu here
-
-//     },
-//     create: function(){
-//         unpauseKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
-//         // Retrieve inventory
-//         // Populate menu
-
-//     },
-//     update: function(){
-//         // Allow form change
-//         // Allow unpause
-//         if (unpauseKey.isDown){
-//             game.state.start('LevelOne')
-//         }
-
-//     }
-// }
 
 Tan.GameOver = function(game){};
 
@@ -577,9 +399,10 @@ Tan.GameOver.prototype = {
     }
 }
 
-
-
 game.state.add('LevelOne', Tan.LevelOne);
-// game.state.add('PauseMenu', Tan.PauseMenu);
 game.state.add('GameOver', Tan.GameOver);
 game.state.start('LevelOne');
+
+
+
+
