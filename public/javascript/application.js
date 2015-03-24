@@ -26,6 +26,11 @@ var movPlat;
 var underwater = false;
 var playerSpeed = 150;
 var crabbyCrab;
+var leftPincer;
+var rightPincer;
+var pincers;
+var originPosition;
+var countdown = false;
 
 Tan.LevelOne = function(game){};
 
@@ -174,12 +179,33 @@ Tan.LevelOne.prototype = {
         game.physics.enable(enemies, Phaser.Physics.ARCADE);
         createdEnemy.body.velocity.x = 100;
 
+        pincers = game.add.group();
+        pincers.enableBody = true;
+        pincers.physicsBodyType = Phaser.Physics.ARCADE;
+
+
         crabbyCrab = game.add.sprite(3500, yWorldBounds - 200, 'crab', 0, enemies);
-        crabbyCrab.scale.x = .2;
-        crabbyCrab.scale.y = .2;
+        crabbyCrab.scale.x = 1;
+        crabbyCrab.scale.y = .5;
+        crabbyCrab.anchor.setTo(.5, 0);
+        crabbyCrab.body.velocity.x = -50;
 
+        leftTriggerCrabby = game.add.sprite(3200, yWorldBounds - 200, null, 0, enemyMovementTriggers);
+        leftTriggerCrabby.body.setSize(4, 32, 0, 0);
+        rightTriggerCrabby = game.add.sprite(3885, yWorldBounds - 200, null, 0, enemyMovementTriggers);
+        rightTriggerCrabby.body.setSize(4, 32, 0, 0);
 
+        leftPincer = game.add.sprite(3400, yWorldBounds - 250, 'platform', 0, pincers);
+        rightPincer = game.add.sprite(3600, yWorldBounds - 300, 'platform', 0, pincers);
+        
+        // leftPincer.scale.x = .4;
+        // leftPincer.scale.y = .2;
+        leftPincer.body.immovable = true;
 
+        
+        // rightPincer.scale.x = .5;
+        // rightPincer.scale.y = .25;
+        rightPincer.body.immovable = true;
 
         function initializePlayer(){
             //could probably be moved outside of create
@@ -219,9 +245,8 @@ Tan.LevelOne.prototype = {
 
         cursors = game.input.keyboard.createCursorKeys();
         game.physics.arcade.collide(enemies, player, collisionHandler, null, this);
-
+        game.physics.arcade.collide(pincers, player, bossCollisionHandler, null, this);
         function collisionHandler (player, enemy) {
-            console.log(player, enemy)
             if (enemy.body.touching.up){
                 enemy.kill();
                 player.body.velocity.y = -200;
@@ -230,6 +255,11 @@ Tan.LevelOne.prototype = {
                 game.state.start('GameOver');
             }
         }
+
+        function bossCollisionHandler (player, enemy) {
+            player.kill();
+            game.state.start('GameOver');
+        }
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
 
@@ -237,15 +267,15 @@ Tan.LevelOne.prototype = {
         switch (playerForm){
           case 'brick':
             moveAsBrick();
-            console.log("i am a brick");
+            // console.log("i am a brick");
             break;
           case 'hat':
             moveAsBrickHat();
-            console.log("I'm wearing a hat");
+            // console.log("I'm wearing a hat");
             break;
           default:
             moveAsBrick();
-            console.log("turn you into brick");
+            // console.log("turn you into brick");
         }
 
         function moveAsBrick(){
@@ -331,6 +361,24 @@ Tan.LevelOne.prototype = {
             gram.kill();
             playerForm = gram.name;
         }
+        
+        // game.time.events.repeat(Phaser.Timer.SECOND * 2, 10, createBall, this);
+        if (player.position.x > 3200 && countdown == false){
+            countdown = true;
+            game.time.events.repeat(Phaser.Timer.SECOND * 5, 10, pinch, this);
+        }
+        // When a player enters range it starts a timer
+        // When the timer reaches 0 one of the pincers moves to it's platform
+        // When the pincer reaches the platform it stops
+        // After a short time, the pincer returns to origin
+        // When the pincer reaches it's origin it stops
+
+        // Whole loop should take 5 seconds
+
+        // claw will open
+        // claw will move to current location
+        // arm will stretch line scale change
+        // Player must jump away
 
         game.physics.arcade.overlap(enemies, enemyMovementTriggers, function(enemy, trigger) {
         // Do a simple check to ensure the trigger only changes the enemy's direction
@@ -354,10 +402,14 @@ Tan.LevelOne.prototype = {
                 platform.lastTrigger = trigger;
             }
         });
-
     }
 
 };
+
+function pinch(){
+    countdown = false;
+    game.physics.arcade.moveToXY(leftPincer,3300,400);
+}
 
 Tan.PauseMenu = function(game){};
 
