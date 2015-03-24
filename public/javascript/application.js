@@ -25,6 +25,7 @@ var platformLeftTrigger;
 var movPlat;
 var underwater = false;
 var playerSpeed = 150;
+var crabbyCrab;
 
 Tan.LevelOne = function(game){};
 
@@ -37,6 +38,7 @@ Tan.LevelOne.prototype = {
         // game.load.spritesheet('brick', 'assets/sprites/tan-square-move.png', 32, 37, 3);
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('water', 'assets/water.png')
+        game.load.image('crab', 'assets/sprites/block.png')
 
     },
     create: function(){
@@ -172,6 +174,13 @@ Tan.LevelOne.prototype = {
         // enemy = game.add.sprite(75,yWorldBounds - 65,'pigeon', 0, enemies);
         game.physics.enable(enemies, Phaser.Physics.ARCADE);
         createdEnemy.body.velocity.x = 100;
+
+        crabbyCrab = game.add.sprite(3500, yWorldBounds - 200, 'crab', 0, enemies);
+        crabbyCrab.scale.x = .2;
+        crabbyCrab.scale.y = .2;
+
+
+
 
         function initializePlayer(){
             //could probably be moved outside of create
