@@ -6,6 +6,9 @@ var Tan = {
 };
 var gameWidth = 800;
 var gameHeight = 600;
+var xWorldBounds = 5000;
+var yWorldBounds = 800
+var gamePadding = yWorldBounds - gameHeight;
 
 var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space');
 
@@ -38,11 +41,14 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet.png', 32, 64, 9);
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('water', 'assets/water.png');
+
+        game.load.image('diamond', 'assets/sprites/tan-square.png');
+        game.load.image('menu', 'assets/sprites/block.png');
     },
     create: function(){
 
-        var xWorldBounds = 5000;
-        var yWorldBounds = 800
+        // var xWorldBounds = 5000;
+        // var yWorldBounds = 800
         pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.P);
         unpauseKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
 
@@ -191,7 +197,9 @@ Tan.LevelOne.prototype = {
             game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
         }
 
+
     },
+
 
     update: function(){
         game.physics.arcade.collide(grams, platforms);
@@ -225,7 +233,6 @@ Tan.LevelOne.prototype = {
         }
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
-
 
         switch (playerForm){
           case 'brick':
@@ -287,32 +294,69 @@ Tan.LevelOne.prototype = {
             player.body.velocity.y = -400;
         }
 
-        // if (pauseKey.isDown){
-        //     xStartPos = player.position.x;
-        //     yStartPos = player.position.y;
-        //     game.state.start('PauseMenu')
-        // }
+        // PAUSE MENU
+        if (pauseKey.isDown){
+            pauseMenu();
+            // game.paused = true;
 
-        // console.log('before pause', gamePaused)
-        if (pauseKey.isDown && !gamePaused){
-            gamePaused = true;
-            console.log('pause');
+            // Pause.showMenu();
+            
+            // menu = game.add.sprite(gameWidth/2, gameHeight/2 + gamePadding, 'menu');
+            // menu.anchor.setTo(0.5, 0.5);
+
+            // menuText = game.add.text(gameWidth/2, gameHeight/2 + gamePadding, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
+            // menuText.anchor.setTo(0.5, 0.5);
         }
 
-        if (unpauseKey.isDown && gamePaused){
-            gamePaused = false;
-            console.log('unpaused');
+        function pauseMenu(){
+            game.paused = true;
+            
+            menu = game.add.sprite(gameWidth/2, gameHeight/2 + gamePadding, 'menu');
+            menu.anchor.setTo(0.5, 0.5);
+
+            menuText = game.add.text(gameWidth/2, gameHeight/2 + gamePadding, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
+            menuText.anchor.setTo(0.5, 0.5);
         }
 
-        var Pause = {
+        game.input.onDown.add(unpause, self);
 
-            disableSprites: function() {
-            },
+        function unpause(event){
+            // Only act if paused
+            if(game.paused){
+                // Calculate the corners of the menu
+                var x1 = gameWidth/2 - 270/2, x2 = gameWidth/2 + 270/2,
+                    y1 = gameHeight/2 - 180/2, y2 = gameHeight/2 + 180/2;
 
-            guessNumber: function(guess) {
+                // Check if the click was inside the menu
+                if(event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2 ){
+                    // The choicemap is an array that will help us see which item was clicked
+                    var choisemap = ['one', 'two', 'three', 'four', 'five', 'six'];
 
-            },
-        }  
+                    // Get menu local coordinates for the click
+                    var x = event.x - x1,
+                        y = event.y - y1;
+
+                    // Calculate the choice 
+                    var choise = Math.floor(x / 90) + 3*Math.floor(y / 90);
+
+                    // Display the choice
+                    menuText.text = 'You chose menu item: ' + choisemap[choise];
+                }
+                else{
+                    // Remove the menu and the label
+                    menu.destroy();
+                    menuText.destroy();
+
+                    // Unpause the game
+                    game.paused = false;
+                }
+            }
+        };
+
+
+
+
+
 
         function collectGram(player, gram){
             playerGrams[gram.name] = gram;
@@ -385,6 +429,7 @@ Tan.GameOver.prototype = {
     update: function(){
         var restartKey = game.input.keyboard.addKey(Phaser.Keyboard.Y);
         var endKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
+        playerForm = 'brick';
         // restart from last checkpoint (start of level, boss)
         if (restartKey.isDown){
             game.state.start('LevelOne')
