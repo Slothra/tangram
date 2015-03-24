@@ -368,23 +368,41 @@ Tan.LevelOne.prototype = {
             playerForm = gram.name;
         }
         
-        // game.time.events.repeat(Phaser.Timer.SECOND * 2, 10, createBall, this);
+        // Claw moves to platform (needs animations)
         if (player.position.x > 3200 && countdown == false){
             countdown = true;
             game.time.events.add(Phaser.Timer.SECOND * 3, pinch, this);
         }
-        // When a player enters range it starts a timer
-        // When the timer reaches 0 one of the pincers moves to it's platform
-        // When the pincer reaches the platform it stops
-        // After a short time, the pincer returns to origin
-        // When the pincer reaches it's origin it stops
 
-        // Whole loop should take 5 seconds
+        function pinch(){
+            if (player.position.x > 3600){
+                game.physics.arcade.moveToXY(rightPincer,3600,400);
+                pincer = 1;
+            } else {
+                game.physics.arcade.moveToXY(leftPincer,3300,400);
+                pincer = -1;
+            }
+            game.time.events.add(Phaser.Timer.SECOND * 4.5, returnPinch, this);
+        }
 
-        // claw will open
-        // claw will move to current location
-        // arm will stretch line scale change
-        // Player must jump away
+        function returnPinch(){
+            if (pincer === 1){
+                game.physics.arcade.moveToXY(rightPincer,3600,500);   
+            } else if (pincer === -1){
+                game.physics.arcade.moveToXY(leftPincer,3400,550);
+            }
+            game.time.events.add(Phaser.Timer.SECOND * 4.5, pausePinch, this);
+        }
+
+        function pausePinch(){
+            if (countdown == true){
+                leftPincer.body.velocity.y = 0;
+                leftPincer.body.velocity.x = 0;
+                rightPincer.body.velocity.y = 0;
+                rightPincer.body.velocity.x = 0;
+                countdown = false;
+            }
+        }
 
         game.physics.arcade.overlap(enemies, enemyMovementTriggers, function(enemy, trigger) {
         // Do a simple check to ensure the trigger only changes the enemy's direction
