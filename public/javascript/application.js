@@ -14,8 +14,6 @@ var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space');
 
 var pauseKey;
 var unpauseKey;
-var menuKey;
-var gamePaused = false;
 var xStartPos = 0;
 var yStartPos = gameHeight;
 var player;
@@ -41,20 +39,15 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet.png', 32, 64, 9);
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('water', 'assets/water.png');
-
-        game.load.image('diamond', 'assets/sprites/tan-square.png');
         game.load.image('menu', 'assets/sprites/block.png');
     },
     create: function(){
-
-        // var xWorldBounds = 5000;
-        // var yWorldBounds = 800
         pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.P);
         unpauseKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
-        background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
+        background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + gamePadding, 'sky');
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
 
         waters = game.add.group();
@@ -294,21 +287,14 @@ Tan.LevelOne.prototype = {
             player.body.velocity.y = -400;
         }
 
+
         // PAUSE MENU
         if (pauseKey.isDown){
-            pauseMenu();
-            // game.paused = true;
-
-            // Pause.showMenu();
-            
-            // menu = game.add.sprite(gameWidth/2, gameHeight/2 + gamePadding, 'menu');
-            // menu.anchor.setTo(0.5, 0.5);
-
-            // menuText = game.add.text(gameWidth/2, gameHeight/2 + gamePadding, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
-            // menuText.anchor.setTo(0.5, 0.5);
+            game.input.onDown.add(unpause, self);
+            pause();
         }
 
-        function pauseMenu(){
+        function pause(){
             game.paused = true;
             
             menu = game.add.sprite(gameWidth/2, gameHeight/2 + gamePadding, 'menu');
@@ -318,10 +304,7 @@ Tan.LevelOne.prototype = {
             menuText.anchor.setTo(0.5, 0.5);
         }
 
-        game.input.onDown.add(unpause, self);
-
         function unpause(event){
-            // Only act if paused
             if(game.paused){
                 // Calculate the corners of the menu
                 var x1 = gameWidth/2 - 270/2, x2 = gameWidth/2 + 270/2,
@@ -330,24 +313,22 @@ Tan.LevelOne.prototype = {
                 // Check if the click was inside the menu
                 if(event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2 ){
                     // The choicemap is an array that will help us see which item was clicked
-                    var choisemap = ['one', 'two', 'three', 'four', 'five', 'six'];
+                    var menuList = ['one', 'two', 'three', 'four', 'five', 'six'];
 
                     // Get menu local coordinates for the click
                     var x = event.x - x1,
                         y = event.y - y1;
 
                     // Calculate the choice 
-                    var choise = Math.floor(x / 90) + 3*Math.floor(y / 90);
+                    var menuItem = Math.floor(x / 90) + 3*Math.floor(y / 90);
 
                     // Display the choice
-                    menuText.text = 'You chose menu item: ' + choisemap[choise];
+                    menuText.text = 'You chose menu item: ' + menuList[menuItem];
                 }
                 else{
-                    // Remove the menu and the label
                     menu.destroy();
                     menuText.destroy();
 
-                    // Unpause the game
                     game.paused = false;
                 }
             }
@@ -392,28 +373,28 @@ Tan.LevelOne.prototype = {
 
 };
 
-Tan.PauseMenu = function(game){};
+// Tan.PauseMenu = function(game){};
 
-Tan.PauseMenu.prototype = {
-    preload: function(){
-        // Load a menu here
+// Tan.PauseMenu.prototype = {
+//     preload: function(){
+//         // Load a menu here
 
-    },
-    create: function(){
-        unpauseKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
-        // Retrieve inventory
-        // Populate menu
+//     },
+//     create: function(){
+//         unpauseKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
+//         // Retrieve inventory
+//         // Populate menu
 
-    },
-    update: function(){
-        // Allow form change
-        // Allow unpause
-        if (unpauseKey.isDown){
-            game.state.start('LevelOne')
-        }
+//     },
+//     update: function(){
+//         // Allow form change
+//         // Allow unpause
+//         if (unpauseKey.isDown){
+//             game.state.start('LevelOne')
+//         }
 
-    }
-}
+//     }
+// }
 
 Tan.GameOver = function(game){};
 
@@ -444,6 +425,6 @@ Tan.GameOver.prototype = {
 
 
 game.state.add('LevelOne', Tan.LevelOne);
-game.state.add('PauseMenu', Tan.PauseMenu);
+// game.state.add('PauseMenu', Tan.PauseMenu);
 game.state.add('GameOver', Tan.GameOver);
 game.state.start('LevelOne');
