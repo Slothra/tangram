@@ -238,12 +238,12 @@ Tan.LevelOne.prototype = {
             moveAsBrick();
         }
 
-        function moveAsBrick(){
+        function movePlayer(staticFrame, walkAnim, jumpAnim){
             if (cursors.left.isDown){
                 //  Move to the left
                 player.body.velocity.x = -(playerSpeed);
                 if (player.scale.x == -1){
-                    player.animations.play('walk');
+                    player.animations.play(walkAnim);
                 } else {
                     player.scale.x *= -1; 
                 }
@@ -251,54 +251,32 @@ Tan.LevelOne.prototype = {
               //  Move to the right
                 player.body.velocity.x = (playerSpeed);
                 if (player.scale.x == 1){
-                    player.animations.play('walk');
+                    player.animations.play(walkAnim);
                 } else {
                     player.scale.x *= -1; 
                 }
             } else {
               //  Stand still
               player.animations.stop();
-              player.frame = 0;
+              player.frame = staticFrame;
               }
               //  Allow the player to jump if they are touching the ground.
             if (cursors.up.isDown && player.body.touching.down){
                 player.body.velocity.y = -400;
             }
             if (!player.body.touching.down){
-                player.animations.play('jump');
-            }
+                player.animations.play(jumpAnim);
+            }            
+        }
+
+        function moveAsBrick(){
+            movePlayer(0, 'walk', 'jump');
         }
 
         function moveAsBrickHat(){
-            if (cursors.left.isDown){
-                //  Move to the left
-                player.body.velocity.x = -(playerSpeed);
-                if (player.scale.x == -1){
-                    player.animations.play('walkHat');
-                } else {
-                    player.scale.x *= -1; 
-                }
-            } else if (cursors.right.isDown) {
-              //  Move to the right
-                player.body.velocity.x = (playerSpeed);
-                if (player.scale.x == 1){
-                    player.animations.play('walkHat');
-                } else {
-                    player.scale.x *= -1; 
-                }
-            } else {
-              //  Stand still
-              player.animations.stop();
-              player.frame = 3;
-              }
-              //  Allow the player to jump if they are touching the ground.
-            if (cursors.up.isDown && player.body.touching.down){
-                player.body.velocity.y = -400;
-            }
-            if (!player.body.touching.down){
-                player.animations.play('jumpHat');
-            }
-        } 
+            movePlayer(3, 'walkHat', 'jumpHat');
+        }
+    
             //  Allow the player to swim.
         if (underwater && cursors.up.isDown){
             player.body.velocity.y = -300;
