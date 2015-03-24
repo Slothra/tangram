@@ -11,8 +11,8 @@ var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space');
 
 var pauseKey;
 var unpauseKey;
-var xStartPos = 0;
-var yStartPos = gameHeight;
+var xStartPos = 3000;
+var yStartPos = 200;
 var player;
 var playerGrams = {};
 var playerForm = 'brick';
@@ -25,10 +25,21 @@ var platformLeftTrigger;
 var movPlat;
 var underwater = false;
 var playerSpeed = 150;
+var crabbyCrab;
+var leftPincer;
+var rightPincer;
+var pincers;
+var originPosition;
+var countdown = false;
+var pincer;
 
 Tan.LevelOne = function(game){};
 
 Tan.LevelOne.prototype = {
+    init: function () {
+        console.log("This Happens")
+
+    },
     preload: function(){
         game.load.image('sky', 'assets/sky.png');
         game.load.image('platform', 'assets/platform_10x10.png');
@@ -36,8 +47,10 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet.png', 32, 64, 9);
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('water', 'assets/water.png')
+        game.load.image('crab', 'assets/sprites/block.png')
 
     },
+
     create: function(){
 
         var xWorldBounds = 5000;
@@ -172,6 +185,34 @@ Tan.LevelOne.prototype = {
         game.physics.enable(enemies, Phaser.Physics.ARCADE);
         createdEnemy.body.velocity.x = 100;
 
+        pincers = game.add.group();
+        pincers.enableBody = true;
+        pincers.physicsBodyType = Phaser.Physics.ARCADE;
+
+
+        crabbyCrab = game.add.sprite(3500, yWorldBounds - 200, 'crab', 0, enemies);
+        crabbyCrab.scale.x = 1;
+        crabbyCrab.scale.y = .5;
+        crabbyCrab.anchor.setTo(.5, 0);
+        crabbyCrab.body.velocity.x = -50;
+
+        leftTriggerCrabby = game.add.sprite(3200, yWorldBounds - 200, null, 0, enemyMovementTriggers);
+        leftTriggerCrabby.body.setSize(4, 32, 0, 0);
+        rightTriggerCrabby = game.add.sprite(3885, yWorldBounds - 200, null, 0, enemyMovementTriggers);
+        rightTriggerCrabby.body.setSize(4, 32, 0, 0);
+
+        leftPincer = game.add.sprite(3400, yWorldBounds - 250, 'platform', 0, pincers);
+        rightPincer = game.add.sprite(3600, yWorldBounds - 300, 'platform', 0, pincers);
+        
+        // leftPincer.scale.x = .4;
+        // leftPincer.scale.y = .2;
+        leftPincer.body.immovable = true;
+
+        
+        // rightPincer.scale.x = .5;
+        // rightPincer.scale.y = .25;
+        rightPincer.body.immovable = true;
+
         function initializePlayer(){
             //could probably be moved outside of create
             player = game.add.sprite(xStartPos, yStartPos, 'brick')
@@ -210,9 +251,8 @@ Tan.LevelOne.prototype = {
 
         cursors = game.input.keyboard.createCursorKeys();
         game.physics.arcade.collide(enemies, player, collisionHandler, null, this);
-
+        game.physics.arcade.collide(pincers, player, bossCollisionHandler, null, this);
         function collisionHandler (player, enemy) {
-            console.log(player, enemy)
             if (enemy.body.touching.up){
                 enemy.kill();
                 player.body.velocity.y = -200;
@@ -221,6 +261,11 @@ Tan.LevelOne.prototype = {
                 game.state.start('GameOver');
             }
         }
+
+        function bossCollisionHandler (player, enemy) {
+            player.kill();
+            game.state.start('GameOver');
+        }
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
 
@@ -228,15 +273,15 @@ Tan.LevelOne.prototype = {
         switch (playerForm){
           case 'brick':
             moveAsBrick();
-            console.log("i am a brick");
+            // console.log("i am a brick");
             break;
           case 'hat':
             moveAsBrickHat();
-            console.log("I'm wearing a hat");
+            // console.log("I'm wearing a hat");
             break;
           default:
             moveAsBrick();
-            console.log("turn you into brick");
+            // console.log("turn you into brick");
         }
 
         function movePlayer(staticFrame, walkAnim, jumpAnim){
@@ -300,6 +345,42 @@ Tan.LevelOne.prototype = {
             gram.kill();
             playerForm = gram.name;
         }
+        
+        // Claw moves to platform (needs animations)
+        if (player.position.x > 3200 && countdown == false){
+            countdown = true;
+            game.time.events.add(Phaser.Timer.SECOND * 3, pinch, this);
+        }
+
+        function pinch(){
+            if (player.position.x > 3600){
+                game.physics.arcade.moveToXY(rightPincer,3600,400);
+                pincer = 1;
+            } else {
+                game.physics.arcade.moveToXY(leftPincer,3300,400);
+                pincer = -1;
+            }
+            game.time.events.add(Phaser.Timer.SECOND * 4.5, returnPinch, this);
+        }
+
+        function returnPinch(){
+            if (pincer === 1){
+                game.physics.arcade.moveToXY(rightPincer,3600,500);   
+            } else if (pincer === -1){
+                game.physics.arcade.moveToXY(leftPincer,3400,550);
+            }
+            game.time.events.add(Phaser.Timer.SECOND * 4.5, pausePinch, this);
+        }
+
+        function pausePinch(){
+            if (countdown == true){
+                leftPincer.body.velocity.y = 0;
+                leftPincer.body.velocity.x = 0;
+                rightPincer.body.velocity.y = 0;
+                rightPincer.body.velocity.x = 0;
+                countdown = false;
+            }
+        }
 
         game.physics.arcade.overlap(enemies, enemyMovementTriggers, function(enemy, trigger) {
         // Do a simple check to ensure the trigger only changes the enemy's direction
@@ -323,10 +404,40 @@ Tan.LevelOne.prototype = {
                 platform.lastTrigger = trigger;
             }
         });
-
     }
 
 };
+
+function pinch(){
+    if (player.position.x > 3600){
+        game.physics.arcade.moveToXY(rightPincer,3600,400);
+        pincer = 1;
+    } else {
+        game.physics.arcade.moveToXY(leftPincer,3300,400);
+        pincer = -1;
+    }
+    game.time.events.add(Phaser.Timer.SECOND * 4.5, returnPinch, this);
+}
+
+function returnPinch(){
+    if (pincer === 1){
+        game.physics.arcade.moveToXY(rightPincer,3600,500);   
+    } else if (pincer === -1){
+        game.physics.arcade.moveToXY(leftPincer,3400,550);
+    }
+    game.time.events.add(Phaser.Timer.SECOND * 4.5, pausePinch, this);
+}
+
+function pausePinch(){
+    if (countdown == true){
+        leftPincer.body.velocity.y = 0;
+        leftPincer.body.velocity.x = 0;
+        rightPincer.body.velocity.y = 0;
+        rightPincer.body.velocity.x = 0;
+        countdown = false;
+    }
+}
+
 
 Tan.PauseMenu = function(game){};
 
