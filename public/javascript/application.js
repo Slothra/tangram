@@ -11,6 +11,8 @@ var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space');
 
 var pauseKey;
 var unpauseKey;
+var menuKey;
+var gamePaused = false;
 var xStartPos = 0;
 var yStartPos = gameHeight;
 var player;
@@ -35,14 +37,14 @@ Tan.LevelOne.prototype = {
         game.load.image('pigeon', 'assets/sprites/pigeons.png');
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet.png', 32, 64, 9);
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
-        game.load.image('water', 'assets/water.png')
-
+        game.load.image('water', 'assets/water.png');
     },
     create: function(){
 
         var xWorldBounds = 5000;
         var yWorldBounds = 800
         pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.P);
+        unpauseKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -228,15 +230,12 @@ Tan.LevelOne.prototype = {
         switch (playerForm){
           case 'brick':
             moveAsBrick();
-            console.log("i am a brick");
             break;
           case 'hat':
             moveAsBrickHat();
-            console.log("I'm wearing a hat");
             break;
           default:
             moveAsBrick();
-            console.log("turn you into brick");
         }
 
         function moveAsBrick(){
@@ -310,11 +309,32 @@ Tan.LevelOne.prototype = {
             player.body.velocity.y = -400;
         }
 
-        if (pauseKey.isDown){
-            xStartPos = player.position.x;
-            yStartPos = player.position.y;
-            game.state.start('PauseMenu')
+        // if (pauseKey.isDown){
+        //     xStartPos = player.position.x;
+        //     yStartPos = player.position.y;
+        //     game.state.start('PauseMenu')
+        // }
+
+        // console.log('before pause', gamePaused)
+        if (pauseKey.isDown && !gamePaused){
+            gamePaused = true;
+            console.log('pause');
         }
+
+        if (unpauseKey.isDown && gamePaused){
+            gamePaused = false;
+            console.log('unpaused');
+        }
+
+        var Pause = {
+
+            disableSprites: function() {
+            },
+
+            guessNumber: function(guess) {
+
+            },
+        }  
 
         function collectGram(player, gram){
             playerGrams[gram.name] = gram;
