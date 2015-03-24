@@ -11,8 +11,8 @@ var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space');
 
 var pauseKey;
 var unpauseKey;
-var xStartPos = 0;
-var yStartPos = gameHeight;
+var xStartPos = 3000;
+var yStartPos = 200;
 var player;
 var playerGrams = {};
 var playerForm = 'brick';
@@ -31,10 +31,15 @@ var rightPincer;
 var pincers;
 var originPosition;
 var countdown = false;
+var pincer;
 
 Tan.LevelOne = function(game){};
 
 Tan.LevelOne.prototype = {
+    init: function () {
+        console.log("This Happens")
+
+    },
     preload: function(){
         game.load.image('sky', 'assets/sky.png');
         game.load.image('platform', 'assets/platform_10x10.png');
@@ -45,6 +50,7 @@ Tan.LevelOne.prototype = {
         game.load.image('crab', 'assets/sprites/block.png')
 
     },
+
     create: function(){
 
         var xWorldBounds = 5000;
@@ -365,7 +371,7 @@ Tan.LevelOne.prototype = {
         // game.time.events.repeat(Phaser.Timer.SECOND * 2, 10, createBall, this);
         if (player.position.x > 3200 && countdown == false){
             countdown = true;
-            game.time.events.repeat(Phaser.Timer.SECOND * 5, 10, pinch, this);
+            game.time.events.add(Phaser.Timer.SECOND * 3, pinch, this);
         }
         // When a player enters range it starts a timer
         // When the timer reaches 0 one of the pincers moves to it's platform
@@ -407,9 +413,35 @@ Tan.LevelOne.prototype = {
 };
 
 function pinch(){
-    countdown = false;
-    game.physics.arcade.moveToXY(leftPincer,3300,400);
+    if (player.position.x > 3600){
+        game.physics.arcade.moveToXY(rightPincer,3600,400);
+        pincer = 1;
+    } else {
+        game.physics.arcade.moveToXY(leftPincer,3300,400);
+        pincer = -1;
+    }
+    game.time.events.add(Phaser.Timer.SECOND * 4.5, returnPinch, this);
 }
+
+function returnPinch(){
+    if (pincer === 1){
+        game.physics.arcade.moveToXY(rightPincer,3600,500);   
+    } else if (pincer === -1){
+        game.physics.arcade.moveToXY(leftPincer,3400,550);
+    }
+    game.time.events.add(Phaser.Timer.SECOND * 4.5, pausePinch, this);
+}
+
+function pausePinch(){
+    if (countdown == true){
+        leftPincer.body.velocity.y = 0;
+        leftPincer.body.velocity.x = 0;
+        rightPincer.body.velocity.y = 0;
+        rightPincer.body.velocity.x = 0;
+        countdown = false;
+    }
+}
+
 
 Tan.PauseMenu = function(game){};
 
