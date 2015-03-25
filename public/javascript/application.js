@@ -308,13 +308,13 @@ Tan.LevelOne.prototype = {
             menuText = game.add.text(gameWidth/2, gameHeight/2 + gamePadding, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
             menuText.anchor.setTo(0.5, 0.5);
             game.paused = true;
-            // var timer = game.time.events.add(Phaser.Timer.SECOND * 0.25, pause, this;
+            // game.time.events.add(Phaser.Timer.SECOND * 0.25, pause, this;
             // console.debug(this);
         }
 
-        function pause(timer){
-          game.paused = true;
-        }
+        // function pause(){
+        //   game.paused = true;
+        // }
 
         game.input.onDown.add(unpause, self);
 
