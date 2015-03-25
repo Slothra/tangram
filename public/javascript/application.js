@@ -57,16 +57,13 @@ Tan.LevelOne.prototype = {
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('water', 'assets/water.png');
         game.load.image('crab', 'assets/sprites/block.png');
-        game.load.spritesheet('coconut-roll','assets/sprites/coconut-roll.png', 31,32,8);
+        game.load.spritesheet('coconut-roll','assets/sprites/coconut-roll.png', 31, 32, 8);
         game.load.spritesheet('coin','assets/sprites/coin_spritesheet1.png', 32, 22, 8);
-
-
+        game.load.image('displayCoin', 'assets/sprites/coin.png');
     },
 
     create: function(){
 
-        // var xWorldBounds = 5000;
-        // var yWorldBounds = 800
         pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.P);
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -272,6 +269,22 @@ Tan.LevelOne.prototype = {
 
         }
 
+
+        // Creates head up display
+        var marginTop = 30;
+
+        var gramsText = game.add.text(100, marginTop, "Tan's Grams:");
+        gramsText.anchor.setTo(0.5, 0.5);
+        gramsText.fixedToCamera = true;
+
+        var displayCoin = game.add.sprite(700, marginTop + 2, 'displayCoin');
+        displayCoin.anchor.setTo(0.5, 0.5);
+        displayCoin.fixedToCamera = true;
+
+        var coinText = game.add.text(740, marginTop, "x " + coinCount);
+        coinText.anchor.setTo(0.5, 0.5);
+        coinText.fixedToCamera = true;
+
     },
 
     update: function(){
@@ -438,6 +451,16 @@ Tan.LevelOne.prototype = {
             movePlayer(6, 'swim', 'jumpFish', playerSpeed - 10, -300);
         }
 
+
+
+        function headsUpDisplay(gram){
+            display = game.add.sprite(0, 0, gram.key);
+            display.fixedToCamera = true;
+            display.cameraOffset.x = 10;
+            display.cameraOffset.y = 10;
+
+        }
+
         function collectGram(player, gram){
             // debugger;
             headsUpDisplay(gram);
@@ -453,13 +476,12 @@ Tan.LevelOne.prototype = {
             console.log(coinCount);
         }
 
-        function headsUpDisplay(gram){
-            display = game.add.sprite(0, 0, gram.key);
-            display.fixedToCamera = true;
-            display.cameraOffset.x = 10;
-            display.cameraOffset.y = 10;
 
-        }
+
+
+
+
+
         
         // Claw moves to platform (needs animations)
         if (player.position.x > 3200 && countdown == false){
