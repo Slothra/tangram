@@ -56,7 +56,8 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 9);
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('water', 'assets/water.png');
-        game.load.image('crab', 'assets/sprites/block.png');
+        game.load.image('crab', 'assets/sprites/crab.png');
+        game.load.image('claw', 'assets/sprites/claw.png');
         game.load.spritesheet('coconut-roll','assets/sprites/coconut-roll.png', 31,32,8);
         game.load.spritesheet('coin','assets/sprites/coin_spritesheet1.png', 32, 22, 8);
 
@@ -208,8 +209,8 @@ Tan.LevelOne.prototype = {
         coconuts.physicsBodyType = Phaser.Physics.ARCADE;
 
         crabbyCrab = game.add.sprite(3500, yWorldBounds - 200, 'crab', 0, enemies);
-        crabbyCrab.scale.x = 1;
-        crabbyCrab.scale.y = .5;
+        // crabbyCrab.scale.x = 1;
+        // crabbyCrab.scale.y = .5;
         crabbyCrab.anchor.setTo(.5, 0);
         crabbyCrab.body.velocity.x = -50;
 
@@ -218,16 +219,17 @@ Tan.LevelOne.prototype = {
         rightTriggerCrabby = game.add.sprite(3885, yWorldBounds - 200, null, 0, enemyMovementTriggers);
         rightTriggerCrabby.body.setSize(4, 32, 0, 0);
 
-        leftPincer = game.add.sprite(3400, yWorldBounds - 250, 'platform', 0, pincers);
-        rightPincer = game.add.sprite(3600, yWorldBounds - 300, 'platform', 0, pincers);
+        leftPincer = game.add.sprite(3400, yWorldBounds - 250, 'claw', 0, pincers);
+        rightPincer = game.add.sprite(3600, yWorldBounds - 300, 'claw', 0, pincers);
         
-        // leftPincer.scale.x = .4;
-        // leftPincer.scale.y = .2;
+        leftPincer.anchor.setTo(.5,0)        
+        leftPincer.scale.x = -1;
+        leftPincer.scale.y = 1;
         leftPincer.body.immovable = true;
 
         
-        // rightPincer.scale.x = .5;
-        // rightPincer.scale.y = .25;
+        rightPincer.scale.x = 1;
+        rightPincer.scale.y = 1.1;
         rightPincer.body.immovable = true;
 
         coconut = game.add.sprite(3550, 300, 'coconut-roll', 0, coconuts);
