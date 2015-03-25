@@ -15,7 +15,7 @@ var xStartPos = 0;
 var yStartPos = gameHeight;
 var player;
 var playerGrams = {};
-var playerForm = 'brick';
+var playerForm = 'fish';
 var enemyMovementTriggers;
 var enemies;
 var createdEnemy;
@@ -46,7 +46,7 @@ Tan.LevelOne.prototype = {
         game.load.image('sky', 'assets/sky.png');
         game.load.image('platform', 'assets/platform_10x10.png');
         game.load.image('pigeon', 'assets/sprites/pigeons.png');
-        game.load.spritesheet('brick', 'assets/sprites/player_spritesheet.png', 32, 64, 9);
+        game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 9);
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('water', 'assets/water.png');
         game.load.image('crab', 'assets/sprites/block.png');
@@ -155,10 +155,11 @@ Tan.LevelOne.prototype = {
         initializeCamera();
 
         player.animations.add('walk', [0, 1, 2], 10, true);
-        player.animations.add('jump', [1]);
+        player.animations.add('jump', [0]);
         player.animations.add('walkHat', [3, 4, 5], 10, true);
         player.animations.add('jumpHat', [4]);
-
+        player.animations.add('swim', [6, 7, 8], 10, true);
+        player.animations.add('jumpFish', [6]);
 
 
         // camera mechanics
@@ -307,9 +308,13 @@ Tan.LevelOne.prototype = {
             moveAsBrickHat();
             // console.log("I'm wearing a hat");
             break;
+          case 'fish':
+            moveAsFish();
+            // console.log("I'm a fish");
+            break;
           default:
             moveAsBrick();
-            // console.log("turn you into brick");
+            console.log("turn you into brick");
         }
 
         function movePlayer(staticFrame, walkAnim, jumpAnim){
@@ -344,11 +349,23 @@ Tan.LevelOne.prototype = {
         }
 
         function moveAsBrick(){
+            console.log('brick')
             movePlayer(0, 'walk', 'jump');
         }
 
         function moveAsBrickHat(){
+            console.log('hat')
+
             movePlayer(3, 'walkHat', 'jumpHat');
+        }
+
+        function moveAsFish(){
+            // player.angle = 90;
+            // player.body.setSize(32, 64, 0, 32);
+
+            console.log('fish')
+
+            movePlayer(6, 'swim', 'jumpFish');
         }
     
             //  Allow the player to swim.
