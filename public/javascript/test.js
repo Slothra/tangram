@@ -148,6 +148,7 @@ Tan.LevelOne.prototype = {
 
         initializePlayer();
         initializeCamera();
+        // initializeMenu();
 
         player.animations.add('walk', [0, 1, 2], 10, true);
         player.animations.add('jump', [1]);
@@ -200,8 +201,13 @@ Tan.LevelOne.prototype = {
             game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
         }
 
-        menu = game.add.sprite(gameWidth/2, -gameHeight, 'menu');
-        menu.anchor.setTo(0.5, 0.5);
+        // function initializeMenu(){        
+        //     menu = game.add.sprite(gameWidth/2, -gameHeight, 'menu');
+        //     menu.anchor.setTo(0.5, 0.5);
+        //     menu.cameraOffset.x = (gameWidth/2);
+        // }
+
+
 
     },
 
@@ -304,16 +310,20 @@ Tan.LevelOne.prototype = {
             pauser = true;
             pauseMenu();
         }
+        console.log(game.paused)
 
         function pauseMenu(){
             // game.paused = true;
             
             // menu = game.add.sprite(gameWidth/2, gameHeight/2 + gamePadding, 'menu');
             // menu.anchor.setTo(0.5, 0.5);
+
+            //needs to set camera offset so it appears in the camera not just at the beginning of the game
+            createPauseMenu();
             game.add.tween(menu).to( { y: gameHeight/2 + gamePadding }, 400, Phaser.Easing.Bounce.Out, true);
 
-            menuText = game.add.text(gameWidth/2, gameHeight/2 + gamePadding, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
-            menuText.anchor.setTo(0.5, 0.5);
+            // menuText = game.add.text(game.camera.view.x, gameHeight/2 + gamePadding, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
+            // menuText.anchor.setTo(0.5, 0.5); 
             // game.paused = true;
             var timer = game.time.events.add(Phaser.Timer.SECOND * .5, pause, self);
             // console.debug(this);
@@ -321,19 +331,22 @@ Tan.LevelOne.prototype = {
 
         }
 
+        function createPauseMenu(){
+            menu = game.add.sprite(game.camera.view.x + 400, -gameHeight, 'menu');
+            menu.anchor.setTo(0.5, 0.5);
+            menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + gamePadding, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
+            menuText.anchor.setTo(0.5, 0.5); 
+        }
+
         function pause(){
             game.paused = true;
-            if (game.paused == true){
-                game.input.onDown.add(unpause, this);
-            }
-
+            game.input.onDown.add(unpause, this);
         }
 
         
     
         function unpause(event){
             // Only act if paused
-            
             
             if(game.paused && pauser == true){
 
