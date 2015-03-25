@@ -38,6 +38,7 @@ var coconuts;
 var crabLife = 3;
 var display;
 var gramCount = 0;
+var coins;
 
 Tan.LevelOne = function(game){};
 
@@ -51,6 +52,8 @@ Tan.LevelOne.prototype = {
         game.load.image('water', 'assets/water.png');
         game.load.image('crab', 'assets/sprites/block.png');
         game.load.spritesheet('coconut-roll','assets/sprites/coconut-roll.png', 31,32,8);
+        game.load.spritesheet('coin','assets/sprites/coin_spritesheet.png', 32, 32, 8);
+
 
     },
 
@@ -161,7 +164,6 @@ Tan.LevelOne.prototype = {
         player.animations.add('swim', [6, 7, 8], 10, true);
         player.animations.add('jumpFish', [7]);
 
-
         // camera mechanics
         game.camera.follow(player);
 
@@ -225,6 +227,27 @@ Tan.LevelOne.prototype = {
         coconut = game.add.sprite(3550, 300, 'coconut-roll', 0, coconuts);
 
 
+
+        // Creating coins
+        coins = game.add.group();
+        coins.enableBody = true;
+        coins.physicsBodyType = Phaser.Physics.ARCADE;
+        createCoins();
+
+
+        function createCoins(){
+            // Creates 25 coins in random places
+            for (var i = 0; i < 25; i++){
+                var coin = coins.create(game.world.randomX, game.rnd.integerInRange(-200, 200), 'coin');
+                coin.body.gravity.y = 1000;
+                var coinAnim = coin.animations.add('rotate');
+                // coins rotate at various speeds
+                coinAnim.play(game.rnd.integerInRange(5, 10), true);
+            }
+
+        }
+        
+
         function initializePlayer(){
             //could probably be moved outside of create
             player = game.add.sprite(xStartPos, yStartPos, 'brick')
@@ -253,6 +276,8 @@ Tan.LevelOne.prototype = {
         game.physics.arcade.collide(coconuts, platforms);
         game.physics.arcade.collide(coconuts, player);
         game.physics.arcade.collide(enemies, coconuts, bossCoconutHandler, null, this)
+        game.physics.arcade.collide(coins, platforms);
+
 
 
         cursors = game.input.keyboard.createCursorKeys();
@@ -475,6 +500,8 @@ Tan.LevelOne.prototype = {
         } else {
             coconut.animations.stop;
         }
+
+
 
 
         game.physics.arcade.overlap(enemies, enemyMovementTriggers, function(enemy, trigger) {
