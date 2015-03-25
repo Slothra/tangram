@@ -148,7 +148,6 @@ Tan.LevelOne.prototype = {
 
         initializePlayer();
         initializeCamera();
-        // initializeMenu();
 
         player.animations.add('walk', [0, 1, 2], 10, true);
         player.animations.add('jump', [1]);
@@ -201,18 +200,11 @@ Tan.LevelOne.prototype = {
             game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
         }
 
-        // function initializeMenu(){        
-        //     menu = game.add.sprite(gameWidth/2, -gameHeight, 'menu');
-        //     menu.anchor.setTo(0.5, 0.5);
-        //     menu.cameraOffset.x = (gameWidth/2);
-        // }
-
-
-
     },
 
 
     update: function(){
+
         game.physics.arcade.collide(grams, platforms);
         game.physics.arcade.overlap(player, grams, collectGram, null, this);
         game.physics.arcade.collide(player, platforms);
@@ -306,11 +298,10 @@ Tan.LevelOne.prototype = {
         }
 
         // PAUSE MENU
-        if (pauseKey.isDown && pauser == false){
+        if (pauseKey.isDown && pauser === false){
             pauser = true;
             pauseMenu();
         }
-        console.log(game.paused)
 
         function pauseMenu(){
             // game.paused = true;
@@ -319,28 +310,13 @@ Tan.LevelOne.prototype = {
             // menu.anchor.setTo(0.5, 0.5);
 
             //needs to set camera offset so it appears in the camera not just at the beginning of the game
-            createPauseMenu();
-            game.add.tween(menu).to( { y: gameHeight/2 + gamePadding }, 400, Phaser.Easing.Bounce.Out, true);
-
-            // menuText = game.add.text(game.camera.view.x, gameHeight/2 + gamePadding, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
-            // menuText.anchor.setTo(0.5, 0.5); 
-            // game.paused = true;
-            var timer = game.time.events.add(Phaser.Timer.SECOND * .5, pause, self);
-            // console.debug(this);
-            console.log(timer);
-
-        }
-
-        function createPauseMenu(){
+            // createPauseMenu();
             menu = game.add.sprite(game.camera.view.x + 400, -gameHeight, 'menu');
             menu.anchor.setTo(0.5, 0.5);
             menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + gamePadding, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
-            menuText.anchor.setTo(0.5, 0.5); 
-        }
-
-        function pause(){
+            menuText.anchor.setTo(0.5, 0.5);
             game.paused = true;
-            game.input.onDown.add(unpause, this);
+            game.input.onDown.addOnce(unpause,self);
         }
 
         
@@ -348,7 +324,7 @@ Tan.LevelOne.prototype = {
         function unpause(event){
             // Only act if paused
             
-            if(game.paused && pauser == true){
+            if(game.paused && pauser === true){
 
                 // Calculate the corners of the menu
                 var x1 = gameWidth/2 - 270/2, x2 = gameWidth/2 + 270/2,
