@@ -327,26 +327,43 @@ Tan.LevelOne.prototype = {
         player.body.velocity.x = 0;
 
         // Set playerForm;
-        if (underwater){
+
+        if ((underwater && playerGrams.hat) || (playerForm == 'fish' && !underwater && !player.body.touching.down)){
             playerForm = 'fish';
-        }
-        if (playerForm == 'fish'){
-            if (!underwater && playerGrams.hat && player.body.touching.down){
-                playerForm = 'hat';
-            } 
-            else if (!underwater && player.body.touching.down){
-                playerForm = 'brick';
-            }
+            console.log(playerForm);
+
+        } else if ((playerForm == 'fish' && !underwater && player.body.touching.down && playerGrams.hat) || (playerForm != 'fish' && !underwater && playerGrams.hat)){
+            playerForm = 'hat';
+            console.log(playerForm);
+        } else {
+            playerForm = 'brick';
+            console.log(playerForm);
+
         }
 
-        if (playerForm != 'fish'){
-            if (playerGrams.hat){
-                playerForm = 'hat';
-            }
-            else{
-                playerForm = 'brick';
-            }
-        }
+
+
+
+        // if (underwater){
+        //     playerForm = 'fish';
+        // }
+        // if (playerForm == 'fish'){
+        //     if (!underwater && playerGrams.hat && player.body.touching.down){
+        //         playerForm = 'hat';
+        //     } 
+        //     else if (!underwater && player.body.touching.down){
+        //         playerForm = 'brick';
+        //     }
+        // }
+
+        // if (playerForm != 'fish'){
+        //     if (playerGrams.hat){
+        //         playerForm = 'hat';
+        //     }
+        //     else{
+        //         playerForm = 'brick';
+        //     }
+        // }
 
 
         switch (playerForm){
