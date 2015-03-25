@@ -445,35 +445,24 @@ Tan.LevelOne.prototype = {
 
 
         function displayGram(gram){
-            var index = gramCount
-            console.log(gram);
-            var displayGram = game.add.sprite(30 + gramCount * 40, 50, gram.key);
+            var paddingLeft = 30;
+            var spaceBetweenGrams
+            var displayGram = game.add.sprite(paddingLeft + gramCount * spaceBetweenGrams, 50, gram.key);
             displayGram.anchor.setTo(0.5, 0.5);
             displayGram.fixedToCamera = true;
-
-
-            // display = game.add.sprite(0, 0, gram.key);
-            // display.fixedToCamera = true;
-            // display.cameraOffset.x = 10;
-            // display.cameraOffset.y = 10;
         }
 
         function collectGram(player, gram){
-            // debugger;
             displayGram(gram);
-            // display.addChildAt(gram,gramCount);
             gramCount++;
             playerGrams[gram.name] = gram;
             gram.kill();
-            console.debug(playerGrams);
-            console.log(gramCount);
         }
 
         function collectCoin(player, coin){
             coinCount++;
-            coin.kill();
             coinText.text = coinCount;
-
+            coin.kill();
         }
 
 
