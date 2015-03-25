@@ -46,7 +46,7 @@ Tan.LevelOne.prototype = {
         game.load.image('sky', 'assets/sky.png');
         game.load.image('platform', 'assets/platform_10x10.png');
         game.load.image('pigeon', 'assets/sprites/pigeons.png');
-        game.load.spritesheet('brick', 'assets/sprites/player_spritesheet.png', 32, 64, 9);
+        game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 9);
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('water', 'assets/water.png');
         game.load.image('crab', 'assets/sprites/block.png');
@@ -158,7 +158,8 @@ Tan.LevelOne.prototype = {
         player.animations.add('jump', [1]);
         player.animations.add('walkHat', [3, 4, 5], 10, true);
         player.animations.add('jumpHat', [4]);
-
+        player.animations.add('swim', [6, 7, 8], 10, true);
+        player.animations.add('jumpFish', [7]);
 
 
         // camera mechanics
@@ -297,25 +298,47 @@ Tan.LevelOne.prototype = {
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
 
+        // Set playerForm;
+        if (underwater){
+            playerForm = 'fish';
+        }
+        if (playerForm == 'fish'){
+            if (!underwater && playerGrams.hat && player.body.touching.down){
+                playerForm = 'hat';
+            } 
+            else if (!underwater && player.body.touching.down){
+                playerForm = 'brick';
+            }
+        }
+
+        if (playerForm != 'fish'){
+            if (playerGrams.hat){
+                playerForm = 'hat';
+            }
+            else{
+                playerForm = 'brick';
+            }
+        }
+
 
         switch (playerForm){
           case 'brick':
             moveAsBrick();
-            // console.log("i am a brick");
             break;
           case 'hat':
             moveAsBrickHat();
-            // console.log("I'm wearing a hat");
+            break;
+          case 'fish':
+            moveAsFish();
             break;
           default:
             moveAsBrick();
-            // console.log("turn you into brick");
         }
 
-        function movePlayer(staticFrame, walkAnim, jumpAnim){
+        function movePlayer(staticFrame, walkAnim, jumpAnim, xVel, yVel){
             if (cursors.left.isDown){
                 //  Move to the left
-                player.body.velocity.x = -(playerSpeed);
+                player.body.velocity.x = -(xVel);
                 if (player.scale.x == -1){
                     player.animations.play(walkAnim);
                 } else {
@@ -323,7 +346,7 @@ Tan.LevelOne.prototype = {
                 }
             } else if (cursors.right.isDown) {
               //  Move to the right
-                player.body.velocity.x = (playerSpeed);
+                player.body.velocity.x = (xVel);
                 if (player.scale.x == 1){
                     player.animations.play(walkAnim);
                 } else {
@@ -334,32 +357,37 @@ Tan.LevelOne.prototype = {
               player.animations.stop();
               player.frame = staticFrame;
               }
-              //  Allow the player to jump if they are touching the ground.
-            if (cursors.up.isDown && player.body.touching.down){
-                player.body.velocity.y = -400;
+
+            // Check if player is underwater
+            if (underwater){
+                if (cursors.up.isDown){
+                    player.body.velocity.y = yVel;
+                }
             }
+              //  Allow the player to jump if they are touching the ground.
+            else {
+                if (!underwater && cursors.up.isDown && player.body.touching.down){
+                    player.body.velocity.y = yVel;
+                }
+            }
+
             if (!player.body.touching.down){
                 player.animations.play(jumpAnim);
             }            
         }
 
         function moveAsBrick(){
-            movePlayer(0, 'walk', 'jump');
+            movePlayer(0, 'walk', 'jump', playerSpeed, -400);
         }
 
         function moveAsBrickHat(){
-            movePlayer(3, 'walkHat', 'jumpHat');
+            movePlayer(3, 'walkHat', 'jumpHat', playerSpeed, -400);
         }
-    
-            //  Allow the player to swim.
-        if (underwater && cursors.up.isDown){
-            player.body.velocity.y = -300;
+
+        function moveAsFish(){
+            movePlayer(6, 'swim', 'jumpFish', playerSpeed - 10, -300);
         }
-            
-            //  Allow the player to jump if they are touching the ground.
-        if (cursors.up.isDown && player.body.touching.down){
-            player.body.velocity.y = -400;
-        }
+
 
         if (pauseKey.isDown){
             xStartPos = player.position.x;
@@ -374,7 +402,6 @@ Tan.LevelOne.prototype = {
             gramCount++;
             playerGrams[gram.name] = gram;
             gram.kill();
-            playerForm = gram.name;
         }
 
         function headsUpDisplay(gram){
