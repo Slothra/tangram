@@ -52,7 +52,7 @@ Tan.LevelOne.prototype = {
         game.load.image('water', 'assets/water.png');
         game.load.image('crab', 'assets/sprites/block.png');
         game.load.spritesheet('coconut-roll','assets/sprites/coconut-roll.png', 31,32,8);
-        game.load.spritesheet('coin','assets/sprites/coin_spritesheet.png', 32, 32, 8);
+        game.load.spritesheet('coin','assets/sprites/coin_spritesheet1.png', 32, 22, 8);
 
 
     },
@@ -246,7 +246,7 @@ Tan.LevelOne.prototype = {
             }
 
         }
-        
+
 
         function initializePlayer(){
             //could probably be moved outside of create
