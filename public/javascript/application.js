@@ -11,6 +11,11 @@ var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space');
 
 var pauseKey;
 var unpauseKey;
+var pauser = false;
+var xWorldBounds = 5000;
+var yWorldBounds = 800;
+var gamePadding = yWorldBounds - gameHeight;
+
 var xStartPos = 0;
 var yStartPos = gameHeight;
 var player;
@@ -60,8 +65,8 @@ Tan.LevelOne.prototype = {
 
     create: function(){
 
-        var xWorldBounds = 5000;
-        var yWorldBounds = 800
+        // var xWorldBounds = 5000;
+        // var yWorldBounds = 800
         pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.P);
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -433,13 +438,6 @@ Tan.LevelOne.prototype = {
             movePlayer(6, 'swim', 'jumpFish', playerSpeed - 10, -300);
         }
 
-
-        if (pauseKey.isDown){
-            xStartPos = player.position.x;
-            yStartPos = player.position.y;
-            game.state.start('PauseMenu')
-        }
-
         function collectGram(player, gram){
             // debugger;
             headsUpDisplay(gram);
@@ -526,6 +524,33 @@ Tan.LevelOne.prototype = {
         } else {
             coconut.animations.stop;
         }
+
+        if (pauseKey.isDown && pauser === false){
+            pauser = true;
+            pauseMenu();
+        }
+
+        function pauseMenu(){
+            menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
+            menuText.anchor.setTo(0.5, 0.5);
+            game.paused = true;
+            game.input.onDown.addOnce(unpause,self);
+        }
+
+        
+    
+        function unpause(event){
+            // Only act if paused
+            console.log(event)
+            if(game.paused && pauser === true){
+                // menu.destroy();
+                menuText.destroy();
+
+                // Unpause the game
+                game.paused = false;
+                pauser = false;
+            }
+        };
 
 
 
