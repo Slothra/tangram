@@ -11,8 +11,8 @@ var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space');
 
 var pauseKey;
 var unpauseKey;
-var xStartPos = 3000;
-var yStartPos = 200;
+var xStartPos = 0;
+var yStartPos = gameHeight;
 var player;
 var playerGrams = {};
 var playerForm = 'brick';
@@ -32,22 +32,25 @@ var pincers;
 var originPosition;
 var countdown = false;
 var pincer;
+var needNewCoconut = false;
+var coconut;
+var coconuts;
+var crabLife = 3;
+var display;
+var gramCount = 0;
 
 Tan.LevelOne = function(game){};
 
 Tan.LevelOne.prototype = {
-    init: function () {
-        console.log("This Happens")
-
-    },
     preload: function(){
         game.load.image('sky', 'assets/sky.png');
         game.load.image('platform', 'assets/platform_10x10.png');
         game.load.image('pigeon', 'assets/sprites/pigeons.png');
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet.png', 32, 64, 9);
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
-        game.load.image('water', 'assets/water.png')
-        game.load.image('crab', 'assets/sprites/block.png')
+        game.load.image('water', 'assets/water.png');
+        game.load.image('crab', 'assets/sprites/block.png');
+        game.load.spritesheet('coconut-roll','assets/sprites/coconut-roll.png', 31,32,8);
 
     },
 
@@ -156,6 +159,8 @@ Tan.LevelOne.prototype = {
         player.animations.add('walkHat', [3, 4, 5], 10, true);
         player.animations.add('jumpHat', [4]);
 
+
+
         // camera mechanics
         game.camera.follow(player);
 
@@ -189,6 +194,9 @@ Tan.LevelOne.prototype = {
         pincers.enableBody = true;
         pincers.physicsBodyType = Phaser.Physics.ARCADE;
 
+        coconuts = game.add.group();
+        coconuts.enableBody = true;
+        coconuts.physicsBodyType = Phaser.Physics.ARCADE;
 
         crabbyCrab = game.add.sprite(3500, yWorldBounds - 200, 'crab', 0, enemies);
         crabbyCrab.scale.x = 1;
@@ -213,6 +221,9 @@ Tan.LevelOne.prototype = {
         // rightPincer.scale.y = .25;
         rightPincer.body.immovable = true;
 
+        coconut = game.add.sprite(3550, 300, 'coconut-roll', 0, coconuts);
+
+
         function initializePlayer(){
             //could probably be moved outside of create
             player = game.add.sprite(xStartPos, yStartPos, 'brick')
@@ -228,6 +239,7 @@ Tan.LevelOne.prototype = {
         function initializeCamera(){
             game.camera.follow(player);
             game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
+
         }
 
     },
@@ -237,6 +249,10 @@ Tan.LevelOne.prototype = {
         game.physics.arcade.overlap(player, grams, collectGram, null, this);
         game.physics.arcade.collide(player, platforms);
         game.physics.arcade.collide(enemies, platforms);
+        game.physics.arcade.collide(coconuts, platforms);
+        game.physics.arcade.collide(coconuts, player);
+        game.physics.arcade.collide(enemies, coconuts, bossCoconutHandler, null, this)
+
 
         cursors = game.input.keyboard.createCursorKeys();
 
@@ -265,6 +281,18 @@ Tan.LevelOne.prototype = {
         function bossCollisionHandler (player, enemy) {
             player.kill();
             game.state.start('GameOver');
+        }
+
+        function bossCoconutHandler() {
+            crabLife--;
+            coconut.destroy();
+            needNewCoconut = true;
+            if (crabLife === 0){
+                console.log("YOU WIN!")
+                crabbyCrab.destroy();
+                leftPincer.destroy();
+                rightPincer.destroy();
+            }
         }
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
@@ -340,15 +368,27 @@ Tan.LevelOne.prototype = {
         }
 
         function collectGram(player, gram){
+            // debugger;
+            headsUpDisplay(gram);
+            display.addChildAt(gram,gramCount);
+            gramCount++;
             playerGrams[gram.name] = gram;
-            console.debug(playerGrams)
             gram.kill();
             playerForm = gram.name;
+        }
+
+        function headsUpDisplay(gram){
+            display = game.add.sprite(0, 0, gram.key);
+            display.fixedToCamera = true;
+            display.cameraOffset.x = 10;
+            display.cameraOffset.y = 10;
+
         }
         
         // Claw moves to platform (needs animations)
         if (player.position.x > 3200 && countdown == false){
             countdown = true;
+            createCoconut();
             game.time.events.add(Phaser.Timer.SECOND * 3, pinch, this);
         }
 
@@ -380,7 +420,35 @@ Tan.LevelOne.prototype = {
                 rightPincer.body.velocity.x = 0;
                 countdown = false;
             }
+            if (coconut.position.y > 600) {
+                coconut.destroy();
+                needNewCoconut = true;
+            }
         }
+
+        function createCoconut(){
+            if (needNewCoconut == true && pincer == 1){
+                needNewCoconut = false;
+                coconut = game.add.sprite(3280, 300, 'coconut-roll', 0, coconuts);
+            } else if (needNewCoconut == true){
+                coconut = game.add.sprite(3550, 300, 'coconut-roll', 0, coconuts);
+                needNewCoconut = false;
+            }
+            // game.physics.arcade.enable(coconut);
+
+            // coconut.body.bounce.y = 0;
+            coconut.body.gravity.y = 600;
+            coconut.animations.add('roll', [0,1,2,3,4,5,6,7,8], 20, true);
+        }
+
+        if (coconut.body.velocity.x > 0) {
+            coconut.animations.play('roll');
+        } else if (coconut.body.velocity.x < 0) {
+            coconut.animations.play('roll');
+        } else {
+            coconut.animations.stop;
+        }
+
 
         game.physics.arcade.overlap(enemies, enemyMovementTriggers, function(enemy, trigger) {
         // Do a simple check to ensure the trigger only changes the enemy's direction
@@ -408,35 +476,6 @@ Tan.LevelOne.prototype = {
 
 };
 
-function pinch(){
-    if (player.position.x > 3600){
-        game.physics.arcade.moveToXY(rightPincer,3600,400);
-        pincer = 1;
-    } else {
-        game.physics.arcade.moveToXY(leftPincer,3300,400);
-        pincer = -1;
-    }
-    game.time.events.add(Phaser.Timer.SECOND * 4.5, returnPinch, this);
-}
-
-function returnPinch(){
-    if (pincer === 1){
-        game.physics.arcade.moveToXY(rightPincer,3600,500);   
-    } else if (pincer === -1){
-        game.physics.arcade.moveToXY(leftPincer,3400,550);
-    }
-    game.time.events.add(Phaser.Timer.SECOND * 4.5, pausePinch, this);
-}
-
-function pausePinch(){
-    if (countdown == true){
-        leftPincer.body.velocity.y = 0;
-        leftPincer.body.velocity.x = 0;
-        rightPincer.body.velocity.y = 0;
-        rightPincer.body.velocity.x = 0;
-        countdown = false;
-    }
-}
 
 
 Tan.PauseMenu = function(game){};
