@@ -39,6 +39,7 @@ var crabLife = 3;
 var display;
 var gramCount = 0;
 var coins;
+var coinCount = 0;
 
 Tan.LevelOne = function(game){};
 
@@ -277,6 +278,8 @@ Tan.LevelOne.prototype = {
         game.physics.arcade.collide(coconuts, player);
         game.physics.arcade.collide(enemies, coconuts, bossCoconutHandler, null, this)
         game.physics.arcade.collide(coins, platforms);
+        game.physics.arcade.overlap(player, coins, collectCoin, null, this);
+
 
 
 
@@ -427,6 +430,12 @@ Tan.LevelOne.prototype = {
             gramCount++;
             playerGrams[gram.name] = gram;
             gram.kill();
+        }
+
+        function collectCoin(player, coin){
+            coinCount++;
+            coin.kill();
+            console.log(coinCount);
         }
 
         function headsUpDisplay(gram){
