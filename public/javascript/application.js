@@ -535,9 +535,7 @@ Tan.LevelOne.prototype = {
             menuText.anchor.setTo(0.5, 0.5);
             game.paused = true;
             game.input.onDown.addOnce(unpause,self);
-        }
-
-        
+        }  
     
         function unpause(event){
             // Only act if paused
@@ -551,9 +549,6 @@ Tan.LevelOne.prototype = {
                 pauser = false;
             }
         };
-
-
-
 
         game.physics.arcade.overlap(enemies, enemyMovementTriggers, function(enemy, trigger) {
         // Do a simple check to ensure the trigger only changes the enemy's direction
@@ -581,31 +576,6 @@ Tan.LevelOne.prototype = {
 
 };
 
-
-
-Tan.PauseMenu = function(game){};
-
-Tan.PauseMenu.prototype = {
-    preload: function(){
-        // Load a menu here
-
-    },
-    create: function(){
-        unpauseKey = game.input.keyboard.addKey(Phaser.Keyboard.Q);
-        // Retrieve inventory
-        // Populate menu
-
-    },
-    update: function(){
-        // Allow form change
-        // Allow unpause
-        if (unpauseKey.isDown){
-            game.state.start('LevelOne')
-        }
-
-    }
-}
-
 Tan.GameOver = function(game){};
 
 Tan.GameOver.prototype = {
@@ -631,9 +601,6 @@ Tan.GameOver.prototype = {
     }
 }
 
-
-
 game.state.add('LevelOne', Tan.LevelOne);
-game.state.add('PauseMenu', Tan.PauseMenu);
 game.state.add('GameOver', Tan.GameOver);
 game.state.start('LevelOne');
