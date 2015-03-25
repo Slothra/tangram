@@ -307,7 +307,7 @@ Tan.LevelOne.prototype = {
         game.physics.arcade.collide(enemies, platforms);
         game.physics.arcade.collide(coconuts, platforms);
         game.physics.arcade.collide(coconuts, player);
-        game.physics.arcade.collide(enemies, coconuts, bossCoconutHandler, null, this)
+        game.physics.arcade.overlap(enemies, coconuts, bossCoconutHandler, null, this)
         game.physics.arcade.collide(coins, platforms);
         game.physics.arcade.overlap(player, coins, collectCoin, null, this);
 
@@ -361,14 +361,14 @@ Tan.LevelOne.prototype = {
 
         if ((underwater && playerGrams.hat) || (playerForm == 'fish' && !underwater && !player.body.touching.down)){
             playerForm = 'fish';
-            console.log(playerForm);
+            // console.log(playerForm);
 
         } else if ((playerForm == 'fish' && !underwater && player.body.touching.down && playerGrams.hat) || (playerForm != 'fish' && !underwater && playerGrams.hat)){
             playerForm = 'hat';
-            console.log(playerForm);
+            // console.log(playerForm);
         } else {
             playerForm = 'brick';
-            console.log(playerForm);
+            // console.log(playerForm);
 
         }
 
@@ -436,7 +436,7 @@ Tan.LevelOne.prototype = {
 
             // Check if player is underwater
             if (underwater){
-                if (cursors.up.isDown){
+                if (cursors.up.isDown && player.position.y > 470){
                     player.body.velocity.y = yVel;
                 }
             }
