@@ -45,6 +45,7 @@ var display;
 var gramCount = 0;
 var coins;
 var coinCount = 0;
+var coinText;
 
 Tan.LevelOne = function(game){};
 
@@ -281,9 +282,21 @@ Tan.LevelOne.prototype = {
         displayCoin.anchor.setTo(0.5, 0.5);
         displayCoin.fixedToCamera = true;
 
-        var coinText = game.add.text(740, marginTop, "x " + coinCount);
+        var coinX = game.add.text(740, marginTop, "x ");
+        coinX.anchor.setTo(0.5, 0.5);
+        coinX.fixedToCamera = true;
+
+        coinText = game.add.text(760, 30);
         coinText.anchor.setTo(0.5, 0.5);
         coinText.fixedToCamera = true;
+        coinText.text = '0'
+
+        // var coinText = game.add.text(760, marginTop);
+        // coinText.anchor.setTo(0.5, 0.5);
+        // coinText.fixedToCamera = true;
+
+        // coinText.text = coinCount;
+
 
     },
 
@@ -473,12 +486,9 @@ Tan.LevelOne.prototype = {
         function collectCoin(player, coin){
             coinCount++;
             coin.kill();
-            console.log(coinCount);
+            coinText.text = coinCount;
+
         }
-
-
-
-
 
 
 
