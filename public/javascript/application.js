@@ -309,7 +309,7 @@ Tan.LevelOne.prototype = {
             menuText.anchor.setTo(0.5, 0.5);
             game.paused = true;
             // game.time.events.add(Phaser.Timer.SECOND * 0.25, pause, this;
-            // console.debug(this);
+            // console.debug(this);111111
         }
 
         // function pause(){
