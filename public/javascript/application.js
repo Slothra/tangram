@@ -56,6 +56,8 @@ Tan.LevelOne.prototype = {
         game.load.image('pigeon', 'assets/sprites/pigeons.png');
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 9);
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
+        game.load.image('triangle2', 'assets/grams/sm_triangle.png');
+
         game.load.image('water', 'assets/water.png');
         game.load.image('crab', 'assets/sprites/block.png');
         game.load.spritesheet('coconut-roll','assets/sprites/coconut-roll.png', 31, 32, 8);
@@ -141,6 +143,13 @@ Tan.LevelOne.prototype = {
         var triGram = grams.create(200, game.world.height - 70, 'sm_triangle');
         triGram.body.gravity.y = 6;
         triGram.name = 'hat'
+
+        var gram2 = grams.create(100, game.world.height -70, 'sm_triangle');
+        gram2.body.gravity.y = 6;
+        gram2.name = 'gram2';
+
+
+
 
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
@@ -272,30 +281,28 @@ Tan.LevelOne.prototype = {
 
 
         // Creates head up display
-        var marginTop = 30;
+        function createHeadsUpDisplay(){
+            var marginTop = 30;
 
-        var gramsText = game.add.text(100, marginTop, "Tan's Grams:");
-        gramsText.anchor.setTo(0.5, 0.5);
-        gramsText.fixedToCamera = true;
+            var gramsText = game.add.text(100, marginTop, "Tan's Grams:");
+            gramsText.anchor.setTo(0.5, 0.5);
+            gramsText.fixedToCamera = true;
 
-        var displayCoin = game.add.sprite(700, marginTop + 2, 'displayCoin');
-        displayCoin.anchor.setTo(0.5, 0.5);
-        displayCoin.fixedToCamera = true;
+            var displayCoin = game.add.sprite(700, marginTop + 2, 'displayCoin');
+            displayCoin.anchor.setTo(0.5, 0.5);
+            displayCoin.fixedToCamera = true;
 
-        var coinX = game.add.text(740, marginTop, "x ");
-        coinX.anchor.setTo(0.5, 0.5);
-        coinX.fixedToCamera = true;
+            var coinX = game.add.text(740, marginTop, "x ");
+            coinX.anchor.setTo(0.5, 0.5);
+            coinX.fixedToCamera = true;
 
-        coinText = game.add.text(760, 30);
-        coinText.anchor.setTo(0.5, 0.5);
-        coinText.fixedToCamera = true;
-        coinText.text = '0'
+            coinText = game.add.text(760, 30);
+            coinText.anchor.setTo(0.5, 0.5);
+            coinText.fixedToCamera = true;
+            coinText.text = '0'
+        }
 
-        // var coinText = game.add.text(760, marginTop);
-        // coinText.anchor.setTo(0.5, 0.5);
-        // coinText.fixedToCamera = true;
-
-        // coinText.text = coinCount;
+        createHeadsUpDisplay();
 
 
     },
@@ -361,40 +368,12 @@ Tan.LevelOne.prototype = {
 
         if ((underwater && playerGrams.hat) || (playerForm == 'fish' && !underwater && !player.body.touching.down)){
             playerForm = 'fish';
-            // console.log(playerForm);
-
         } else if ((playerForm == 'fish' && !underwater && player.body.touching.down && playerGrams.hat) || (playerForm != 'fish' && !underwater && playerGrams.hat)){
             playerForm = 'hat';
-            // console.log(playerForm);
         } else {
             playerForm = 'brick';
-            // console.log(playerForm);
 
         }
-
-
-
-
-        // if (underwater){
-        //     playerForm = 'fish';
-        // }
-        // if (playerForm == 'fish'){
-        //     if (!underwater && playerGrams.hat && player.body.touching.down){
-        //         playerForm = 'hat';
-        //     } 
-        //     else if (!underwater && player.body.touching.down){
-        //         playerForm = 'brick';
-        //     }
-        // }
-
-        // if (playerForm != 'fish'){
-        //     if (playerGrams.hat){
-        //         playerForm = 'hat';
-        //     }
-        //     else{
-        //         playerForm = 'brick';
-        //     }
-        // }
 
 
         switch (playerForm){
@@ -465,22 +444,29 @@ Tan.LevelOne.prototype = {
         }
 
 
+        function displayGram(gram){
+            var index = gramCount
+            console.log(gram);
+            var displayGram = game.add.sprite(30 + gramCount * 40, 50, gram.key);
+            displayGram.anchor.setTo(0.5, 0.5);
+            displayGram.fixedToCamera = true;
 
-        function headsUpDisplay(gram){
-            display = game.add.sprite(0, 0, gram.key);
-            display.fixedToCamera = true;
-            display.cameraOffset.x = 10;
-            display.cameraOffset.y = 10;
 
+            // display = game.add.sprite(0, 0, gram.key);
+            // display.fixedToCamera = true;
+            // display.cameraOffset.x = 10;
+            // display.cameraOffset.y = 10;
         }
 
         function collectGram(player, gram){
             // debugger;
-            headsUpDisplay(gram);
-            display.addChildAt(gram,gramCount);
+            displayGram(gram);
+            // display.addChildAt(gram,gramCount);
             gramCount++;
             playerGrams[gram.name] = gram;
             gram.kill();
+            console.debug(playerGrams);
+            console.log(gramCount);
         }
 
         function collectCoin(player, coin){
