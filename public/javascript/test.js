@@ -32,6 +32,7 @@ var platformLeftTrigger;
 var movPlat;
 var underwater = false;
 var playerSpeed = 150;
+var pauser = false;
 
 Tan.LevelOne = function(game){};
 
@@ -299,7 +300,8 @@ Tan.LevelOne.prototype = {
         }
 
         // PAUSE MENU
-        if (pauseKey.isDown){
+        if (pauseKey.isDown && pauser == false){
+            pauser = true;
             pauseMenu();
         }
 
@@ -313,57 +315,59 @@ Tan.LevelOne.prototype = {
             menuText = game.add.text(gameWidth/2, gameHeight/2 + gamePadding, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
             menuText.anchor.setTo(0.5, 0.5);
             // game.paused = true;
-            var timer = game.time.events.add(Phaser.Timer.SECOND * 0.5, pause, this);
+            var timer = game.time.events.add(Phaser.Timer.SECOND * .5, pause, self);
             // console.debug(this);
+            console.log(timer);
+
         }
 
         function pause(){
-          console.log("inside pause fxn: before paused");
-          game.paused = true;
-          console.log("inside pause fxn: after pause");
+            game.paused = true;
+            if (game.paused == true){
+                game.input.onDown.add(unpause, this);
+            }
 
         }
-        // game.input.tapRate = 500;
-        game.input.onDown.add(unpause, this);
 
+        
+    
         function unpause(event){
             // Only act if paused
-
-          
-            if(game.paused){
-              console.log("clicked");
-        
+            
+            
+            if(game.paused && pauser == true){
 
                 // Calculate the corners of the menu
-                // var x1 = gameWidth/2 - 270/2, x2 = gameWidth/2 + 270/2,
-                //     y1 = gameHeight/2 - 180/2, y2 = gameHeight/2 + 180/2;
+                var x1 = gameWidth/2 - 270/2, x2 = gameWidth/2 + 270/2,
+                    y1 = gameHeight/2 - 180/2, y2 = gameHeight/2 + 180/2;
 
-                // // Check if the click was inside the menu
-                // if(event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2 ){
-                //     // // The choicemap is an array that will help us see which item was clicked
-                //     // var choisemap = ['one', 'two', 'three', 'four', 'five', 'six'];
+                // Check if the click was inside the menu
+                if(event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2 ){
+                    // // The choicemap is an array that will help us see which item was clicked
+                    // var choisemap = ['one', 'two', 'three', 'four', 'five', 'six'];
 
-                //     // // Get menu local coordinates for the click
-                //     // var x = event.x - x1,
-                //     //     y = event.y - y1;
+                    // // Get menu local coordinates for the click
+                    // var x = event.x - x1,
+                    //     y = event.y - y1;
 
-                //     // // Calculate the choice 
-                //     // var choise = Math.floor(x / 90) + 3*Math.floor(y / 90);
+                    // // Calculate the choice 
+                    // var choise = Math.floor(x / 90) + 3*Math.floor(y / 90);
 
-                //     // // Display the choice
-                //     // menuText.text = 'You chose menu item: ' + choisemap[choise];
-                // }
-                // else{
-                //     // Remove the menu and the label
-                //     game.add.tween(menu).to( { y: -gameHeight }, 400, Phaser.Easing.Bounce.Out, true);
+                    // // Display the choice
+                    // menuText.text = 'You chose menu item: ' + choisemap[choise];
+                }
+                else{
+                    // Remove the menu and the label
+                    game.add.tween(menu).to( { y: -gameHeight }, 400, Phaser.Easing.Bounce.Out, true);
 
-                //     // menu.destroy();
-                //     menuText.destroy();
+                    // menu.destroy();
+                    menuText.destroy();
 
                     // Unpause the game
                     game.paused = false;
+                    pauser = false;
                 }
-            // }
+            }
         };
 
         function collectGram(player, gram){
