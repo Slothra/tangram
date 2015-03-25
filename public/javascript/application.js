@@ -155,7 +155,7 @@ Tan.LevelOne.prototype = {
         initializeCamera();
 
         player.animations.add('walk', [0, 1, 2], 10, true);
-        player.animations.add('jump', [0]);
+        player.animations.add('jump', [1]);
         player.animations.add('walkHat', [3, 4, 5], 10, true);
         player.animations.add('jumpHat', [4]);
         player.animations.add('swim', [6, 7, 8], 10, true);
@@ -298,14 +298,28 @@ Tan.LevelOne.prototype = {
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
 
-        // Set playerForm when underwater;
+        // Set playerForm;
         if (underwater){
             playerForm = 'fish';
-        } else if (!underwater && playerGrams.hat){
-            playerForm = 'hat';
-        } else {
-            playerForm = 'brick';
         }
+        if (playerForm == 'fish'){
+            if (!underwater && playerGrams.hat && player.body.touching.down){
+                playerForm = 'hat';
+            } 
+            else if (!underwater && player.body.touching.down){
+                playerForm = 'brick';
+            }
+        }
+
+        if (playerForm != 'fish'){
+            if (playerGrams.hat){
+                playerForm = 'hat';
+            }
+            else{
+                playerForm = 'brick';
+            }
+        }
+
 
         switch (playerForm){
           case 'brick':
