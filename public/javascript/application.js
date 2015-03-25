@@ -239,7 +239,7 @@ Tan.LevelOne.prototype = {
         function createCoins(){
             // Creates 25 coins in random places
             for (var i = 0; i < 25; i++){
-                var coin = coins.create(game.world.randomX, game.rnd.integerInRange(-200, 200), 'coin');
+                var coin = coins.create(game.rnd.integerInRange(50, xWorldBounds), game.rnd.integerInRange(-200, 200), 'coin');
                 coin.body.gravity.y = 1000;
                 var coinAnim = coin.animations.add('rotate');
                 // coins rotate at various speeds
