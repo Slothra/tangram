@@ -298,23 +298,27 @@ Tan.LevelOne.prototype = {
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
 
+        // Set playerForm when underwater;
+        if (underwater){
+            playerForm = 'fish';
+        } else if (!underwater && playerGrams.hat){
+            playerForm = 'hat';
+        } else {
+            playerForm = 'brick';
+        }
 
         switch (playerForm){
           case 'brick':
             moveAsBrick();
-            // console.log("i am a brick");
             break;
           case 'hat':
             moveAsBrickHat();
-            // console.log("I'm wearing a hat");
             break;
           case 'fish':
             moveAsFish();
-            // console.log("I'm a fish");
             break;
           default:
             moveAsBrick();
-            console.log("turn you into brick");
         }
 
         function movePlayer(staticFrame, walkAnim, jumpAnim, xVel, yVel){
@@ -339,12 +343,14 @@ Tan.LevelOne.prototype = {
               player.animations.stop();
               player.frame = staticFrame;
               }
-              //  Allow the player to jump if they are touching the ground.
+
+            // Check if player is underwater
             if (underwater){
                 if (cursors.up.isDown){
                     player.body.velocity.y = yVel;
                 }
             }
+              //  Allow the player to jump if they are touching the ground.
             else {
                 if (!underwater && cursors.up.isDown && player.body.touching.down){
                     player.body.velocity.y = yVel;
@@ -367,17 +373,7 @@ Tan.LevelOne.prototype = {
         function moveAsFish(){
             movePlayer(6, 'swim', 'jumpFish', playerSpeed - 10, -300);
         }
-    
-            //  Allow the player to swim.
 
-        if (underwater && cursors.up.isDown){
-            // player.body.velocity.y = -300;
-        }
-            
-        //     //  Allow the player to jump if they are touching the ground.
-        // if (cursors.up.isDown && player.body.touching.down){
-        //     player.body.velocity.y = -400;
-        // }
 
         if (pauseKey.isDown){
             xStartPos = player.position.x;
@@ -392,7 +388,6 @@ Tan.LevelOne.prototype = {
             gramCount++;
             playerGrams[gram.name] = gram;
             gram.kill();
-            playerForm = gram.name;
         }
 
         function headsUpDisplay(gram){
