@@ -446,7 +446,7 @@ Tan.LevelOne.prototype = {
 
         function displayGram(gram){
             var paddingLeft = 30;
-            var spaceBetweenGrams
+            var spaceBetweenGrams = 50;
             var displayGram = game.add.sprite(paddingLeft + gramCount * spaceBetweenGrams, 50, gram.key);
             displayGram.anchor.setTo(0.5, 0.5);
             displayGram.fixedToCamera = true;
