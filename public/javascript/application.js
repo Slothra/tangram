@@ -376,7 +376,7 @@ Tan.LevelOne.prototype = {
                 player.kill();
                 game.state.start('GameOver');
             } else if (enemy.body.touching.up){
-                var collision = game.add.sprite(enemy.position.x,enemy.position.y,'collision');
+                var collision = game.add.sprite(enemy.position.x-3,enemy.position.y-5,'collision');
                 collision.animations.add('explode', [0, 1, 2], 10, false);
                 collision.animations.play('explode');
                 var cleanup = function (){
@@ -384,7 +384,7 @@ Tan.LevelOne.prototype = {
                 }
                 enemy.kill();
                 player.body.velocity.y = -200;
-                game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
+                game.time.events.add(Phaser.Timer.SECOND * 10, cleanup, this);
             } else {
                 player.kill();
                 game.state.start('GameOver');
