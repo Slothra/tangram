@@ -52,6 +52,7 @@ var deadPlayer;
 // Heads up display
 var coinText;
 var toggler;
+var toggleKey;
 
 
 Tan.LevelOne = function(game){};
@@ -85,6 +86,7 @@ Tan.LevelOne.prototype = {
     create: function(){
 
         pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.P);
+        toggleKey = game.input.keyboard.addKey(Phaser.Keyboard.F);
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -289,7 +291,7 @@ Tan.LevelOne.prototype = {
 
         function initializePlayer(){
             //could probably be moved outside of create
-            player = game.add.sprite(xStartPos, yStartPos, 'brick')
+            player = game.add.sprite(xStartPos, yStartPos, 'brick');
             game.physics.arcade.enable(player);
 
             player.body.bounce.y = 0;
@@ -334,8 +336,11 @@ Tan.LevelOne.prototype = {
             coinText.text = coinCount;
 
             createHeadsUpIcon(700, marginTop + 2, 'displayCoin');
-            toggler = createHeadsUpIcon(50, marginTop + 50, 'toggler');
+
+            toggler = createHeadsUpIcon(50, 250, 'toggler');
             toggler.displayed = false;
+            toggler.fixedToCamera = false;
+
         }
 
         createHeadsUpDisplay();
@@ -533,7 +538,7 @@ Tan.LevelOne.prototype = {
                 toggler.visible = true;
             }            
         }
-        
+
         displayGrams();
         displayToggler();
 
@@ -549,6 +554,12 @@ Tan.LevelOne.prototype = {
             coinCount++;
             coinText.text = coinCount;
             coin.kill();
+        }
+
+        if (toggleKey.isDown){
+            toggler.x += 4;
+            console.log('pushing f');
+            // game.physics.arcade.moveToXY(toggler, player);
         }
 
 
