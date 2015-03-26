@@ -16,7 +16,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 1500;
+var xStartPos = 0;
 var yStartPos = gameHeight;
 var player;
 var playerGrams = {};
@@ -54,7 +54,8 @@ Tan.LevelOne.prototype = {
     preload: function(){
         game.load.image('sky', 'assets/sky.png');
         game.load.image('platform', 'assets/platform_10x10.png');
-        game.load.image('pigeon', 'assets/sprites/pigeons.png');
+        // game.load.image('pigeon', 'assets/sprites/pigeons.png');
+        game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 12);
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('triangle2', 'assets/grams/sm_triangle.png');
@@ -66,7 +67,7 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('coconut-roll','assets/sprites/coconut-roll.png', 31,32,8);
         game.load.spritesheet('coin','assets/sprites/coin_spritesheet1.png', 32, 22, 8);
         game.load.image('displayCoin', 'assets/sprites/coin.png');
-        game.load.spritesheet('collision', 'assets/sprites/colision.png', 21, 23, 3);
+        game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
         game.load.image('badfish', 'assets/sprites/badfish.png');
 
     },
@@ -175,6 +176,8 @@ Tan.LevelOne.prototype = {
         function createEnemy(xPixFromLeft, yPixFromBottom, enemyKey, leftTrigger, rightTrigger){
             var newEnemy = enemies.create(xPixFromLeft, game.world.height - yPixFromBottom, enemyKey, 0, enemies);
             newEnemy.body.velocity.x = 100;
+            newEnemy.animations.add('pigeon-step', [0,1,2], 10, true);
+            newEnemy.animations.play('pigeon-step');
             createLeftTrigger(newEnemy, leftTrigger);
             createRightTrigger(newEnemy, rightTrigger);
             return newEnemy;
@@ -198,13 +201,11 @@ Tan.LevelOne.prototype = {
         }
 
         // creates enemy with triggers
-        createEnemy(200,65, 'pigeon', 50, 50);
-        createEnemy(420,265, 'pigeon', 100, 80);
-        createEnemy(2850,365, 'pigeon', 90, 90);
+        createEnemy(200,80, 'pigeon', 50, 50);
+        createEnemy(420,280, 'pigeon', 100, 80);
+        createEnemy(2850,380, 'pigeon', 90, 90);
         createEnemy(2000, 150, 'badfish', 150, 150);
         createEnemy(1800, 300, 'badfish', 10, 700);
-
-
 
         function makeImmovable(sprite){
             sprite.body.immovable = true;
@@ -235,8 +236,6 @@ Tan.LevelOne.prototype = {
         coconuts.physicsBodyType = Phaser.Physics.ARCADE;
 
         crabbyCrab = game.add.sprite(3500, yWorldBounds - 200, 'crab', 0, enemies);
-        // crabbyCrab.scale.x = 1;
-        // crabbyCrab.scale.y = .5;
         crabbyCrab.anchor.setTo(.5, 0);
         crabbyCrab.body.velocity.x = crabVel;
 
@@ -352,14 +351,14 @@ Tan.LevelOne.prototype = {
                 game.state.start('GameOver');
             } else if (enemy.body.touching.up){
                 var collision = game.add.sprite(enemy.position.x-3,enemy.position.y-5,'collision');
-                collision.animations.add('explode', [0, 1, 2], 10, false);
+                collision.animations.add('explode', [0, 1, 2], 20, false);
                 collision.animations.play('explode');
                 var cleanup = function (){
                     collision.destroy();
                 }
                 enemy.kill();
                 player.body.velocity.y = -200;
-                game.time.events.add(Phaser.Timer.SECOND * 10, cleanup, this);
+                game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
             } else {
                 player.kill();
                 game.state.start('GameOver');
