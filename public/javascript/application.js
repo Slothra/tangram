@@ -176,8 +176,10 @@ Tan.LevelOne.prototype = {
         function createEnemy(xPixFromLeft, yPixFromBottom, enemyKey, leftTrigger, rightTrigger){
             var newEnemy = enemies.create(xPixFromLeft, game.world.height - yPixFromBottom, enemyKey, 0, enemies);
             newEnemy.body.velocity.x = 100;
-            newEnemy.animations.add('pigeon-step', [0,1,2], 10, true);
-            newEnemy.animations.play('pigeon-step');
+            if (enemyKey == 'pigeon'){
+                newEnemy.animations.add('pigeon-step', [0,1,2], 10, true);
+                newEnemy.animations.play('pigeon-step');
+            }
             createLeftTrigger(newEnemy, leftTrigger);
             createRightTrigger(newEnemy, rightTrigger);
             return newEnemy;
@@ -372,6 +374,13 @@ Tan.LevelOne.prototype = {
 
         function bossCoconutHandler() {
             crabLife--;
+            var collision = game.add.sprite(coconut.position.x,coconut.position.y-5,'collision');
+            collision.animations.add('explode', [0, 1, 2], 20, false);
+            collision.animations.play('explode');
+            var cleanup = function (){
+                collision.destroy();
+            }
+            game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
             coconut.destroy();
             needNewCoconut = true;
             if (crabLife === 0){
