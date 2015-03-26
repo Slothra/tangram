@@ -151,11 +151,10 @@ Tan.LevelOne.prototype = {
 
         // Create a gram
         function createGram(xPos, yPos, imgKey, gramName){
-            var gravity = 6;
-
             var gram = grams.create(xPos, yPos, imgKey);
-            gram.body.gravity.y = gravity;
+            gram.body.gravity.y = 6;
             gram.name = gramName;
+            gram.displayed = false;
         }
 
         createGram(200, game.world.height - 70, 'sm_triangle', 'hat');
@@ -499,17 +498,30 @@ Tan.LevelOne.prototype = {
             movePlayer(6, 'swim', 'jumpFish', playerSpeed, -300);
         }
 
+///////////
 
         function displayGram(gram){
-            var paddingLeft = 30;
-            var spaceBetweenGrams = 50;
-            var displayGram = game.add.sprite(paddingLeft + gramCount * spaceBetweenGrams, 50, gram.key);
+            var marginLeft = 30;
+            var padding = 50;
+            var displayGram = game.add.sprite(marginLeft + ((gram.indexInInv + 1) * padding), 50, gram.key);
             displayGram.anchor.setTo(0.5, 0.5);
             displayGram.fixedToCamera = true;
         }
 
+        function displayGrams(){
+            for (var key in playerGrams) {
+                var gram = playerGrams[key];
+              if (playerGrams.hasOwnProperty(key) && gram.displayed == false) {
+                gram.displayed = true;
+                displayGram(gram);
+              }
+            }
+        }
+        displayGrams();
+
+
         function collectGram(player, gram){
-            displayGram(gram);
+            gram.indexInInv = gramCount;
             gramCount++;
             playerGrams[gram.name] = gram;
             gram.kill();
@@ -520,6 +532,8 @@ Tan.LevelOne.prototype = {
             coinText.text = coinCount;
             coin.kill();
         }
+
+
 
 
 
