@@ -62,7 +62,8 @@ Tan.LevelOne.prototype = {
     preload: function(){
         game.load.image('sky', 'assets/sky.png');
         game.load.image('platform', 'assets/platform_10x10.png');
-        game.load.image('pigeon', 'assets/sprites/pigeons.png');
+        // game.load.image('pigeon', 'assets/sprites/pigeons.png');
+        game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 12);
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('triangle2', 'assets/grams/sm_triangle.png');
@@ -74,7 +75,7 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('coconut-roll','assets/sprites/coconut-roll.png', 31,32,8);
         game.load.spritesheet('coin','assets/sprites/coin_spritesheet1.png', 32, 22, 8);
         game.load.image('displayCoin', 'assets/sprites/coin.png');
-        game.load.spritesheet('collision', 'assets/sprites/colision.png', 21, 23, 3)
+        game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
     },
 
     create: function(){
@@ -204,13 +205,13 @@ Tan.LevelOne.prototype = {
         }
 
         // creates enemy with triggers
-        enemy1 = createEnemy(200,65)
+        enemy1 = createEnemy(200,80)
         left1 = createLeftTrigger(enemy1)
         right1 = createRightTrigger(enemy1)
-        enemy2 = createEnemy(420,265)
+        enemy2 = createEnemy(420,280)
         left2 = createLeftTrigger(enemy2)
         right2 = createRightTrigger(enemy2)
-        enemy3 = createEnemy(2850,365)
+        enemy3 = createEnemy(2850,380)
         left3 = createLeftTrigger(enemy3)
         right3 = createRightTrigger(enemy3)
         // enemy4 = createEnemy(200,65)
@@ -377,14 +378,14 @@ Tan.LevelOne.prototype = {
                 game.state.start('GameOver');
             } else if (enemy.body.touching.up){
                 var collision = game.add.sprite(enemy.position.x-3,enemy.position.y-5,'collision');
-                collision.animations.add('explode', [0, 1, 2], 10, false);
+                collision.animations.add('explode', [0, 1, 2], 20, false);
                 collision.animations.play('explode');
                 var cleanup = function (){
                     collision.destroy();
                 }
                 enemy.kill();
                 player.body.velocity.y = -200;
-                game.time.events.add(Phaser.Timer.SECOND * 10, cleanup, this);
+                game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
             } else {
                 player.kill();
                 game.state.start('GameOver');
