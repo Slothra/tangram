@@ -58,6 +58,9 @@ var restartMusic;
 var coinText;
 var toggler;
 var toggleKey;
+var togglerX = 0;
+var togglerPadding = 50;
+
 
 
 Tan.LevelOne = function(game){};
@@ -183,7 +186,7 @@ Tan.LevelOne.prototype = {
         }
 
         createGram(200, game.world.height - 70, 'sm_triangle', 'hat');
-        createGram(100, game.world.height -70, 'sm_triangle', 'gram2');
+        createGram(600, game.world.height -70, 'sm_triangle', 'gram2');
 
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
@@ -321,7 +324,6 @@ Tan.LevelOne.prototype = {
         function initializeCamera(){
             game.camera.follow(player);
             game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
-
         }
 
         function anchorAndFixToCam(obj){
@@ -354,13 +356,22 @@ Tan.LevelOne.prototype = {
 
             createHeadsUpIcon(700, marginTop + 2, 'displayCoin');
 
-            toggler = createHeadsUpIcon(50, 250, 'toggler');
+            toggler = createHeadsUpIcon(game.camera.view.x + 50, game.camera.view.y + 275, 'toggler');
             toggler.displayed = false;
             toggler.fixedToCamera = false;
+
+
+            // game.camera.view.x,game.camera.view.y
 
         }
 
         createHeadsUpDisplay();
+
+
+
+
+
+
 
     },
 
@@ -585,16 +596,13 @@ Tan.LevelOne.prototype = {
         }
 
         if (toggleKey.isDown){
-            toggler.x += 4;
-            console.log('pushing f');
-            // game.physics.arcade.moveToXY(toggler, player);
+            togglerPadding += 10;
         }
 
 
+        toggler.x = game.camera.view.x + togglerPadding;
+        toggler.y = game.camera.view.y + 75;
 
-
-
-        
         // Claw moves to platform (needs animations)
         
         var tempCrabVel;
