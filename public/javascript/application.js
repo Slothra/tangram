@@ -16,7 +16,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 0;
+var xStartPos = 300;
 var yStartPos = gameHeight;
 var player;
 var playerGrams = {};
@@ -54,7 +54,7 @@ Tan.LevelOne.prototype = {
         game.load.image('sky', 'assets/sky.png');
         game.load.image('platform', 'assets/platform_10x10.png');
         game.load.image('pigeon', 'assets/sprites/pigeons.png');
-        game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 9);
+        game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 12);
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('triangle2', 'assets/grams/sm_triangle.png');
 
@@ -175,7 +175,7 @@ Tan.LevelOne.prototype = {
         player.animations.add('walkHat', [3, 4, 5], 10, true);
         player.animations.add('jumpHat', [4]);
         player.animations.add('swim', [6, 7, 8], 10, true);
-        player.animations.add('jumpFish', [7]);
+        player.animations.add('jumpFish', [10]);
 
         // camera mechanics
         game.camera.follow(player);
@@ -441,6 +441,10 @@ Tan.LevelOne.prototype = {
 
         function moveAsFish(){
             movePlayer(6, 'swim', 'jumpFish', playerSpeed - 10, -300);
+        }
+
+        function moveFishUp(){
+            movePlayer(6, 'swimUp', 'jumpFish', playerSpeed - 10, -300);
         }
 
 
