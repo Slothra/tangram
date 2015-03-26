@@ -58,8 +58,10 @@ var restartMusic;
 var coinText;
 var toggler;
 var toggleKey;
-var togglerX = 0;
 var togglerPadding = 50;
+var toggle = false;
+var togglePosition = 0;
+var displayedGrams = [];
 
 
 
@@ -186,7 +188,7 @@ Tan.LevelOne.prototype = {
         }
 
         createGram(200, game.world.height - 70, 'sm_triangle', 'hat');
-        createGram(600, game.world.height -70, 'sm_triangle', 'gram2');
+        createGram(600, game.world.height -70, 'sm_triangle', 'brick');
 
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
@@ -359,18 +361,9 @@ Tan.LevelOne.prototype = {
             toggler = createHeadsUpIcon(game.camera.view.x + 50, game.camera.view.y + 275, 'toggler');
             toggler.displayed = false;
             toggler.fixedToCamera = false;
-
-
-            // game.camera.view.x,game.camera.view.y
-
         }
 
         createHeadsUpDisplay();
-
-
-
-
-
 
 
     },
@@ -471,13 +464,13 @@ Tan.LevelOne.prototype = {
 
         // Set playerForm;
 
-        if ((underwater && playerGrams.hat) || (playerForm == 'fish' && !underwater && !player.body.touching.down)){
-            playerForm = 'fish';
-        } else if ((playerForm == 'fish' && !underwater && player.body.touching.down && playerGrams.hat) || (playerForm != 'fish' && !underwater && playerGrams.hat)){
-            playerForm = 'hat';
-        } else {
-            playerForm = 'brick';
-        }
+        // if ((underwater && playerGrams.hat) || (playerForm == 'fish' && !underwater && !player.body.touching.down)){
+        //     playerForm = 'fish';
+        // } else if ((playerForm == 'fish' && !underwater && player.body.touching.down && playerGrams.hat) || (playerForm != 'fish' && !underwater && playerGrams.hat)){
+        //     playerForm = 'hat';
+        // } else {
+        //     playerForm = 'brick';
+        // }
 
 
         switch (playerForm){
@@ -554,7 +547,7 @@ Tan.LevelOne.prototype = {
         function displayGram(gram){
             var marginLeft = 30;
             var padding = 50;
-            var displayGram = game.add.sprite(marginLeft + ((gram.indexInInv + 1) * padding), 50, gram.key);
+            var displayGram = game.add.sprite(marginLeft + ((gram.displayIndex + 1) * padding), 50, gram.key);
             displayGram.anchor.setTo(0.5, 0.5);
             displayGram.fixedToCamera = true;
         }
@@ -578,15 +571,19 @@ Tan.LevelOne.prototype = {
             }            
         }
 
-        displayGrams();
-        displayToggler();
-
-
         function collectGram(player, gram){
-            gram.indexInInv = gramCount;
+            gram.displayIndex = gramCount;
             gramCount++;
             playerGrams[gram.name] = gram;
+            // displayedGrams.push(gram);
             gram.kill();
+        }
+
+        for (var key in playerGrams){
+            var gram = playerGrams[key];
+            if (togglePosition == gram.displayIndex){
+                playerForm = gram.name;
+            }
         }
 
         function collectCoin(player, coin){
@@ -595,13 +592,31 @@ Tan.LevelOne.prototype = {
             coin.kill();
         }
 
-        if (toggleKey.isDown){
-            togglerPadding += 10;
+        if (toggleKey.isDown && toggle == false){
+            toggle = true;
+            if (togglePosition < gramCount-1){
+                togglerPadding += 64;
+                togglePosition++;
+            } else {
+                togglerPadding = 50;
+                togglePosition = 0;
+            }
+        } else if (toggleKey.isUp){
+            toggle = false;
         }
 
-
+        displayGrams();
+        displayToggler();
         toggler.x = game.camera.view.x + togglerPadding;
         toggler.y = game.camera.view.y + 75;
+
+
+
+
+
+
+
+
 
         // Claw moves to platform (needs animations)
         
