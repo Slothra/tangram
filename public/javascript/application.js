@@ -322,7 +322,6 @@ Tan.LevelOne.prototype = {
 
         createHeadsUpDisplay();
 
-
     },
 
     update: function(){
@@ -418,7 +417,6 @@ Tan.LevelOne.prototype = {
             playerForm = 'hat';
         } else {
             playerForm = 'brick';
-
         }
 
 
