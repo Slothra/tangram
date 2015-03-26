@@ -47,14 +47,6 @@ var coins;
 var coinCount = 0;
 var crabVel = -50;
 var coinText;
-var enemy1;
-var left1;
-var right1;
-var enemy2;
-var left2;
-var right2;
-var enemy3;
-var enemy4;
 
 Tan.LevelOne = function(game){};
 
@@ -76,6 +68,8 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('coin','assets/sprites/coin_spritesheet1.png', 32, 22, 8);
         game.load.image('displayCoin', 'assets/sprites/coin.png');
         game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
+        game.load.image('badfish', 'assets/sprites/badfish.png');
+
     },
 
     create: function(){
@@ -162,8 +156,6 @@ Tan.LevelOne.prototype = {
         gram2.name = 'gram2';
 
 
-
-
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
             newPlatform.scale.setTo(widthScale, heightScale);
@@ -181,9 +173,13 @@ Tan.LevelOne.prototype = {
         enemies.enableBody = true;
         enemies.physicsBodyType = Phaser.Physics.ARCADE;
 
-        function createEnemy(xPixFromLeft,yPixFromBottom){
-            var newEnemy = enemies.create(xPixFromLeft, game.world.height - yPixFromBottom, 'pigeon', 0, enemies);
+        function createEnemy(xPixFromLeft, yPixFromBottom, enemyKey, leftTrigger, rightTrigger){
+            var newEnemy = enemies.create(xPixFromLeft, game.world.height - yPixFromBottom, enemyKey, 0, enemies);
             newEnemy.body.velocity.x = 100;
+            newEnemy.animations.add('pigeon-step', [0,1,2], 10, true);
+            newEnemy.animations.play('pigeon-step');
+            createLeftTrigger(newEnemy, leftTrigger);
+            createRightTrigger(newEnemy, rightTrigger);
             return newEnemy;
         }
 
@@ -192,29 +188,24 @@ Tan.LevelOne.prototype = {
         enemyMovementTriggers.enableBody = true;
         enemyMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
 
-        function createLeftTrigger(enemy){
-            var left = game.add.sprite(enemy.position.x - 50, enemy.position.y, '', 0, enemyMovementTriggers);
+        function createLeftTrigger(enemy, leftTrigger){
+            var left = game.add.sprite(enemy.position.x - leftTrigger, enemy.position.y, '', 0, enemyMovementTriggers);
             left.body.setSize(4, 32, 0, 0);
             return left;
         }
 
-        function createRightTrigger(enemy){
-            var right = game.add.sprite(enemy.position.x + 50, enemy.position.y, '', 0, enemyMovementTriggers);
+        function createRightTrigger(enemy, rightTrigger){
+            var right = game.add.sprite(enemy.position.x + rightTrigger, enemy.position.y, '', 0, enemyMovementTriggers);
             right.body.setSize(4, 32, 0, 0);
             return right;
         }
 
         // creates enemy with triggers
-        enemy1 = createEnemy(200,80)
-        left1 = createLeftTrigger(enemy1)
-        right1 = createRightTrigger(enemy1)
-        enemy2 = createEnemy(420,280)
-        left2 = createLeftTrigger(enemy2)
-        right2 = createRightTrigger(enemy2)
-        enemy3 = createEnemy(2850,380)
-        left3 = createLeftTrigger(enemy3)
-        right3 = createRightTrigger(enemy3)
-        // enemy4 = createEnemy(200,65)
+        createEnemy(200,80, 'pigeon', 50, 50);
+        createEnemy(420,280, 'pigeon', 100, 80);
+        createEnemy(2850,380, 'pigeon', 90, 90);
+        createEnemy(2000, 150, 'badfish', 150, 150);
+        createEnemy(1800, 300, 'badfish', 10, 700);
 
         function makeImmovable(sprite){
             sprite.body.immovable = true;
@@ -236,22 +227,6 @@ Tan.LevelOne.prototype = {
         // deadzone
         game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
 
-        // // Enemy movement triggers
-        // enemyMovementTriggers = game.add.group();
-        // enemyMovementTriggers.enableBody = true;
-        // enemyMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
-
-        // leftTrigger = game.add.sprite(100, yWorldBounds - 65, null, 0, enemyMovementTriggers);
-        // leftTrigger.body.setSize(4, 32, 0, 0);
-        // rightTrigger = game.add.sprite(210, yWorldBounds - 65, null, 0, enemyMovementTriggers);
-        // rightTrigger.body.setSize(4, 32, 0, 0);
-
-        // creates enemy with triggers
-        // createdEnemy = game.add.sprite(200, yWorldBounds - 65, 'pigeon', 0, enemies);
-        // createdEnemy.anchor.setTo(.5, 0); //so it flips around its middle
-        // game.physics.enable(enemies, Phaser.Physics.ARCADE);
-        // createdEnemy.body.velocity.x = 100;
-
         pincers = game.add.group();
         pincers.enableBody = true;
         pincers.physicsBodyType = Phaser.Physics.ARCADE;
@@ -261,8 +236,6 @@ Tan.LevelOne.prototype = {
         coconuts.physicsBodyType = Phaser.Physics.ARCADE;
 
         crabbyCrab = game.add.sprite(3500, yWorldBounds - 200, 'crab', 0, enemies);
-        // crabbyCrab.scale.x = 1;
-        // crabbyCrab.scale.y = .5;
         crabbyCrab.anchor.setTo(.5, 0);
         crabbyCrab.body.velocity.x = crabVel;
 
@@ -338,7 +311,7 @@ Tan.LevelOne.prototype = {
             coinText = game.add.text(760, 30);
             coinText.anchor.setTo(0.5, 0.5);
             coinText.fixedToCamera = true;
-            coinText.text = '0'
+            coinText.text = coinCount;
         }
 
         createHeadsUpDisplay();
