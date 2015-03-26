@@ -48,10 +48,17 @@ var coinCount = 0;
 var crabVel = -50;
 var deadPlayer;
 var bossTime = false;
+
 var music;
 var bossMusic;
 var gameOverMusic;
 var restartMusic;
+var jumpSound;
+var poofSound;
+var splashSound;
+var crackSound;
+var coinSound;
+var gramSound;
 
 
 // Heads up display
@@ -59,9 +66,8 @@ var coinText;
 var toggler;
 var toggleKey;
 var togglerPadding = 50;
-var toggle = false;
+var toggleOn = false;
 var togglePosition = 0;
-var displayedGrams = [];
 
 
 
@@ -96,6 +102,12 @@ Tan.LevelOne.prototype = {
         game.load.audio('suspense', 'assets/sound/suspense.m4a');
         game.load.audio('gameover', 'assets/sound/gameover.m4a');
         game.load.audio('restart', 'assets/sound/restart.m4a');
+        game.load.audio('jumpSound', 'assets/sound/jump.wav');
+        game.load.audio('poof', 'assets/sound/poof.wav');
+        game.load.audio('splash', 'assets/sound/splash.wav');
+        game.load.audio('crack', 'assets/sound/crack.mp3');
+        game.load.audio('coin', 'assets/sound/coin.mp3');
+        game.load.audio('gram', 'assets/sound/gram.wav');
 
     },
 
@@ -113,6 +125,12 @@ Tan.LevelOne.prototype = {
         gameOverMusic = game.add.audio('gameover');
         music.loop = true;
         music.play();
+        jumpSound = game.add.audio('jumpSound');
+        poofSound = game.add.audio('poof');
+        splashSound = game.add.audio('splash');
+        crackSound = game.add.audio('crack');
+        coinSound = game.add.audio('coin');
+        gramSound = game.add.audio('gram');
 
         waters = game.add.group();
         waters.enableBody = true;
@@ -383,9 +401,15 @@ Tan.LevelOne.prototype = {
 
         // Checks if player is collides with water;
         if (game.physics.arcade.overlap(player, waters) == true){
+            if (underwater === false){
+                splashSound.play();
+            }
             underwater = true;
             playerSpeed = 100;
         } else {
+            if (underwater === true){
+                splashSound.play();
+            }
             underwater = false;
             playerSpeed = 150;
         };
@@ -399,6 +423,7 @@ Tan.LevelOne.prototype = {
                 literallyDying(bossMusic);
                 game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);
             } else if (enemy.body.touching.up){
+                poofSound.play();
                 var collision = game.add.sprite(enemy.position.x-3,enemy.position.y-5,'collision');
                 collision.animations.add('explode', [0, 1, 2], 20, false);
                 collision.animations.play('explode');
@@ -444,6 +469,7 @@ Tan.LevelOne.prototype = {
             var collision = game.add.sprite(coconut.position.x,coconut.position.y-5,'collision');
             collision.animations.add('explode', [0, 1, 2], 20, false);
             collision.animations.play('explode');
+            crackSound.play();
             var cleanup = function (){
                 collision.destroy();
             }
@@ -520,6 +546,7 @@ Tan.LevelOne.prototype = {
             else {
                 if (!underwater && cursors.up.isDown && player.body.touching.down){
                     player.body.velocity.y = yVel;
+                    jumpSound.play();
                 }
             }
 
@@ -527,6 +554,11 @@ Tan.LevelOne.prototype = {
                 player.animations.play(jumpAnim);
             else if (!player.body.touching.down && playerForm != 'fish'){
                 player.animations.play(jumpAnim);
+                // if (jumpBool === false){
+                //     jumpBool = true;
+                        
+                // }
+                
             }            
         }
 
@@ -573,9 +605,9 @@ Tan.LevelOne.prototype = {
 
         function collectGram(player, gram){
             gram.displayIndex = gramCount;
+            gramSound.play();
             gramCount++;
             playerGrams[gram.name] = gram;
-            // displayedGrams.push(gram);
             gram.kill();
         }
 
@@ -587,13 +619,14 @@ Tan.LevelOne.prototype = {
         }
 
         function collectCoin(player, coin){
+            coinSound.play();
             coinCount++;
             coinText.text = coinCount;
             coin.kill();
         }
 
-        if (toggleKey.isDown && toggle == false){
-            toggle = true;
+        if (toggleKey.isDown && toggleOn == false){
+            toggleOn = true;
             if (togglePosition < gramCount-1){
                 togglerPadding += 64;
                 togglePosition++;
@@ -602,18 +635,13 @@ Tan.LevelOne.prototype = {
                 togglePosition = 0;
             }
         } else if (toggleKey.isUp){
-            toggle = false;
+            toggleOn = false;
         }
 
         displayGrams();
         displayToggler();
         toggler.x = game.camera.view.x + togglerPadding;
         toggler.y = game.camera.view.y + 75;
-
-
-
-
-
 
 
 
