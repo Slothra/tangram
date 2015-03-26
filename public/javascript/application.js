@@ -73,6 +73,8 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
         game.load.image('badfish', 'assets/sprites/badfish.png');
 
+        game.load.audio('exploring', 'assets/sound/exploring.m4a');
+
     },
 
     create: function(){
@@ -83,6 +85,10 @@ Tan.LevelOne.prototype = {
 
         background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
+
+        music = game.add.audio('exploring');
+        music.loop = true;
+        music.play();
 
         waters = game.add.group();
         waters.enableBody = true;
