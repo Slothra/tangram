@@ -150,13 +150,25 @@ Tan.LevelOne.prototype = {
         movPlat.body.immovable = true;
 
         // Create a gram
-        var triGram = grams.create(200, game.world.height - 70, 'sm_triangle');
-        triGram.body.gravity.y = 6;
-        triGram.name = 'hat'
+        function createGram(xPos, yPos, imgKey, gramName){
+            var gravity = 6;
 
-        var gram2 = grams.create(100, game.world.height -70, 'sm_triangle');
-        gram2.body.gravity.y = 6;
-        gram2.name = 'gram2';
+            var gram = grams.create(xPos, yPos, imgKey);
+            gram.body.gravity.y = gravity;
+            gram.name = gramName;
+        }
+
+        createGram(200, game.world.height - 70, 'sm_triangle', 'hat');
+        createGram(100, game.world.height -70, 'sm_triangle', 'gram2');
+
+
+        // var triGram = grams.create(200, game.world.height - 70, 'sm_triangle');
+        // triGram.body.gravity.y = 6;
+        // triGram.name = 'hat'
+
+        // var gram2 = grams.create(100, game.world.height -70, 'sm_triangle');
+        // gram2.body.gravity.y = 6;
+        // gram2.name = 'gram2';
 
 
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
