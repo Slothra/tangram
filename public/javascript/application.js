@@ -489,15 +489,16 @@ Tan.LevelOne.prototype = {
         player.body.velocity.x = 0;
 
         // Set playerForm;
-
-        // if ((underwater && playerGrams.hat) || (playerForm == 'fish' && !underwater && !player.body.touching.down)){
-        //     playerForm = 'fish';
-        // } else if ((playerForm == 'fish' && !underwater && player.body.touching.down && playerGrams.hat) || (playerForm != 'fish' && !underwater && playerGrams.hat)){
-        //     playerForm = 'hat';
-        // } else {
-        //     playerForm = 'brick';
-        // }
-
+        if ((underwater && playerGrams.hat) || (playerForm == 'fish' && !underwater && !player.body.touching.down)){
+            playerForm = 'fish';
+        } else {       
+            for (var key in playerGrams){
+                var gram = playerGrams[key];
+                if (togglePosition == gram.displayIndex){
+                    playerForm = gram.name;
+                }
+            }
+        }
 
         switch (playerForm){
           case 'brick':
@@ -611,12 +612,12 @@ Tan.LevelOne.prototype = {
             gram.kill();
         }
 
-        for (var key in playerGrams){
-            var gram = playerGrams[key];
-            if (togglePosition == gram.displayIndex){
-                playerForm = gram.name;
-            }
-        }
+        // for (var key in playerGrams){
+        //     var gram = playerGrams[key];
+        //     if (togglePosition == gram.displayIndex){
+        //         playerForm = gram.name;
+        //     }
+        // }
 
         function collectCoin(player, coin){
             coinSound.play();
