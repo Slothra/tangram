@@ -48,6 +48,9 @@ var coinCount = 0;
 var crabVel = -50;
 var coinText;
 var deadPlayer;
+var bossTime = false;
+var music;
+var bossMusic;
 
 Tan.LevelOne = function(game){};
 
@@ -74,6 +77,7 @@ Tan.LevelOne.prototype = {
         game.load.image('badfish', 'assets/sprites/badfish.png');
 
         game.load.audio('exploring', 'assets/sound/exploring.m4a');
+        game.load.audio('boss', 'assets/sound/boss.m4a');
 
     },
 
@@ -406,6 +410,8 @@ Tan.LevelOne.prototype = {
             coconut.destroy();
             needNewCoconut = true;
             if (crabLife === 0){
+                bossMusic.stop();
+                music.play();
                 console.log("YOU WIN!")
                 crabbyCrab.destroy();
                 leftPincer.destroy();
@@ -529,6 +535,14 @@ Tan.LevelOne.prototype = {
             crabVel = crabbyCrab.body.velocity.x;
             leftPincer.body.velocity.x = crabVel;
             rightPincer.body.velocity.x = crabVel;
+        }
+
+        if (player.position.x > 3200 && bossTime === false){
+            bossTime = true;
+            bossMusic = game.add.audio('boss');
+            music.stop();
+            bossMusic.loop = true;
+            bossMusic.play();
         }
 
         if (player.position.x > 3200 && countdown == false){
