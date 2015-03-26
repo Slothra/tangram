@@ -86,7 +86,7 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('death-tint', 'assets/sprites/deathtint.png', 800,600,3)
 
         game.load.image('water', 'assets/water.png');
-        game.load.image('crab', 'assets/sprites/crab.png');
+        game.load.spritesheet('crab', 'assets/sprites/crab.png', 298.3, 143, 3);
         game.load.image('claw', 'assets/sprites/claw.png');
         game.load.image('left', 'assets/sprites/rightClaw.png');
         game.load.spritesheet('coconut-roll','assets/sprites/coconut-roll.png', 31,32,8);
@@ -292,6 +292,8 @@ Tan.LevelOne.prototype = {
         coconuts.physicsBodyType = Phaser.Physics.ARCADE;
 
         crabbyCrab = game.add.sprite(3500, yWorldBounds - 200, 'crab', 0, enemies);
+        crabbyCrab.animations.add('crabWalk',[0,1], 10, true);
+        crabbyCrab.animations.add('hurt',[2], 10, true);
         crabbyCrab.anchor.setTo(.5, 0);
         crabbyCrab.body.velocity.x = crabVel;
 
@@ -417,6 +419,13 @@ Tan.LevelOne.prototype = {
         cursors = game.input.keyboard.createCursorKeys();
         game.physics.arcade.collide(enemies, player, collisionHandler, null, this);
         game.physics.arcade.collide(pincers, player, bossCollisionHandler, null, this);
+        
+        if (crabbyCrab.body.velocity.x != 0){
+            crabbyCrab.animations.play('crabWalk');
+        } else {
+            crabbyCrab.animations.stop();
+        }
+
         function collisionHandler (player, enemy) {
             if (enemy == crabbyCrab) {
                 player.destroy();
@@ -466,13 +475,18 @@ Tan.LevelOne.prototype = {
 
         function bossCoconutHandler() {
             crabLife--;
+            crabbyCrab.animations.play('hurt');
             var collision = game.add.sprite(coconut.position.x,coconut.position.y-5,'collision');
             collision.animations.add('explode', [0, 1, 2], 20, false);
             collision.animations.play('explode');
             crackSound.play();
             var cleanup = function (){
                 collision.destroy();
+                switchAnimation();
             }
+            var switchAnimation = function(){
+                crabbyCrab.animations.play('crabWalk')
+            };
             game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
             coconut.destroy();
             needNewCoconut = true;
