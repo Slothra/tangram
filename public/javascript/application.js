@@ -58,6 +58,9 @@ var jumpSound;
 var poofSound;
 var splashSound;
 var crackSound;
+var coinSound;
+var gramSound;
+var poof;
 
 Tan.LevelOne = function(game){};
 
@@ -92,6 +95,8 @@ Tan.LevelOne.prototype = {
         game.load.audio('poof', 'assets/sound/poof.wav');
         game.load.audio('splash', 'assets/sound/splash.wav');
         game.load.audio('crack', 'assets/sound/crack.mp3');
+        game.load.audio('coin', 'assets/sound/coin.mp3');
+        game.load.audio('gram', 'assets/sound/gram.wav');
 
     },
 
@@ -110,8 +115,11 @@ Tan.LevelOne.prototype = {
         music.play();
         jumpSound = game.add.audio('jumpSound');
         poofSound = game.add.audio('poof');
+        poof = poofSound.addMarker('poof', .3, 1)
         splashSound = game.add.audio('splash');
         crackSound = game.add.audio('crack');
+        coinSound = game.add.audio('coin');
+        gramSound = game.add.audio('gram');
 
         waters = game.add.group();
         waters.enableBody = true;
@@ -391,7 +399,7 @@ Tan.LevelOne.prototype = {
                 literallyDying(bossMusic);
                 game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);
             } else if (enemy.body.touching.up){
-                poofSound.play();
+                poof.resume();
                 var collision = game.add.sprite(enemy.position.x-3,enemy.position.y-5,'collision');
                 collision.animations.add('explode', [0, 1, 2], 20, false);
                 collision.animations.play('explode');
@@ -552,6 +560,7 @@ Tan.LevelOne.prototype = {
         }
 
         function collectGram(player, gram){
+            gramSound.play();
             displayGram(gram);
             gramCount++;
             playerGrams[gram.name] = gram;
@@ -559,6 +568,7 @@ Tan.LevelOne.prototype = {
         }
 
         function collectCoin(player, coin){
+            coinSound.play();
             coinCount++;
             coinText.text = coinCount;
             coin.kill();
