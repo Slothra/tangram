@@ -47,6 +47,7 @@ var coins;
 var coinCount = 0;
 var crabVel = -50;
 var coinText;
+var deadPlayer;
 
 Tan.LevelOne = function(game){};
 
@@ -57,8 +58,10 @@ Tan.LevelOne.prototype = {
         // game.load.image('pigeon', 'assets/sprites/pigeons.png');
         game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 12);
+        game.load.spritesheet('heart', 'assets/sprites/heart.png', 38,30,4)
         game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
         game.load.image('triangle2', 'assets/grams/sm_triangle.png');
+        game.load.spritesheet('death-tint', 'assets/sprites/deathtint.png', 800,600,3)
 
         game.load.image('water', 'assets/water.png');
         game.load.image('crab', 'assets/sprites/crab.png');
@@ -176,8 +179,10 @@ Tan.LevelOne.prototype = {
         function createEnemy(xPixFromLeft, yPixFromBottom, enemyKey, leftTrigger, rightTrigger){
             var newEnemy = enemies.create(xPixFromLeft, game.world.height - yPixFromBottom, enemyKey, 0, enemies);
             newEnemy.body.velocity.x = 100;
-            newEnemy.animations.add('pigeon-step', [0,1,2], 10, true);
-            newEnemy.animations.play('pigeon-step');
+            if (enemyKey == 'pigeon'){
+                newEnemy.animations.add('pigeon-step', [0,1,2], 10, true);
+                newEnemy.animations.play('pigeon-step');
+            }
             createLeftTrigger(newEnemy, leftTrigger);
             createRightTrigger(newEnemy, rightTrigger);
             return newEnemy;
@@ -220,6 +225,7 @@ Tan.LevelOne.prototype = {
         player.animations.add('jumpHat', [4]);
         player.animations.add('swim', [6, 7, 8], 10, true);
         player.animations.add('jumpFish', [10]);
+
 
         // camera mechanics
         game.camera.follow(player);
@@ -330,7 +336,6 @@ Tan.LevelOne.prototype = {
         game.physics.arcade.collide(coins, platforms);
         game.physics.arcade.overlap(player, coins, collectCoin, null, this);
 
-
         cursors = game.input.keyboard.createCursorKeys();
 
         // Checks if player is collides with water;
@@ -361,8 +366,22 @@ Tan.LevelOne.prototype = {
                 game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
             } else {
                 player.kill();
-                game.state.start('GameOver');
+                literallyDying();
+                game.time.events.add(Phaser.Timer.SECOND * 5, restartScreen, this)
             }
+        }
+
+        function restartScreen(){
+            game.state.start('GameOver');
+        }
+
+        function literallyDying (){
+            var deadPlayer = game.add.sprite(player.position.x,player.position.y+20,'heart');
+            deadPlayer.animations.add('dead', [0,1,2,3], 3, false);
+            deadPlayer.animations.play('dead');
+            var deathScreen = game.add.sprite(game.camera.view.x,game.camera.view.y,'death-tint');
+            deathScreen.animations.add('tint', [0,1,2], 10, false);
+            deathScreen.animations.play('tint');
         }
 
         function bossCollisionHandler (player, enemy) {
