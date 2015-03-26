@@ -46,8 +46,13 @@ var gramCount = 0;
 var coins;
 var coinCount = 0;
 var crabVel = -50;
-var coinText;
 var deadPlayer;
+
+
+// Heads up display
+var coinText;
+var toggler;
+
 
 Tan.LevelOne = function(game){};
 
@@ -72,6 +77,8 @@ Tan.LevelOne.prototype = {
         game.load.image('displayCoin', 'assets/sprites/coin.png');
         game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
         game.load.image('badfish', 'assets/sprites/badfish.png');
+        game.load.image('gramToggler', 'assets/sprites/gram_toggler.png');
+
 
     },
 
@@ -308,27 +315,30 @@ Tan.LevelOne.prototype = {
 
         }
 
+        function createHeadsUpText(xPos, yPos, text){
+            var text = game.add.text(xPos, yPos, text);
+            text.anchor.setTo(0.5, 0.5);
+            text.fixedToCamera = true;
+            return text;
+        }
+
 
         // Creates head up display
         function createHeadsUpDisplay(){
             var marginTop = 30;
 
-            var gramsText = game.add.text(100, marginTop, "Tan's Grams:");
-            gramsText.anchor.setTo(0.5, 0.5);
-            gramsText.fixedToCamera = true;
+            createHeadsUpText(100, marginTop, "Tan's Grams:");
+            createHeadsUpText(740, marginTop, "x ");
 
-            var displayCoin = game.add.sprite(700, marginTop + 2, 'displayCoin');
-            displayCoin.anchor.setTo(0.5, 0.5);
-            displayCoin.fixedToCamera = true;
-
-            var coinX = game.add.text(740, marginTop, "x ");
-            coinX.anchor.setTo(0.5, 0.5);
-            coinX.fixedToCamera = true;
-
-            coinText = game.add.text(760, 30);
-            coinText.anchor.setTo(0.5, 0.5);
-            coinText.fixedToCamera = true;
+            coinText = createHeadsUpText(760, 30, null);
             coinText.text = coinCount;
+
+
+
+
+            // var displayCoin = game.add.sprite(700, marginTop + 2, 'displayCoin');
+            // displayCoin.anchor.setTo(0.5, 0.5);
+            // displayCoin.fixedToCamera = true;
         }
 
         createHeadsUpDisplay();
