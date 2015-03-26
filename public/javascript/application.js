@@ -48,6 +48,11 @@ var coinCount = 0;
 var crabVel = -50;
 var coinText;
 var deadPlayer;
+var bossTime = false;
+var music;
+var bossMusic;
+var gameOverMusic;
+var restartMusic;
 
 Tan.LevelOne = function(game){};
 
@@ -73,6 +78,12 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
         game.load.image('badfish', 'assets/sprites/badfish.png');
 
+        game.load.audio('exploring', 'assets/sound/exploring.m4a');
+        game.load.audio('boss', 'assets/sound/boss.m4a');
+        game.load.audio('suspense', 'assets/sound/suspense.m4a');
+        game.load.audio('gameover', 'assets/sound/gameover.m4a');
+        game.load.audio('restart', 'assets/sound/restart.m4a');
+
     },
 
     create: function(){
@@ -83,6 +94,11 @@ Tan.LevelOne.prototype = {
 
         background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
+
+        music = game.add.audio('exploring');
+        gameOverMusic = game.add.audio('gameover');
+        music.loop = true;
+        music.play();
 
         waters = game.add.group();
         waters.enableBody = true;
@@ -183,6 +199,7 @@ Tan.LevelOne.prototype = {
                 newEnemy.animations.add('pigeon-step', [0,1,2], 10, true);
                 newEnemy.animations.play('pigeon-step');
             }
+            newEnemy.anchor.setTo(.5,0)
             createLeftTrigger(newEnemy, leftTrigger);
             createRightTrigger(newEnemy, rightTrigger);
             return newEnemy;
@@ -210,7 +227,7 @@ Tan.LevelOne.prototype = {
         createEnemy(420,280, 'pigeon', 100, 80);
         createEnemy(2850,380, 'pigeon', 90, 90);
         createEnemy(2000, 150, 'badfish', 150, 150);
-        createEnemy(1800, 300, 'badfish', 10, 700);
+        createEnemy(2000, 300, 'badfish', 100, 600);
 
         function makeImmovable(sprite){
             sprite.body.immovable = true;
@@ -351,8 +368,9 @@ Tan.LevelOne.prototype = {
         game.physics.arcade.collide(pincers, player, bossCollisionHandler, null, this);
         function collisionHandler (player, enemy) {
             if (enemy == crabbyCrab) {
-                player.kill();
-                game.state.start('GameOver');
+                player.destroy();
+                literallyDying(bossMusic);
+                game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);
             } else if (enemy.body.touching.up){
                 var collision = game.add.sprite(enemy.position.x-3,enemy.position.y-5,'collision');
                 collision.animations.add('explode', [0, 1, 2], 20, false);
@@ -364,9 +382,9 @@ Tan.LevelOne.prototype = {
                 player.body.velocity.y = -200;
                 game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
             } else {
-                player.kill();
-                literallyDying();
-                game.time.events.add(Phaser.Timer.SECOND * 5, restartScreen, this)
+                player.destroy();
+                literallyDying(music);
+                game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);
             }
         }
 
@@ -374,18 +392,24 @@ Tan.LevelOne.prototype = {
             game.state.start('GameOver');
         }
 
-        function literallyDying (){
+        function literallyDying (currentMusic){
+            currentMusic.stop();
+            var suspenseSound = game.add.audio('suspense');
+            suspenseSound.play();
+            gameOverMusic.play();
             var deadPlayer = game.add.sprite(player.position.x,player.position.y+20,'heart');
-            deadPlayer.animations.add('dead', [0,1,2,3], 3, false);
+            deadPlayer.animations.add('dead', [0,1,2,3], 1, false);
             deadPlayer.animations.play('dead');
             var deathScreen = game.add.sprite(game.camera.view.x,game.camera.view.y,'death-tint');
             deathScreen.animations.add('tint', [0,1,2], 10, false);
             deathScreen.animations.play('tint');
+
         }
 
         function bossCollisionHandler (player, enemy) {
-            player.kill();
-            game.state.start('GameOver');
+            player.destroy();
+            literallyDying(bossMusic);
+            game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);;
         }
 
         function bossCoconutHandler() {
@@ -400,6 +424,8 @@ Tan.LevelOne.prototype = {
             coconut.destroy();
             needNewCoconut = true;
             if (crabLife === 0){
+                bossMusic.stop();
+                music.play();
                 console.log("YOU WIN!")
                 crabbyCrab.destroy();
                 leftPincer.destroy();
@@ -470,7 +496,9 @@ Tan.LevelOne.prototype = {
                 }
             }
 
-            if (!player.body.touching.down){
+            if (!underwater && !player.body.touching.down && playerForm == 'fish')
+                player.animations.play(jumpAnim);
+            else if (!player.body.touching.down && playerForm != 'fish'){
                 player.animations.play(jumpAnim);
             }            
         }
@@ -491,7 +519,7 @@ Tan.LevelOne.prototype = {
         function displayGram(gram){
             var paddingLeft = 30;
             var spaceBetweenGrams = 50;
-            var displayGram = game.add.sprite(paddingLeft + gramCount * spaceBetweenGrams, 50, gram.key);
+            var displayGram = game.add.sprite(paddingLeft + gramCount * spaceBetweenGrams, 60, gram.key);
             displayGram.anchor.setTo(0.5, 0.5);
             displayGram.fixedToCamera = true;
         }
@@ -523,6 +551,14 @@ Tan.LevelOne.prototype = {
             crabVel = crabbyCrab.body.velocity.x;
             leftPincer.body.velocity.x = crabVel;
             rightPincer.body.velocity.x = crabVel;
+        }
+
+        if (player.position.x > 3200 && bossTime === false){
+            bossTime = true;
+            bossMusic = game.add.audio('boss');
+            music.stop();
+            bossMusic.loop = true;
+            bossMusic.play();
         }
 
         if (player.position.x > 3200 && countdown == false){
@@ -649,8 +685,9 @@ Tan.GameOver.prototype = {
         // load death screen images
     },
     create: function(){
-        // place dead screen
-        // ask to restart
+        restartMusic = game.add.audio('restart');
+        restartMusic.loop = true;
+        restartMusic.play();
         
     },
     update: function(){
@@ -658,10 +695,15 @@ Tan.GameOver.prototype = {
         var endKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
         // restart from last checkpoint (start of level, boss)
         if (restartKey.isDown){
-            game.state.start('LevelOne')
+            restartMusic.stop();
+            gramCount = 0;
+            playerGrams = {};
+            coinCount = 0;
+            game.state.start('LevelOne');
         }
         if (endKey.isDown){
-            console.Log("Bye!")
+            restartMusic.stop();
+            console.Log("Bye!");
         }
 
     }
