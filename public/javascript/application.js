@@ -16,7 +16,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 0;
+var xStartPos = 1500;
 var yStartPos = gameHeight;
 var player;
 var playerGrams = {};
@@ -47,14 +47,6 @@ var coins;
 var coinCount = 0;
 var crabVel = -50;
 var coinText;
-var enemy1;
-var left1;
-var right1;
-var enemy2;
-var left2;
-var right2;
-var enemy3;
-var enemy4;
 
 Tan.LevelOne = function(game){};
 
@@ -75,7 +67,7 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('coin','assets/sprites/coin_spritesheet1.png', 32, 22, 8);
         game.load.image('displayCoin', 'assets/sprites/coin.png');
         game.load.spritesheet('collision', 'assets/sprites/colision.png', 21, 23, 3);
-        game.load.image('badfish', 'assets/sprites/angry_fish.png');
+        game.load.image('badfish', 'assets/sprites/badfish.png');
 
     },
 
@@ -163,8 +155,6 @@ Tan.LevelOne.prototype = {
         gram2.name = 'gram2';
 
 
-
-
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
             newPlatform.scale.setTo(widthScale, heightScale);
@@ -208,19 +198,13 @@ Tan.LevelOne.prototype = {
         }
 
         // creates enemy with triggers
-        enemy1 = createEnemy(200,65, 'pigeon', 50, 50);
-        // createLeftTrigger(enemy1);
-        // right1 = createRightTrigger(enemy1);
-        enemy2 = createEnemy(420,265, 'pigeon', 60, 40);
-        // left2 = createLeftTrigger(enemy2);
-        // right2 = createRightTrigger(enemy2);
-        enemy3 = createEnemy(2850,365, 'pigeon', 50, 50);
-        // left3 = createLeftTrigger(enemy3);
-        // right3 = createRightTrigger(enemy3);
-        
-        // fish1 = createEnemy(200,65, 'badfish')
-        // left1 = createLeftTrigger(enemy1)
-        // enemy4 = createEnemy(200,65)
+        createEnemy(200,65, 'pigeon', 50, 50);
+        createEnemy(420,265, 'pigeon', 100, 80);
+        createEnemy(2850,365, 'pigeon', 90, 90);
+        createEnemy(2000, 150, 'badfish', 150, 150);
+        createEnemy(1800, 300, 'badfish', 10, 700);
+
+
 
         function makeImmovable(sprite){
             sprite.body.immovable = true;
@@ -241,22 +225,6 @@ Tan.LevelOne.prototype = {
 
         // deadzone
         game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
-
-        // // Enemy movement triggers
-        // enemyMovementTriggers = game.add.group();
-        // enemyMovementTriggers.enableBody = true;
-        // enemyMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
-
-        // leftTrigger = game.add.sprite(100, yWorldBounds - 65, null, 0, enemyMovementTriggers);
-        // leftTrigger.body.setSize(4, 32, 0, 0);
-        // rightTrigger = game.add.sprite(210, yWorldBounds - 65, null, 0, enemyMovementTriggers);
-        // rightTrigger.body.setSize(4, 32, 0, 0);
-
-        // creates enemy with triggers
-        // createdEnemy = game.add.sprite(200, yWorldBounds - 65, 'pigeon', 0, enemies);
-        // createdEnemy.anchor.setTo(.5, 0); //so it flips around its middle
-        // game.physics.enable(enemies, Phaser.Physics.ARCADE);
-        // createdEnemy.body.velocity.x = 100;
 
         pincers = game.add.group();
         pincers.enableBody = true;
@@ -344,7 +312,7 @@ Tan.LevelOne.prototype = {
             coinText = game.add.text(760, 30);
             coinText.anchor.setTo(0.5, 0.5);
             coinText.fixedToCamera = true;
-            coinText.text = '0'
+            coinText.text = coinCount;
         }
 
         createHeadsUpDisplay();
