@@ -66,6 +66,7 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('coconut-roll','assets/sprites/coconut-roll.png', 31,32,8);
         game.load.spritesheet('coin','assets/sprites/coin_spritesheet1.png', 32, 22, 8);
         game.load.image('displayCoin', 'assets/sprites/coin.png');
+        game.load.spritesheet('collision', 'assets/sprites/colision.png', 21, 23, 3)
     },
 
     create: function(){
@@ -339,8 +340,15 @@ Tan.LevelOne.prototype = {
         game.physics.arcade.collide(pincers, player, bossCollisionHandler, null, this);
         function collisionHandler (player, enemy) {
             if (enemy.body.touching.up){
+                var collision = game.add.sprite(enemy.position.x,enemy.position.y,'collision');
+                collision.animations.add('explode', [0, 1, 2], 10, false);
+                collision.animations.play('explode');
+                var cleanup = function (){
+                    collision.destroy();
+                }
                 enemy.kill();
                 player.body.velocity.y = -200;
+                game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
             } else {
                 player.kill();
                 game.state.start('GameOver');
