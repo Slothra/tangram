@@ -303,7 +303,7 @@ Tan.LevelOne.prototype = {
         rightTriggerCrabby.body.setSize(4, 32, 0, 0);
 
         leftPincer = game.add.sprite(crabbyCrab.position.x - 150, 530, 'left', 0, pincers);
-        rightPincer = game.add.sprite(crabbyCrab.position.x, 530, 'claw', 0, pincers);
+        rightPincer = game.add.sprite(crabbyCrab.position.x+10, 530, 'claw', 0, pincers);
         leftPincer.body.immovable = true;
         rightPincer.body.immovable = true;
 
