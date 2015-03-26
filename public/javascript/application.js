@@ -46,7 +46,6 @@ var gramCount = 0;
 var coins;
 var coinCount = 0;
 var crabVel = -50;
-var coinText;
 var deadPlayer;
 var bossTime = false;
 
@@ -60,6 +59,17 @@ var splashSound;
 var crackSound;
 var coinSound;
 var gramSound;
+
+
+// Heads up display
+var coinText;
+var toggler;
+var toggleKey;
+var togglerPadding = 50;
+var toggleOn = false;
+var togglePosition = 0;
+
+
 
 Tan.LevelOne = function(game){};
 
@@ -84,6 +94,8 @@ Tan.LevelOne.prototype = {
         game.load.image('displayCoin', 'assets/sprites/coin.png');
         game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
         game.load.image('badfish', 'assets/sprites/badfish.png');
+        game.load.image('toggler', 'assets/sprites/gram_toggler.png');
+
 
         game.load.audio('exploring', 'assets/sound/exploring.m4a');
         game.load.audio('boss', 'assets/sound/boss.m4a');
@@ -102,6 +114,7 @@ Tan.LevelOne.prototype = {
     create: function(){
 
         pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.P);
+        toggleKey = game.input.keyboard.addKey(Phaser.Keyboard.F);
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -185,14 +198,15 @@ Tan.LevelOne.prototype = {
         movPlat.body.immovable = true;
 
         // Create a gram
-        var triGram = grams.create(200, game.world.height - 70, 'sm_triangle');
-        triGram.body.gravity.y = 6;
-        triGram.name = 'hat'
+        function createGram(xPos, yPos, imgKey, gramName){
+            var gram = grams.create(xPos, yPos, imgKey);
+            gram.body.gravity.y = 6;
+            gram.name = gramName;
+            gram.displayed = false;
+        }
 
-        var gram2 = grams.create(100, game.world.height -70, 'sm_triangle');
-        gram2.body.gravity.y = 6;
-        gram2.name = 'gram2';
-
+        createGram(200, game.world.height - 70, 'sm_triangle', 'hat');
+        createGram(600, game.world.height -70, 'sm_triangle', 'brick');
 
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
@@ -317,7 +331,7 @@ Tan.LevelOne.prototype = {
 
         function initializePlayer(){
             //could probably be moved outside of create
-            player = game.add.sprite(xStartPos, yStartPos, 'brick')
+            player = game.add.sprite(xStartPos, yStartPos, 'brick');
             game.physics.arcade.enable(player);
 
             player.body.bounce.y = 0;
@@ -330,33 +344,45 @@ Tan.LevelOne.prototype = {
         function initializeCamera(){
             game.camera.follow(player);
             game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
-
         }
 
+        function anchorAndFixToCam(obj){
+            obj.anchor.setTo(0.5, 0.5);
+            obj.fixedToCamera = true;
+            return obj;
+        }
+
+        function createHeadsUpText(xPos, yPos, text){
+            var text = game.add.text(xPos, yPos, text);
+            anchorAndFixToCam(text);
+            return text;
+        }
+
+        function createHeadsUpIcon(xPos, yPos, imgKey){
+            var icon = game.add.sprite(xPos, yPos, imgKey);
+            anchorAndFixToCam(icon);
+            return icon;
+        }
 
         // Creates head up display
         function createHeadsUpDisplay(){
             var marginTop = 30;
 
-            var gramsText = game.add.text(100, marginTop, "Tan's Grams:");
-            gramsText.anchor.setTo(0.5, 0.5);
-            gramsText.fixedToCamera = true;
+            createHeadsUpText(100, marginTop, "Tan's Grams:");
+            createHeadsUpText(740, marginTop, "x ");
 
-            var displayCoin = game.add.sprite(700, marginTop + 2, 'displayCoin');
-            displayCoin.anchor.setTo(0.5, 0.5);
-            displayCoin.fixedToCamera = true;
-
-            var coinX = game.add.text(740, marginTop, "x ");
-            coinX.anchor.setTo(0.5, 0.5);
-            coinX.fixedToCamera = true;
-
-            coinText = game.add.text(760, 30);
-            coinText.anchor.setTo(0.5, 0.5);
-            coinText.fixedToCamera = true;
+            coinText = createHeadsUpText(760, 30, null);
             coinText.text = coinCount;
+
+            createHeadsUpIcon(700, marginTop + 2, 'displayCoin');
+
+            toggler = createHeadsUpIcon(game.camera.view.x + 50, game.camera.view.y + 275, 'toggler');
+            toggler.displayed = false;
+            toggler.fixedToCamera = false;
         }
 
         createHeadsUpDisplay();
+
 
     },
 
@@ -464,13 +490,13 @@ Tan.LevelOne.prototype = {
 
         // Set playerForm;
 
-        if ((underwater && playerGrams.hat) || (playerForm == 'fish' && !underwater && !player.body.touching.down)){
-            playerForm = 'fish';
-        } else if ((playerForm == 'fish' && !underwater && player.body.touching.down && playerGrams.hat) || (playerForm != 'fish' && !underwater && playerGrams.hat)){
-            playerForm = 'hat';
-        } else {
-            playerForm = 'brick';
-        }
+        // if ((underwater && playerGrams.hat) || (playerForm == 'fish' && !underwater && !player.body.touching.down)){
+        //     playerForm = 'fish';
+        // } else if ((playerForm == 'fish' && !underwater && player.body.touching.down && playerGrams.hat) || (playerForm != 'fish' && !underwater && playerGrams.hat)){
+        //     playerForm = 'hat';
+        // } else {
+        //     playerForm = 'brick';
+        // }
 
 
         switch (playerForm){
@@ -548,21 +574,48 @@ Tan.LevelOne.prototype = {
             movePlayer(6, 'swim', 'jumpFish', playerSpeed, -300);
         }
 
+///////////
 
         function displayGram(gram){
-            var paddingLeft = 30;
-            var spaceBetweenGrams = 50;
-            var displayGram = game.add.sprite(paddingLeft + gramCount * spaceBetweenGrams, 60, gram.key);
+            var marginLeft = 30;
+            var padding = 50;
+            var displayGram = game.add.sprite(marginLeft + ((gram.displayIndex + 1) * padding), 50, gram.key);
             displayGram.anchor.setTo(0.5, 0.5);
             displayGram.fixedToCamera = true;
         }
 
+        function displayGrams(){
+            for (var key in playerGrams) {
+                var gram = playerGrams[key];
+              if (playerGrams.hasOwnProperty(key) && gram.displayed == false) {
+                toggler.displayed = true;
+                gram.displayed = true;
+                displayGram(gram);
+              }
+            }
+        }
+        function displayToggler(){
+            if (toggler.displayed == false){
+                toggler.visible = false;
+            }
+            else{
+                toggler.visible = true;
+            }            
+        }
+
         function collectGram(player, gram){
+            gram.displayIndex = gramCount;
             gramSound.play();
-            displayGram(gram);
             gramCount++;
             playerGrams[gram.name] = gram;
             gram.kill();
+        }
+
+        for (var key in playerGrams){
+            var gram = playerGrams[key];
+            if (togglePosition == gram.displayIndex){
+                playerForm = gram.name;
+            }
         }
 
         function collectCoin(player, coin){
@@ -572,9 +625,27 @@ Tan.LevelOne.prototype = {
             coin.kill();
         }
 
+        if (toggleKey.isDown && toggleOn == false){
+            toggleOn = true;
+            if (togglePosition < gramCount-1){
+                togglerPadding += 64;
+                togglePosition++;
+            } else {
+                togglerPadding = 50;
+                togglePosition = 0;
+            }
+        } else if (toggleKey.isUp){
+            toggleOn = false;
+        }
+
+        displayGrams();
+        displayToggler();
+        toggler.x = game.camera.view.x + togglerPadding;
+        toggler.y = game.camera.view.y + 75;
 
 
-        
+
+
         // Claw moves to platform (needs animations)
         
         var tempCrabVel;
