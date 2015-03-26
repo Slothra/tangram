@@ -443,10 +443,6 @@ Tan.LevelOne.prototype = {
             movePlayer(6, 'swim', 'jumpFish', playerSpeed - 10, -300);
         }
 
-        function moveFishUp(){
-            movePlayer(6, 'swimUp', 'jumpFish', playerSpeed - 10, -300);
-        }
-
 
         function displayGram(gram){
             var paddingLeft = 30;
