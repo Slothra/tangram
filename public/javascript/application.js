@@ -440,7 +440,7 @@ Tan.LevelOne.prototype = {
         }
 
         function moveAsFish(){
-            movePlayer(6, 'swim', 'jumpFish', playerSpeed - 10, -300);
+            movePlayer(6, 'swim', 'jumpFish', playerSpeed, -300);
         }
 
 
