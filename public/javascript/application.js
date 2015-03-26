@@ -74,7 +74,9 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('coconut-roll','assets/sprites/coconut-roll.png', 31,32,8);
         game.load.spritesheet('coin','assets/sprites/coin_spritesheet1.png', 32, 22, 8);
         game.load.image('displayCoin', 'assets/sprites/coin.png');
-        game.load.spritesheet('collision', 'assets/sprites/colision.png', 21, 23, 3)
+        game.load.spritesheet('collision', 'assets/sprites/colision.png', 21, 23, 3);
+        game.load.image('badfish', 'assets/sprites/angry_fish.png');
+
     },
 
     create: function(){
@@ -180,9 +182,11 @@ Tan.LevelOne.prototype = {
         enemies.enableBody = true;
         enemies.physicsBodyType = Phaser.Physics.ARCADE;
 
-        function createEnemy(xPixFromLeft,yPixFromBottom){
-            var newEnemy = enemies.create(xPixFromLeft, game.world.height - yPixFromBottom, 'pigeon', 0, enemies);
+        function createEnemy(xPixFromLeft, yPixFromBottom, enemyKey, leftTrigger, rightTrigger){
+            var newEnemy = enemies.create(xPixFromLeft, game.world.height - yPixFromBottom, enemyKey, 0, enemies);
             newEnemy.body.velocity.x = 100;
+            createLeftTrigger(newEnemy, leftTrigger);
+            createRightTrigger(newEnemy, rightTrigger);
             return newEnemy;
         }
 
@@ -191,28 +195,31 @@ Tan.LevelOne.prototype = {
         enemyMovementTriggers.enableBody = true;
         enemyMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
 
-        function createLeftTrigger(enemy){
-            var left = game.add.sprite(enemy.position.x - 50, enemy.position.y, '', 0, enemyMovementTriggers);
+        function createLeftTrigger(enemy, leftTrigger){
+            var left = game.add.sprite(enemy.position.x - leftTrigger, enemy.position.y, '', 0, enemyMovementTriggers);
             left.body.setSize(4, 32, 0, 0);
             return left;
         }
 
-        function createRightTrigger(enemy){
-            var right = game.add.sprite(enemy.position.x + 50, enemy.position.y, '', 0, enemyMovementTriggers);
+        function createRightTrigger(enemy, rightTrigger){
+            var right = game.add.sprite(enemy.position.x + rightTrigger, enemy.position.y, '', 0, enemyMovementTriggers);
             right.body.setSize(4, 32, 0, 0);
             return right;
         }
 
         // creates enemy with triggers
-        enemy1 = createEnemy(200,65)
-        left1 = createLeftTrigger(enemy1)
-        right1 = createRightTrigger(enemy1)
-        enemy2 = createEnemy(420,265)
-        left2 = createLeftTrigger(enemy2)
-        right2 = createRightTrigger(enemy2)
-        enemy3 = createEnemy(2850,365)
-        left3 = createLeftTrigger(enemy3)
-        right3 = createRightTrigger(enemy3)
+        enemy1 = createEnemy(200,65, 'pigeon', 50, 50);
+        // createLeftTrigger(enemy1);
+        // right1 = createRightTrigger(enemy1);
+        enemy2 = createEnemy(420,265, 'pigeon', 60, 40);
+        // left2 = createLeftTrigger(enemy2);
+        // right2 = createRightTrigger(enemy2);
+        enemy3 = createEnemy(2850,365, 'pigeon', 50, 50);
+        // left3 = createLeftTrigger(enemy3);
+        // right3 = createRightTrigger(enemy3);
+        
+        // fish1 = createEnemy(200,65, 'badfish')
+        // left1 = createLeftTrigger(enemy1)
         // enemy4 = createEnemy(200,65)
 
         function makeImmovable(sprite){
