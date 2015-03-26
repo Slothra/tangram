@@ -77,7 +77,7 @@ Tan.LevelOne.prototype = {
         game.load.image('displayCoin', 'assets/sprites/coin.png');
         game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
         game.load.image('badfish', 'assets/sprites/badfish.png');
-        game.load.image('gramToggler', 'assets/sprites/gram_toggler.png');
+        game.load.image('toggler', 'assets/sprites/gram_toggler.png');
 
 
     },
@@ -166,16 +166,6 @@ Tan.LevelOne.prototype = {
 
         createGram(200, game.world.height - 70, 'sm_triangle', 'hat');
         createGram(100, game.world.height -70, 'sm_triangle', 'gram2');
-
-
-        // var triGram = grams.create(200, game.world.height - 70, 'sm_triangle');
-        // triGram.body.gravity.y = 6;
-        // triGram.name = 'hat'
-
-        // var gram2 = grams.create(100, game.world.height -70, 'sm_triangle');
-        // gram2.body.gravity.y = 6;
-        // gram2.name = 'gram2';
-
 
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
@@ -315,13 +305,23 @@ Tan.LevelOne.prototype = {
 
         }
 
+        function anchorAndFixToCam(obj){
+            obj.anchor.setTo(0.5, 0.5);
+            obj.fixedToCamera = true;
+            return obj;
+        }
+
         function createHeadsUpText(xPos, yPos, text){
             var text = game.add.text(xPos, yPos, text);
-            text.anchor.setTo(0.5, 0.5);
-            text.fixedToCamera = true;
+            anchorAndFixToCam(text);
             return text;
         }
 
+        function createHeadsUpIcon(xPos, yPos, imgKey){
+            var icon = game.add.sprite(xPos, yPos, imgKey);
+            anchorAndFixToCam(icon);
+            return icon;
+        }
 
         // Creates head up display
         function createHeadsUpDisplay(){
@@ -333,12 +333,9 @@ Tan.LevelOne.prototype = {
             coinText = createHeadsUpText(760, 30, null);
             coinText.text = coinCount;
 
-
-
-
-            // var displayCoin = game.add.sprite(700, marginTop + 2, 'displayCoin');
-            // displayCoin.anchor.setTo(0.5, 0.5);
-            // displayCoin.fixedToCamera = true;
+            createHeadsUpIcon(700, marginTop + 2, 'displayCoin');
+            toggler = createHeadsUpIcon(50, marginTop + 50, 'toggler');
+            toggler.displayed = false;
         }
 
         createHeadsUpDisplay();
@@ -522,12 +519,23 @@ Tan.LevelOne.prototype = {
             for (var key in playerGrams) {
                 var gram = playerGrams[key];
               if (playerGrams.hasOwnProperty(key) && gram.displayed == false) {
+                toggler.displayed = true;
                 gram.displayed = true;
                 displayGram(gram);
               }
             }
         }
+        function displayToggler(){
+            if (toggler.displayed == false){
+                toggler.visible = false;
+            }
+            else{
+                toggler.visible = true;
+            }            
+        }
+        
         displayGrams();
+        displayToggler();
 
 
         function collectGram(player, gram){
