@@ -7,6 +7,14 @@ var Tan = {
 var gameWidth = 800;
 var gameHeight = 600;
 
+// Menu dimensions
+var x1;
+var x2;
+var y1;
+var y2;
+var mainMenu;
+var miniMenu;
+
 var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space');
 
 var pauseKey;
@@ -60,6 +68,9 @@ var crackSound;
 var coinSound;
 var gramSound;
 
+var muteKey;
+var muted = false;
+
 
 // Heads up display
 var toggleKey;
@@ -69,6 +80,41 @@ var togglerPadding = 50;
 var toggleOn = false;
 var togglePosition = 0;
 
+Tan.MainMenu = function(game){};
+
+Tan.MainMenu.prototype = {
+    preload: function(){
+        // menu graphics and sound
+        game.load.spritesheet('menu', 'assets/sprites/MainMenu.png', 399.125, 393, 8);
+        game.load.image('button', 'assets/sprites/button.png');
+    },
+    create: function(){
+        // play sound create main menu including buttons for start/password
+        mainMenu = game.add.sprite(400, 200, 'menu');
+        mainMenu.anchor.setTo(.5,.5);
+        mainMenu.animations.add('start', [0,1,2,3,4,5,6,7,6,5,4,3,2,1], 10, true)
+
+        var button = game.add.sprite(400, 500, 'button');
+        button.anchor.setTo(.5,.5);
+        
+        x1 = gameWidth/2 - 270/2; 
+        x2 = gameWidth/2 + 270/2;
+        y1 = gameHeight/2 - 180/2;
+        y2 = gameHeight/2 + 180/2;
+
+    },
+    update: function(){
+        // if clicked starts game
+        game.input.onDown.add(loading,self);    
+        function loading(){
+            mainMenu.animations.play('start');
+            game.time.events.add(Phaser.Timer.SECOND * 6, startGame, this);
+        }
+        function startGame(){
+            game.state.start('LevelOne');
+        }
+    }
+}
 
 
 
@@ -88,7 +134,7 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('death-tint', 'assets/sprites/deathtint.png', 800,600,3)
 
         game.load.image('water', 'assets/water.png');
-        game.load.image('crab', 'assets/sprites/crab.png');
+        game.load.spritesheet('crab', 'assets/sprites/crab.png', 298.3, 143, 3);
         game.load.image('claw', 'assets/sprites/claw.png');
         game.load.image('left', 'assets/sprites/rightClaw.png');
         game.load.spritesheet('coconut-roll','assets/sprites/coconut-roll.png', 31,32,8);
@@ -120,6 +166,7 @@ Tan.LevelOne.prototype = {
 
         pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.P);
         toggleKey = game.input.keyboard.addKey(Phaser.Keyboard.F);
+        muteKey = game.input.keyboard.addKey(Phaser.Keyboard.M);
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -297,6 +344,8 @@ Tan.LevelOne.prototype = {
         coconuts.physicsBodyType = Phaser.Physics.ARCADE;
 
         crabbyCrab = game.add.sprite(3500, yWorldBounds - 200, 'crab', 0, enemies);
+        crabbyCrab.animations.add('crabWalk',[0,1], 10, true);
+        crabbyCrab.animations.add('hurt',[2], 10, true);
         crabbyCrab.anchor.setTo(.5, 0);
         crabbyCrab.body.velocity.x = crabVel;
 
@@ -306,7 +355,7 @@ Tan.LevelOne.prototype = {
         rightTriggerCrabby.body.setSize(4, 32, 0, 0);
 
         leftPincer = game.add.sprite(crabbyCrab.position.x - 150, 530, 'left', 0, pincers);
-        rightPincer = game.add.sprite(crabbyCrab.position.x, 530, 'claw', 0, pincers);
+        rightPincer = game.add.sprite(crabbyCrab.position.x+10, 530, 'claw', 0, pincers);
         leftPincer.body.immovable = true;
         rightPincer.body.immovable = true;
 
@@ -410,6 +459,20 @@ Tan.LevelOne.prototype = {
 
         cursors = game.input.keyboard.createCursorKeys();
 
+        if (muteKey.isDown && muted === false){
+            muted = true;
+            game.time.events.add(Phaser.Timer.SECOND * .5, mute, this);
+        }
+
+        function mute(){
+            if (game.sound.volume === 1){
+                game.sound.volume = 0;    
+            } else {
+                game.sound.volume = 1;
+            }
+            muted = false;
+        }
+
         // Checks if player is collides with water;
         if (game.physics.arcade.overlap(player, waters) == true){
             if (underwater === false){
@@ -428,6 +491,13 @@ Tan.LevelOne.prototype = {
         cursors = game.input.keyboard.createCursorKeys();
         game.physics.arcade.collide(enemies, player, collisionHandler, null, this);
         game.physics.arcade.collide(pincers, player, bossCollisionHandler, null, this);
+        
+        if (crabbyCrab.body.velocity.x != 0){
+            crabbyCrab.animations.play('crabWalk');
+        } else {
+            crabbyCrab.animations.stop();
+        }
+
         function collisionHandler (player, enemy) {
             if (enemy == crabbyCrab) {
                 player.destroy();
@@ -477,13 +547,18 @@ Tan.LevelOne.prototype = {
 
         function bossCoconutHandler() {
             crabLife--;
+            crabbyCrab.animations.play('hurt');
             var collision = game.add.sprite(coconut.position.x,coconut.position.y-5,'collision');
             collision.animations.add('explode', [0, 1, 2], 20, false);
             collision.animations.play('explode');
             crackSound.play();
             var cleanup = function (){
                 collision.destroy();
+                switchAnimation();
             }
+            var switchAnimation = function(){
+                crabbyCrab.animations.play('crabWalk')
+            };
             game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
             coconut.destroy();
             needNewCoconut = true;
@@ -811,6 +886,7 @@ Tan.GameOver.prototype = {
             playerGrams = {};
             coinCount = 0;
             game.state.start('LevelOne');
+            playerForm = 'brick';
         }
         if (endKey.isDown){
             restartMusic.stop();
@@ -821,5 +897,6 @@ Tan.GameOver.prototype = {
 }
 
 game.state.add('LevelOne', Tan.LevelOne);
+game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelOne');
+game.state.start('MainMenu');
