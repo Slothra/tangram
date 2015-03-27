@@ -73,10 +73,12 @@ var muted = false;
 
 
 // Heads up display
+var toggleKey;
 var coinText;
 var toggler;
-var toggleKey;
-var togglerPadding = 50;
+var togglerDefaultPadding = 236;
+var togglerPaddingLeft = togglerDefaultPadding;
+var togglerPaddingTop = 10;
 var toggleOn = false;
 var togglePosition = 0;
 
@@ -116,7 +118,6 @@ Tan.MainMenu.prototype = {
     }
 }
 
-
 Tan.LevelOne = function(game){};
 
 Tan.LevelOne.prototype = {
@@ -127,7 +128,7 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 12);
         game.load.spritesheet('heart', 'assets/sprites/heart.png', 38,30,4)
-        game.load.image('sm_triangle', 'assets/grams/sm_triangle.png');
+        game.load.image('sm_triangle', 'assets/grams/sm_triangle2.png');
         game.load.image('triangle2', 'assets/grams/sm_triangle.png');
         game.load.spritesheet('death-tint', 'assets/sprites/deathtint.png', 800,600,3)
 
@@ -140,8 +141,7 @@ Tan.LevelOne.prototype = {
         game.load.image('displayCoin', 'assets/sprites/coin.png');
         game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
         game.load.image('badfish', 'assets/sprites/badfish.png');
-        game.load.image('toggler', 'assets/sprites/gram_toggler.png');
-
+        game.load.image('toggler', 'assets/sprites/gram_toggler2.png');
 
         game.load.audio('exploring', 'assets/sound/exploring.m4a');
         game.load.audio('boss', 'assets/sound/boss.m4a');
@@ -155,9 +155,11 @@ Tan.LevelOne.prototype = {
         game.load.audio('coin', 'assets/sound/coin.mp3');
         game.load.audio('gram', 'assets/sound/gram.wav');
 
+        game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
     },
 
     create: function(){
+
 
         pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.P);
         toggleKey = game.input.keyboard.addKey(Phaser.Keyboard.F);
@@ -396,13 +398,12 @@ Tan.LevelOne.prototype = {
         }
 
         function anchorAndFixToCam(obj){
-            obj.anchor.setTo(0.5, 0.5);
             obj.fixedToCamera = true;
             return obj;
         }
 
-        function createHeadsUpText(xPos, yPos, text){
-            var text = game.add.text(xPos, yPos, text);
+        function createHeadsUpText(xPos, yPos, text, size){
+            var text = game.add.bitmapText(xPos, yPos, 'font', text, size);
             anchorAndFixToCam(text);
             return text;
         }
@@ -415,20 +416,29 @@ Tan.LevelOne.prototype = {
 
         // Creates head up display
         function createHeadsUpDisplay(){
-            var marginTop = 30;
+            var margin = 30;
 
-            createHeadsUpText(100, marginTop, "Tan's Grams:");
-            createHeadsUpText(740, marginTop, "x ");
+            createHeadsUpText(margin, margin, "Tan's Grams:", 20);
 
-            coinText = createHeadsUpText(760, 30, null);
-            coinText.text = coinCount;
+            createHeadsUpIcon(35, 55, 'displayCoin');
+            createHeadsUpText(63, 57, "x ", 15);
+            coinText = createHeadsUpText(85, 55, coinCount.toString(), 20);
 
-            createHeadsUpIcon(700, marginTop + 2, 'displayCoin');
-
-            toggler = createHeadsUpIcon(game.camera.view.x + 50, 100, 'toggler');
+            toggler = createHeadsUpIcon(game.camera.view.x + togglerDefaultPadding, togglerPaddingTop, 'toggler');
+            toggler.scale.setTo(0.75, 0.75);
             toggler.displayed = false;
             toggler.fixedToCamera = true;
         }
+
+
+
+
+
+
+
+
+
+
 
         createHeadsUpDisplay();
 
@@ -650,12 +660,10 @@ Tan.LevelOne.prototype = {
             movePlayer(6, 'swim', 'jumpFish', playerSpeed, -300);
         }
 
-///////////
-
         function displayGram(gram){
-            var marginLeft = 30;
+            var marginLeft = 210;
             var padding = 50;
-            var displayGram = game.add.sprite(marginLeft + ((gram.displayIndex + 1) * padding), 50, gram.key);
+            var displayGram = game.add.sprite(marginLeft + ((gram.displayIndex + 1) * padding), 35, gram.key);
             displayGram.anchor.setTo(0.5, 0.5);
             displayGram.fixedToCamera = true;
         }
@@ -687,13 +695,6 @@ Tan.LevelOne.prototype = {
             gram.kill();
         }
 
-        // for (var key in playerGrams){
-        //     var gram = playerGrams[key];
-        //     if (togglePosition == gram.displayIndex){
-        //         playerForm = gram.name;
-        //     }
-        // }
-
         function collectCoin(player, coin){
             coinSound.play();
             coinCount++;
@@ -704,21 +705,26 @@ Tan.LevelOne.prototype = {
         if (toggleKey.isDown && toggleOn == false){
             toggleOn = true;
             if (togglePosition < gramCount-1){
-                togglerPadding += 64;
+                togglerPaddingLeft += 50;
                 togglePosition++;
             } else {
-                togglerPadding = 50;
+                togglerPaddingLeft = togglerDefaultPadding;
                 togglePosition = 0;
             }
-            toggler.position.y = 100;
-            toggler.position.x = togglerPadding;
-            // toggler.fixedToCamera = true;
+            toggler.position.y = togglerPaddingTop;
+            toggler.position.x = togglerPaddingLeft;
+            toggler.fixedToCamera = true;
         } else if (toggleKey.isUp){
             toggleOn = false;
         }
 
         displayGrams();
         displayToggler();
+
+
+
+
+
 
 
 
@@ -896,4 +902,4 @@ Tan.GameOver.prototype = {
 game.state.add('LevelOne', Tan.LevelOne);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('MainMenu');
+game.state.start('LevelOne');
