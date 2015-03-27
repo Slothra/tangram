@@ -24,7 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 800;
+var xStartPos = 3900;
 
 
 
@@ -205,6 +205,12 @@ Tan.LevelOne.prototype = {
         game.load.image('ground_sand', 'assets/scene/ground_sand_tile3.png');
         game.load.image('plat01', 'assets/scene/plat01.png');
         game.load.image('plat04', 'assets/scene/plat04_160x450.png');
+        game.load.image('plat05_06', 'assets/scene/plat05_06.png');
+        game.load.image('plat07_08', 'assets/scene/plat07_08.png');
+        game.load.image('plat12', 'assets/scene/plat12_300x300.png');
+
+
+
 
 
     },
@@ -271,13 +277,13 @@ Tan.LevelOne.prototype = {
         makeImmovable(plat10);
         var plat11 = createPlatform(18, 3, 2400, 440);
         makeImmovable(plat11);
-        var plat12 = createPlatform(30, 50, 2700, 350);
+        var plat12 = createPlatform(30, 30, 2700, 350);
         makeImmovable(plat12);
         var plat13 = createPlatform(12, 3, 3200, 450);
         makeImmovable(plat13);
         var plat14 = createPlatform(12, 3, 3500, 470);
         makeImmovable(plat14);
-        var plat15 = createPlatform((xWorldBounds/10 + 3900), 50, 3900, 350);
+        var plat15 = createPlatform((xWorldBounds/10 + 3900), 30, 3900, 350);
         makeImmovable(plat15);
         var plat16 = createPlatform(8, 3, 3000, 200);
         makeImmovable(plat16);
@@ -502,6 +508,11 @@ Tan.LevelOne.prototype = {
         game.add.tileSprite(0, 745, xWorldBounds, 70, 'ground_sand');
         game.add.sprite(295, 541, 'plat01');
         game.add.sprite(895, 290, 'plat04');
+        game.add.sprite(1495, 295, 'plat05_06');
+        game.add.sprite(1495, 415, 'plat07_08');
+        game.add.sprite(2695, 445, 'plat12');
+
+
 
 
 
