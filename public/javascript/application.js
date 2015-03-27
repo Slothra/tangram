@@ -13,7 +13,7 @@ var x2;
 var y1;
 var y2;
 var mainMenu;
-var miniMenu;
+var mainMenuText;
 
 var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space');
 
@@ -57,7 +57,11 @@ var crabVel = -50;
 var deadPlayer;
 var bossTime = false;
 
+var grassGroup;
+
 var music;
+var introMusic;
+var selectSound;
 var bossMusic;
 var gameOverMusic;
 var restartMusic;
@@ -89,17 +93,29 @@ Tan.MainMenu.prototype = {
     preload: function(){
         // menu graphics and sound
         game.load.spritesheet('menu', 'assets/sprites/MainMenu.png', 399.125, 393, 8);
-        game.load.image('button', 'assets/sprites/button.png');
+        // game.load.image('button', 'assets/sprites/button.png');
+        game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
+        game.load.audio('intro', 'assets/sound/restart.m4a');
+        game.load.audio('menu-select', 'assets/sound/form-change.wav');
+
     },
     create: function(){
         // play sound create main menu including buttons for start/password
-        mainMenu = game.add.sprite(400, 200, 'menu');
+        introMusic = game.add.audio('intro');
+        selectSound = game.add.audio('menu-select');
+        selectSound.volume = .1;
+        introMusic.loop = true;
+        introMusic.play();
+        mainMenu = game.add.sprite(400, 270, 'menu');
         mainMenu.anchor.setTo(.5,.5);
-        mainMenu.animations.add('start', [0,1,2,3,4,5,6,7,6,5,4,3,2,1], 10, true)
+        mainMenu.animations.add('start', [0,1,2,3,4,5,6,7,6,5,4,3,2,1], 20, true)
 
-        var button = game.add.sprite(400, 500, 'button');
-        button.anchor.setTo(.5,.5);
-        
+        // var button = game.add.sprite(400, 500, 'button');
+        // button.anchor.setTo(.5,.5);
+
+        var text = "Click to begin"
+        titleText = game.add.bitmapText(270,mainMenu.position.y-250, 'font', "TanGram", 40);
+        mainMenuText = game.add.bitmapText(250, mainMenu.position.y+230, 'font', text, 25);
         x1 = gameWidth/2 - 270/2; 
         x2 = gameWidth/2 + 270/2;
         y1 = gameHeight/2 - 180/2;
@@ -109,11 +125,34 @@ Tan.MainMenu.prototype = {
     update: function(){
         // if clicked starts game
         game.input.onDown.add(loading,self);    
-        function loading(){
-            mainMenu.animations.play('start');
-            game.time.events.add(Phaser.Timer.SECOND * 6, startGame, this);
+        var clickMenu = false;
+
+        function clicked(){
+            if (clickMenu === false){
+                selectSound.play();
+                clickMenu = true;
+            }
         }
+
+        function loading(){
+            clicked();
+
+            mainMenu.animations.play('start');
+            game.time.events.add(Phaser.Timer.SECOND * 3, helpMenu, this);
+        }
+        function helpMenu(){
+            clickMenu = false;
+            mainMenu.destroy();
+
+            var mainMenuText = "Left Arrow  - Move left\nRight Arrow - Move right\nF button    - change form\nM button    - Mute game\nP button    - Pause game"
+            var text = game.add.bitmapText(150, 200, 'font', mainMenuText, 25);
+            game.input.onDown.add(startGame,self);
+        }
+
         function startGame(){
+            clicked();
+            selectSound.play();
+            introMusic.stop();
             game.state.start('LevelOne');
         }
     }
@@ -125,13 +164,12 @@ Tan.LevelOne.prototype = {
     preload: function(){
         game.load.image('sky', 'assets/sky.png');
         game.load.image('platform', 'assets/platform_10x10.png');
-        // game.load.image('pigeon', 'assets/sprites/pigeons.png');
+        game.load.image('grass', 'assets/grass.png');
         game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 12);
         game.load.spritesheet('heart', 'assets/sprites/heart.png', 38,30,4)
         game.load.image('sm_triangle', 'assets/grams/sm_triangle2.png');
         game.load.image('sm_square', 'assets/grams/tan-square.png');
-
         game.load.spritesheet('death-tint', 'assets/sprites/deathtint.png', 800,600,3)
 
         game.load.image('water', 'assets/water.png');
@@ -142,7 +180,7 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('coin','assets/sprites/coin_spritesheet1.png', 32, 22, 8);
         game.load.image('displayCoin', 'assets/sprites/coin.png');
         game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
-        game.load.image('badfish', 'assets/sprites/badfish.png');
+        game.load.spritesheet('badfish', 'assets/sprites/badfish-swim.png', 99, 72, 3);
         game.load.image('toggler', 'assets/sprites/gram_toggler2.png');
 
         game.load.audio('exploring', 'assets/sound/exploring.m4a');
@@ -156,6 +194,7 @@ Tan.LevelOne.prototype = {
         game.load.audio('crack', 'assets/sound/crack.mp3');
         game.load.audio('coin', 'assets/sound/coin.mp3');
         game.load.audio('gram', 'assets/sound/gram.wav');
+        game.load.audio('menu-select', 'assets/sound/form-change.wav');
 
         game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
     },
@@ -182,6 +221,8 @@ Tan.LevelOne.prototype = {
         crackSound = game.add.audio('crack');
         coinSound = game.add.audio('coin');
         gramSound = game.add.audio('gram');
+        selectSound = game.add.audio('menu-select');
+        selectSound.volume = .1;
 
         waters = game.add.group();
         waters.enableBody = true;
@@ -282,6 +323,9 @@ Tan.LevelOne.prototype = {
             if (enemyKey == 'pigeon'){
                 newEnemy.animations.add('pigeon-step', [0,1,2], 10, true);
                 newEnemy.animations.play('pigeon-step');
+            } else if (enemyKey == 'badfish'){
+                newEnemy.animations.add('badfish-swim',[0,1,2], 10, true);
+                newEnemy.animations.play('badfish-swim');
             }
             newEnemy.anchor.setTo(.5,0)
             createLeftTrigger(newEnemy, leftTrigger);
@@ -393,6 +437,7 @@ Tan.LevelOne.prototype = {
             player.body.collideWorldBounds = true;
             player.body.setSize(32, 32, 0, 32);
             player.anchor.setTo(.5, 0);
+            player.z = 1;
         }
 
         function initializeCamera(){
@@ -432,6 +477,7 @@ Tan.LevelOne.prototype = {
             toggler.displayed = false;
             toggler.fixedToCamera = true;
 
+
             // create small square icon
             var sq_icon = createGram(0, 0, 'sm_square', 'brick');
             sq_icon.displayIndex = 0;
@@ -461,6 +507,9 @@ Tan.LevelOne.prototype = {
             muted = true;
             game.time.events.add(Phaser.Timer.SECOND * .5, mute, this);
         }
+
+        player.z = 1;
+        grassGroup.z = 2;
 
         function mute(){
             if (game.sound.volume === 1){
@@ -649,10 +698,6 @@ Tan.LevelOne.prototype = {
                 player.animations.play(jumpAnim);
             else if (!player.body.touching.down && playerForm != 'fish'){
                 player.animations.play(jumpAnim);
-                // if (jumpBool === false){
-                //     jumpBool = true;
-                        
-                // }
                 
             }            
         }
@@ -718,6 +763,7 @@ Tan.LevelOne.prototype = {
         // Moves toggle position
         if (toggleKey.isDown && toggleOn == false){
             toggleOn = true;
+            selectSound.play();
             if (togglePosition < gramCount-1){
                 togglerPaddingLeft += 50;
                 togglePosition++;
@@ -734,7 +780,6 @@ Tan.LevelOne.prototype = {
 
         displayGrams();
         displayToggler();
-
 
         // Claw moves to platform (needs animations)
         
@@ -767,13 +812,13 @@ Tan.LevelOne.prototype = {
             tempCrabVel = crabbyCrab.body.velocity.x;
             crabbyCrab.body.velocity.x = 0;
             if (player.position.x > 3500){
-                game.physics.arcade.moveToXY(rightPincer,3505, 266);
+                game.physics.arcade.moveToXY(rightPincer,3505, 266, 120);
                 pincer = 1;
             } else {
-                game.physics.arcade.moveToXY(leftPincer,3250,260);
+                game.physics.arcade.moveToXY(leftPincer,3250,260, 120);
                 pincer = -1;
             }
-            game.time.events.add(Phaser.Timer.SECOND * 4.5, returnPinch, this);
+            game.time.events.add(Phaser.Timer.SECOND * 2.25, returnPinch, this);
         }
 
         function returnPinch(){
@@ -879,11 +924,17 @@ Tan.GameOver = function(game){};
 Tan.GameOver.prototype = {
     preload: function(){
         // load death screen images
+        game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
+
     },
     create: function(){
         restartMusic = game.add.audio('restart');
         restartMusic.loop = true;
         restartMusic.play();
+        var restartText = "Would you like to restart?"
+        var yesOrNo = "y/n"
+        var text = game.add.bitmapText(120, 300, 'font', restartText, 25);
+        game.add.bitmapText(text.position.x + 230,350,'font', yesOrNo, 25);
         
     },
     update: function(){
@@ -909,4 +960,4 @@ Tan.GameOver.prototype = {
 game.state.add('LevelOne', Tan.LevelOne);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelOne');
+game.state.start('MainMenu');
