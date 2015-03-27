@@ -118,9 +118,6 @@ Tan.MainMenu.prototype = {
     }
 }
 
-
-
-
 Tan.LevelOne = function(game){};
 
 Tan.LevelOne.prototype = {
@@ -159,8 +156,6 @@ Tan.LevelOne.prototype = {
         game.load.audio('gram', 'assets/sound/gram.wav');
 
         game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
-
-
     },
 
     create: function(){
@@ -430,26 +425,14 @@ Tan.LevelOne.prototype = {
             coinText = createHeadsUpText(85, 55, coinCount.toString(), 20);
 
             toggler = createHeadsUpIcon(game.camera.view.x + 50, 100, 'toggler');
-            toggler.scale.setTo(0.8, 0.8);
             toggler.displayed = false;
-            toggler.fixedToCamera = false;
-
+            toggler.fixedToCamera = true;
         }
-
-
-
-
-
-
-
-
-
 
 
 
         createHeadsUpDisplay();
 
-        // var texting = game.add.bitmapText(300, 300, 'font', 'TESTING', 50);
 
     },
 
@@ -668,8 +651,6 @@ Tan.LevelOne.prototype = {
             movePlayer(6, 'swim', 'jumpFish', playerSpeed, -300);
         }
 
-///////////
-
         function displayGram(gram){
             var marginLeft = 210;
             var padding = 50;
@@ -718,9 +699,8 @@ Tan.LevelOne.prototype = {
                 togglerPaddingLeft += 50;
                 togglePosition++;
             } else {
-                togglerPaddingleft = 10;
+                togglerPaddingLeft = 10;
                 togglePosition = 0;
-                // console.log(togglerPaddingLeft);
             }
             toggler.position.y = 100;
             toggler.position.x = togglerPaddingLeft;
@@ -731,25 +711,6 @@ Tan.LevelOne.prototype = {
 
         displayGrams();
         displayToggler();
-        // toggler.x = game.camera.view.x + togglerPaddingLeft;
-        // toggler.y = game.camera.view.y + togglerPaddingTop;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -926,4 +887,4 @@ Tan.GameOver.prototype = {
 game.state.add('LevelOne', Tan.LevelOne);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('MainMenu');
+game.state.start('LevelOne');
