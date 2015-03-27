@@ -438,18 +438,7 @@ Tan.LevelOne.prototype = {
             sq_icon.visible = false; 
             playerGrams.brick = sq_icon;
         }
-
-
-
-
-
-
-
-
-
-
-
-
+        
         createHeadsUpDisplay();
 
 
@@ -745,7 +734,7 @@ Tan.LevelOne.prototype = {
 
         displayGrams();
         displayToggler();
-        
+
 
         // Claw moves to platform (needs animations)
         
