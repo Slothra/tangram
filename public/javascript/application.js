@@ -50,7 +50,7 @@ var coconut;
 var coconuts;
 var crabLife = 3;
 var display;
-var gramCount = 0;
+var gramCount = 1;
 var coins;
 var coinCount = 0;
 var crabVel = -50;
@@ -81,6 +81,7 @@ var togglerPaddingLeft = togglerDefaultPadding;
 var togglerPaddingTop = 10;
 var toggleOn = false;
 var togglePosition = 0;
+var toggleForm;
 
 Tan.MainMenu = function(game){};
 
@@ -129,7 +130,8 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 12);
         game.load.spritesheet('heart', 'assets/sprites/heart.png', 38,30,4)
         game.load.image('sm_triangle', 'assets/grams/sm_triangle2.png');
-        game.load.image('triangle2', 'assets/grams/sm_triangle.png');
+        game.load.image('sm_square', 'assets/grams/tan-square.png');
+
         game.load.spritesheet('death-tint', 'assets/sprites/deathtint.png', 800,600,3)
 
         game.load.image('water', 'assets/water.png');
@@ -252,10 +254,10 @@ Tan.LevelOne.prototype = {
             gram.body.gravity.y = 6;
             gram.name = gramName;
             gram.displayed = false;
+            return gram;
         }
 
-        createGram(200, game.world.height - 70, 'sm_triangle', 'hat');
-        createGram(600, game.world.height -70, 'sm_triangle', 'brick');
+        createGram(200, game.world.height -70, 'sm_triangle', 'hat');
 
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
@@ -324,6 +326,7 @@ Tan.LevelOne.prototype = {
         player.animations.add('jumpHat', [4]);
         player.animations.add('swim', [6, 7, 8], 10, true);
         player.animations.add('jumpFish', [10]);
+        player.animations.add('walkUnderwater', [0, 1, 2], 6, true);
 
 
         // camera mechanics
@@ -428,18 +431,14 @@ Tan.LevelOne.prototype = {
             toggler.scale.setTo(0.75, 0.75);
             toggler.displayed = false;
             toggler.fixedToCamera = true;
+
+            // create small square icon
+            var sq_icon = createGram(0, 0, 'sm_square', 'brick');
+            sq_icon.displayIndex = 0;
+            sq_icon.visible = false; 
+            playerGrams.brick = sq_icon;
         }
-
-
-
-
-
-
-
-
-
-
-
+        
         createHeadsUpDisplay();
 
 
@@ -573,13 +572,20 @@ Tan.LevelOne.prototype = {
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
 
-        // Set playerForm;
-        if ((underwater && playerGrams.hat) || (playerForm == 'fish' && !underwater && !player.body.touching.down)){
-            playerForm = 'fish';
-        } else {       
-            for (var key in playerGrams){
-                var gram = playerGrams[key];
-                if (togglePosition == gram.displayIndex){
+        // Set playerForm
+        for (var key in playerGrams){
+            var gram = playerGrams[key];
+            if (togglePosition == gram.displayIndex){
+                toggleForm = gram.name;
+                if (underwater){
+                    if (toggleForm == 'brick'){
+                        playerForm = 'brickUnderwater';
+                    } else if (toggleForm == 'hat'){
+                        playerForm = 'fish';
+                    }
+                } else if (playerForm == 'fish' && !underwater && !player.body.touching.down) {
+                    playerForm = 'fish';
+                } else {
                     playerForm = gram.name;
                 }
             }
@@ -594,6 +600,9 @@ Tan.LevelOne.prototype = {
             break;
           case 'fish':
             moveAsFish();
+            break;
+          case 'brickUnderwater':
+            moveAsBrickUnderwater();
             break;
           default:
             moveAsBrick();
@@ -652,18 +661,22 @@ Tan.LevelOne.prototype = {
             movePlayer(0, 'walk', 'jump', playerSpeed, -400);
         }
 
+        function moveAsBrickUnderwater(){
+            movePlayer(0, 'walkUnderwater', 'jump', playerSpeed/3, -300);
+        }
+
         function moveAsBrickHat(){
             movePlayer(3, 'walkHat', 'jumpHat', playerSpeed, -400);
         }
 
         function moveAsFish(){
-            movePlayer(6, 'swim', 'jumpFish', playerSpeed, -300);
+            movePlayer(6, 'swim', 'jumpFish', playerSpeed*1.25, -300);
         }
 
         function displayGram(gram){
             var marginLeft = 210;
             var padding = 50;
-            var displayGram = game.add.sprite(marginLeft + ((gram.displayIndex + 1) * padding), 35, gram.key);
+            var displayGram = game.add.sprite(marginLeft + ((gram.displayIndex + 1) * padding), 38, gram.key);
             displayGram.anchor.setTo(0.5, 0.5);
             displayGram.fixedToCamera = true;
         }
@@ -702,6 +715,7 @@ Tan.LevelOne.prototype = {
             coin.kill();
         }
 
+        // Moves toggle position
         if (toggleKey.isDown && toggleOn == false){
             toggleOn = true;
             if (togglePosition < gramCount-1){
@@ -720,13 +734,6 @@ Tan.LevelOne.prototype = {
 
         displayGrams();
         displayToggler();
-
-
-
-
-
-
-
 
 
         // Claw moves to platform (needs animations)
