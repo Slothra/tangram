@@ -24,7 +24,11 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 0;
+var xStartPos = 500;
+
+
+
+
 var yStartPos = gameHeight;
 var player;
 var playerGrams = {};
@@ -198,6 +202,25 @@ Tan.LevelOne.prototype = {
         game.load.audio('menu-select', 'assets/sound/form-change.wav');
 
         game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
+    
+        game.load.image('ground_sand', 'assets/scene/ground_sand_tile3.png');
+        game.load.image('plat01', 'assets/scene/plat01.png');
+        game.load.image('plat04', 'assets/scene/plat04_160x450.png');
+        game.load.image('plat05_06', 'assets/scene/plat05_06.png');
+        game.load.image('plat07_08', 'assets/scene/plat07_08.png');
+        game.load.image('plat12', 'assets/scene/plat12_300x300.png');
+        game.load.image('plat_end', 'assets/scene/platEnd.png');
+        game.load.image('plat_end_rounded', 'assets/scene/plat_end_rounded.png');
+        game.load.image('water_overlay', 'assets/scene/water_overlay.png');
+        game.load.image('branch', 'assets/scene/branch.png');
+
+
+
+
+
+
+
+
     },
 
     create: function(){
@@ -211,6 +234,7 @@ Tan.LevelOne.prototype = {
 
         background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
+
 
         music = game.add.audio('exploring');
         gameOverMusic = game.add.audio('gameover');
@@ -239,7 +263,7 @@ Tan.LevelOne.prototype = {
         ground.body.immovable = true;
 
         var water01 = createWater((xWorldBounds/10 + 1000), 25, 1000, 300);
-        var plat01 = createPlatform(20, 40, 300, 250);
+        var plat01 = createPlatform(20, 20, 300, 250);
         makeImmovable(plat01);
         var plat02 = createPlatform(6, 3, 600, 400);
         makeImmovable(plat02);
@@ -261,13 +285,13 @@ Tan.LevelOne.prototype = {
         makeImmovable(plat10);
         var plat11 = createPlatform(18, 3, 2400, 440);
         makeImmovable(plat11);
-        var plat12 = createPlatform(30, 50, 2700, 350);
+        var plat12 = createPlatform(30, 30, 2700, 350);
         makeImmovable(plat12);
         var plat13 = createPlatform(12, 3, 3200, 450);
         makeImmovable(plat13);
         var plat14 = createPlatform(12, 3, 3500, 470);
         makeImmovable(plat14);
-        var plat15 = createPlatform((xWorldBounds/10 + 3900), 50, 3900, 350);
+        var plat15 = createPlatform((xWorldBounds/10 + 3900), 30, 3900, 350);
         makeImmovable(plat15);
         var plat16 = createPlatform(8, 3, 3000, 200);
         makeImmovable(plat16);
@@ -488,6 +512,21 @@ Tan.LevelOne.prototype = {
         
         createHeadsUpDisplay();
 
+    // Scenic overlay
+        var sands = game.add.group();
+        //Sand
+        game.add.tileSprite(0, 745, xWorldBounds, 70, 'ground_sand');
+        sands.create(295, 541, 'plat01');
+        sands.create(895, 290, 'plat04');
+        sands.create(1495, 295, 'plat05_06');
+        sands.create(1495, 415, 'plat07_08');
+        sands.create(2695, 445, 'plat12');
+        game.add.tileSprite(3950, 445, xWorldBounds, 350, 'plat_end');
+        sands.create(3895, 445, 'plat_end_rounded');
+        // Transparent layer over water
+        var waterOverlay = game.add.sprite(1062, 500, 'water_overlay');
+        waterOverlay.scale.setTo((xWorldBounds/10 + 1000), 30);
+
 
     },
 
@@ -513,6 +552,9 @@ Tan.LevelOne.prototype = {
             muted = true;
             game.time.events.add(Phaser.Timer.SECOND * .5, mute, this);
         }
+
+        player.z = 1;
+        // grassGroup.z = 2;
 
         function mute(){
             if (game.sound.volume === 1){
@@ -985,4 +1027,4 @@ game.state.add('LevelOne', Tan.LevelOne);
 game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('MainMenu');
+game.state.start('LevelOne');
