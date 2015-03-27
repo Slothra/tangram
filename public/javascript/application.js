@@ -127,12 +127,10 @@ Tan.LevelOne.prototype = {
         game.load.image('sky', 'assets/sky.png');
         game.load.image('platform', 'assets/platform_10x10.png');
         game.load.image('grass', 'assets/grass.png');
-        // game.load.image('pigeon', 'assets/sprites/pigeons.png');
         game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 12);
         game.load.spritesheet('heart', 'assets/sprites/heart.png', 38,30,4)
         game.load.image('sm_triangle', 'assets/grams/sm_triangle2.png');
-        // game.load.image('triangle2', 'assets/grams/sm_triangle.png');
         game.load.spritesheet('death-tint', 'assets/sprites/deathtint.png', 800,600,3)
 
         game.load.image('water', 'assets/water.png');
@@ -192,9 +190,6 @@ Tan.LevelOne.prototype = {
 
         grams = game.add.group();
         grams.enableBody = true;
-
-        grassGroup = game.add.group();
-        grassGroup.z = 2;
 
         var ground = platforms.create(0, game.world.height - 50, 'platform');
         ground.scale.setTo(xWorldBounds/10, 7);
@@ -442,7 +437,8 @@ Tan.LevelOne.prototype = {
         createHeadsUpDisplay();
 
 
-
+        grassGroup = game.add.group();
+        grassGroup.z = 2;
 
         var grass = grassGroup.create(300, 525, 'grass');
         
