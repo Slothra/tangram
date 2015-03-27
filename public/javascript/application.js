@@ -378,8 +378,6 @@ Tan.LevelOne.prototype = {
             createHeadsUpText(63, 57, "x ", 15);
             coinText = createHeadsUpText(85, 55, coinCount.toString(), 20);
 
-
-
             toggler = createHeadsUpIcon(game.camera.view.x + 50, game.camera.view.y + 275, 'toggler');
             toggler.displayed = false;
             toggler.fixedToCamera = false;
