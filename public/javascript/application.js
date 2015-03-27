@@ -13,7 +13,7 @@ var x2;
 var y1;
 var y2;
 var mainMenu;
-var miniMenu;
+var mainMenuText;
 
 var game = new Phaser.Game(gameWidth, gameHeight, Phaser.AUTO, 'game-space');
 
@@ -96,15 +96,15 @@ Tan.MainMenu.prototype = {
     },
     create: function(){
         // play sound create main menu including buttons for start/password
-        mainMenu = game.add.sprite(400, 300, 'menu');
+        mainMenu = game.add.sprite(400, 270, 'menu');
         mainMenu.anchor.setTo(.5,.5);
         mainMenu.animations.add('start', [0,1,2,3,4,5,6,7,6,5,4,3,2,1], 10, true)
 
         // var button = game.add.sprite(400, 500, 'button');
         // button.anchor.setTo(.5,.5);
 
-        var restartText = "Click to begin"
-        var text = game.add.bitmapText(250, 500, 'font', restartText, 25);
+        var text = "Click to begin"
+        mainMenuText = game.add.bitmapText(250, 500, 'font', text, 25);
         x1 = gameWidth/2 - 270/2; 
         x2 = gameWidth/2 + 270/2;
         y1 = gameHeight/2 - 180/2;
@@ -116,8 +116,16 @@ Tan.MainMenu.prototype = {
         game.input.onDown.add(loading,self);    
         function loading(){
             mainMenu.animations.play('start');
-            game.time.events.add(Phaser.Timer.SECOND * 6, startGame, this);
+            game.time.events.add(Phaser.Timer.SECOND * 6, helpMenu, this);
         }
+        function helpMenu(){
+            mainMenu.destroy();
+
+            var mainMenuText = "Left Arrow  - Move left\nRight Arrow - Move right\nP button    - Pause game\nM button    - Mute game"
+            var text = game.add.bitmapText(150, 200, 'font', mainMenuText, 25);
+            game.input.onDown.add(startGame,self);
+        }
+
         function startGame(){
             game.state.start('LevelOne');
         }
