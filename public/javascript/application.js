@@ -60,6 +60,8 @@ var bossTime = false;
 var grassGroup;
 
 var music;
+var introMusic;
+var selectSound;
 var bossMusic;
 var gameOverMusic;
 var restartMusic;
@@ -92,19 +94,27 @@ Tan.MainMenu.prototype = {
         game.load.spritesheet('menu', 'assets/sprites/MainMenu.png', 399.125, 393, 8);
         // game.load.image('button', 'assets/sprites/button.png');
         game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
+        game.load.audio('intro', 'assets/sound/restart.m4a');
+        game.load.audio('menu-select', 'assets/sound/form-change.wav');
 
     },
     create: function(){
         // play sound create main menu including buttons for start/password
+        introMusic = game.add.audio('intro');
+        selectSound = game.add.audio('menu-select');
+        selectSound.volume = .1;
+        introMusic.loop = true;
+        introMusic.play();
         mainMenu = game.add.sprite(400, 270, 'menu');
         mainMenu.anchor.setTo(.5,.5);
-        mainMenu.animations.add('start', [0,1,2,3,4,5,6,7,6,5,4,3,2,1], 10, true)
+        mainMenu.animations.add('start', [0,1,2,3,4,5,6,7,6,5,4,3,2,1], 20, true)
 
         // var button = game.add.sprite(400, 500, 'button');
         // button.anchor.setTo(.5,.5);
 
         var text = "Click to begin"
-        mainMenuText = game.add.bitmapText(250, 500, 'font', text, 25);
+        titleText = game.add.bitmapText(270,mainMenu.position.y-250, 'font', "TanGram", 40);
+        mainMenuText = game.add.bitmapText(250, mainMenu.position.y+230, 'font', text, 25);
         x1 = gameWidth/2 - 270/2; 
         x2 = gameWidth/2 + 270/2;
         y1 = gameHeight/2 - 180/2;
@@ -114,19 +124,34 @@ Tan.MainMenu.prototype = {
     update: function(){
         // if clicked starts game
         game.input.onDown.add(loading,self);    
+        var clickMenu = false;
+
+        function clicked(){
+            if (clickMenu === false){
+                selectSound.play();
+                clickMenu = true;
+            }
+        }
+
         function loading(){
+            clicked();
+
             mainMenu.animations.play('start');
-            game.time.events.add(Phaser.Timer.SECOND * 6, helpMenu, this);
+            game.time.events.add(Phaser.Timer.SECOND * 3, helpMenu, this);
         }
         function helpMenu(){
+            clickMenu = false;
             mainMenu.destroy();
 
-            var mainMenuText = "Left Arrow  - Move left\nRight Arrow - Move right\nP button    - Pause game\nM button    - Mute game"
+            var mainMenuText = "Left Arrow  - Move left\nRight Arrow - Move right\nF button    - change form\nM button    - Mute game\nP button    - Pause game"
             var text = game.add.bitmapText(150, 200, 'font', mainMenuText, 25);
             game.input.onDown.add(startGame,self);
         }
 
         function startGame(){
+            clicked();
+            selectSound.play();
+            introMusic.stop();
             game.state.start('LevelOne');
         }
     }
@@ -167,6 +192,7 @@ Tan.LevelOne.prototype = {
         game.load.audio('crack', 'assets/sound/crack.mp3');
         game.load.audio('coin', 'assets/sound/coin.mp3');
         game.load.audio('gram', 'assets/sound/gram.wav');
+        game.load.audio('menu-select', 'assets/sound/form-change.wav');
 
         game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
     },
@@ -193,6 +219,8 @@ Tan.LevelOne.prototype = {
         crackSound = game.add.audio('crack');
         coinSound = game.add.audio('coin');
         gramSound = game.add.audio('gram');
+        selectSound = game.add.audio('menu-select');
+        selectSound.volume = .1;
 
         waters = game.add.group();
         waters.enableBody = true;
@@ -715,6 +743,7 @@ Tan.LevelOne.prototype = {
 
         if (toggleKey.isDown && toggleOn == false){
             toggleOn = true;
+            selectSound.play();
             if (togglePosition < gramCount-1){
                 togglerPaddingLeft += 50;
                 togglePosition++;
