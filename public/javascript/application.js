@@ -863,11 +863,17 @@ Tan.GameOver = function(game){};
 Tan.GameOver.prototype = {
     preload: function(){
         // load death screen images
+        game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
+
     },
     create: function(){
         restartMusic = game.add.audio('restart');
         restartMusic.loop = true;
         restartMusic.play();
+        var restartText = "Would you like to restart?"
+        var yesOrNo = "y/n"
+        var text = game.add.bitmapText(120, 300, 'font', restartText, 25);
+        game.add.bitmapText(text.position.x + 230,350,'font', yesOrNo, 25);
         
     },
     update: function(){
@@ -893,4 +899,4 @@ Tan.GameOver.prototype = {
 game.state.add('LevelOne', Tan.LevelOne);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelOne');
+game.state.start('MainMenu');
