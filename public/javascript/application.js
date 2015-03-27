@@ -603,6 +603,9 @@ Tan.LevelOne.prototype = {
                             playerForm = 'fish';
                         }
                     }
+                    if (playerForm == 'fish' && !underwater && !player.body.touching.down){
+                        playerForm = 'fish';
+                    }
                 }
             }
         // }
@@ -678,7 +681,7 @@ Tan.LevelOne.prototype = {
         }
 
         function moveAsBrickUnderwater(){
-            movePlayer(0, 'walkUnderwater', 'jump', 10, -250);
+            movePlayer(0, 'walkUnderwater', 'jump', playerSpeed/3, -300);
         }
 
         function moveAsBrickHat(){
@@ -686,13 +689,13 @@ Tan.LevelOne.prototype = {
         }
 
         function moveAsFish(){
-            movePlayer(6, 'swim', 'jumpFish', playerSpeed, -300);
+            movePlayer(6, 'swim', 'jumpFish', playerSpeed*1.25, -300);
         }
 
         function displayGram(gram){
             var marginLeft = 210;
             var padding = 50;
-            var displayGram = game.add.sprite(marginLeft + ((gram.displayIndex + 1) * padding), 35, gram.key);
+            var displayGram = game.add.sprite(marginLeft + ((gram.displayIndex + 1) * padding), 38, gram.key);
             displayGram.anchor.setTo(0.5, 0.5);
             displayGram.fixedToCamera = true;
         }
