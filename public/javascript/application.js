@@ -425,9 +425,9 @@ Tan.LevelOne.prototype = {
 
             createHeadsUpIcon(700, marginTop + 2, 'displayCoin');
 
-            toggler = createHeadsUpIcon(game.camera.view.x + 50, game.camera.view.y + 275, 'toggler');
+            toggler = createHeadsUpIcon(game.camera.view.x + 50, 100, 'toggler');
             toggler.displayed = false;
-            toggler.fixedToCamera = false;
+            toggler.fixedToCamera = true;
         }
 
         createHeadsUpDisplay();
@@ -710,14 +710,15 @@ Tan.LevelOne.prototype = {
                 togglerPadding = 50;
                 togglePosition = 0;
             }
+            toggler.position.y = 100;
+            toggler.position.x = togglerPadding;
+            // toggler.fixedToCamera = true;
         } else if (toggleKey.isUp){
             toggleOn = false;
         }
 
         displayGrams();
         displayToggler();
-        toggler.x = game.camera.view.x + togglerPadding;
-        toggler.y = game.camera.view.y + 75;
 
 
 
