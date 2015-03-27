@@ -28,7 +28,7 @@ var xStartPos = 0;
 var yStartPos = gameHeight;
 var player;
 var playerGrams = {};
-var playerForm = 'brick';
+var playerForm = 'brickUnderwater';
 var enemyMovementTriggers;
 var enemies;
 var createdEnemy;
@@ -129,7 +129,6 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 12);
         game.load.spritesheet('heart', 'assets/sprites/heart.png', 38,30,4)
         game.load.image('sm_triangle', 'assets/grams/sm_triangle2.png');
-        game.load.image('triangle2', 'assets/grams/sm_triangle.png');
         game.load.spritesheet('death-tint', 'assets/sprites/deathtint.png', 800,600,3)
 
         game.load.image('water', 'assets/water.png');
@@ -324,6 +323,7 @@ Tan.LevelOne.prototype = {
         player.animations.add('jumpHat', [4]);
         player.animations.add('swim', [6, 7, 8], 10, true);
         player.animations.add('jumpFish', [10]);
+        player.animations.add('walkUnderwater', [0, 1, 2], 6, true);
 
 
         // camera mechanics
@@ -574,16 +574,21 @@ Tan.LevelOne.prototype = {
         player.body.velocity.x = 0;
 
         // Set playerForm;
-        if ((underwater && playerGrams.hat) || (playerForm == 'fish' && !underwater && !player.body.touching.down)){
-            playerForm = 'fish';
-        } else {       
-            for (var key in playerGrams){
-                var gram = playerGrams[key];
-                if (togglePosition == gram.displayIndex){
-                    playerForm = gram.name;
-                }
-            }
-        }
+        // if ((underwater && playerGrams.hat) || (playerForm == 'fish' && !underwater && !player.body.touching.down)){
+        //     playerForm = 'fish';
+        // } else {   
+
+
+            // for (var key in playerGrams){
+            //     var gram = playerGrams[key];
+            //     if (togglePosition == gram.displayIndex){
+            //         playerForm = gram.name;
+            //     }
+            // }
+
+
+
+        // }
 
         switch (playerForm){
           case 'brick':
@@ -594,6 +599,9 @@ Tan.LevelOne.prototype = {
             break;
           case 'fish':
             moveAsFish();
+            break;
+          case 'brickUnderwater':
+            moveAsBrickUnderwater();
             break;
           default:
             moveAsBrick();
@@ -648,8 +656,12 @@ Tan.LevelOne.prototype = {
             }            
         }
 
-        function moveAsBrick(){
-            movePlayer(0, 'walk', 'jump', playerSpeed, -400);
+        // function moveAsBrick(){
+        //     movePlayer(0, 'walk', 'jump', playerSpeed, -400);
+        // }
+
+        function moveAsBrickUnderwater(){
+            movePlayer(0, 'walkUnderwater', 'jump', 10, -400);
         }
 
         function moveAsBrickHat(){
