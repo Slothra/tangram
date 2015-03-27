@@ -24,7 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 3900;
+var xStartPos = 0;
 
 
 
@@ -60,6 +60,7 @@ var coinCount = 0;
 var crabVel = -50;
 var deadPlayer;
 var bossTime = false;
+var crabDead = false;
 
 var grassGroup;
 
@@ -208,6 +209,10 @@ Tan.LevelOne.prototype = {
         game.load.image('plat05_06', 'assets/scene/plat05_06.png');
         game.load.image('plat07_08', 'assets/scene/plat07_08.png');
         game.load.image('plat12', 'assets/scene/plat12_300x300.png');
+        game.load.image('plat_end', 'assets/scene/platEnd.png');
+        game.load.image('plat_end_rounded', 'assets/scene/plat_end_rounded.png');
+
+
 
 
 
@@ -434,7 +439,7 @@ Tan.LevelOne.prototype = {
         function createCoins(){
             // Creates 25 coins in random places
             for (var i = 0; i < 25; i++){
-                var coin = coins.create(game.rnd.integerInRange(50, xWorldBounds), game.rnd.integerInRange(-200, 200), 'coin');
+                var coin = coins.create(game.rnd.integerInRange(50, xWorldBounds-1800), game.rnd.integerInRange(-200, 200), 'coin');
                 coin.body.gravity.y = 1000;
                 var coinAnim = coin.animations.add('rotate');
                 // coins rotate at various speeds
@@ -505,29 +510,21 @@ Tan.LevelOne.prototype = {
         createHeadsUpDisplay();
 
         // Scenic overlay
+
+        var sands = game.add.group();
+
         game.add.tileSprite(0, 745, xWorldBounds, 70, 'ground_sand');
-        game.add.sprite(295, 541, 'plat01');
-        game.add.sprite(895, 290, 'plat04');
-        game.add.sprite(1495, 295, 'plat05_06');
-        game.add.sprite(1495, 415, 'plat07_08');
-        game.add.sprite(2695, 445, 'plat12');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        sands.create(295, 541, 'plat01');
+        sands.create(895, 290, 'plat04');
+        sands.create(1495, 295, 'plat05_06');
+        sands.create(1495, 415, 'plat07_08');
+        sands.create(2695, 445, 'plat12');
+        game.add.tileSprite(3950, 445, xWorldBounds, 350, 'plat_end');
+        sands.create(3895, 445, 'plat_end_rounded');
     },
 
     update: function(){
+        // Sets up physics
         game.physics.arcade.collide(grams, platforms);
         game.physics.arcade.overlap(player, grams, collectGram, null, this);
         game.physics.arcade.collide(player, platforms);
@@ -537,9 +534,13 @@ Tan.LevelOne.prototype = {
         game.physics.arcade.overlap(enemies, coconuts, bossCoconutHandler, null, this)
         game.physics.arcade.collide(coins, platforms);
         game.physics.arcade.overlap(player, coins, collectCoin, null, this);
+        game.physics.arcade.collide(enemies, player, collisionHandler, null, this);
+        game.physics.arcade.collide(pincers, player, bossCollisionHandler, null, this);
 
+        // Sets up controls
         cursors = game.input.keyboard.createCursorKeys();
 
+        // Sets up mute
         if (muteKey.isDown && muted === false){
             muted = true;
             game.time.events.add(Phaser.Timer.SECOND * .5, mute, this);
@@ -557,6 +558,32 @@ Tan.LevelOne.prototype = {
             muted = false;
         }
 
+        // Sets up pause Screen
+        if (pauseKey.isDown && pauser === false){
+            pauser = true;
+            pauseMenu();
+        }
+
+        function pauseMenu(){
+            menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
+            menuText.anchor.setTo(0.5, 0.5);
+            game.paused = true;
+            game.input.onDown.addOnce(unpause,self);
+        }  
+    
+        function unpause(event){
+            // Only act if paused
+            console.log(event)
+            if(game.paused && pauser === true){
+                // menu.destroy();
+                menuText.destroy();
+
+                // Unpause the game
+                game.paused = false;
+                pauser = false;
+            }
+        };
+
         // Checks if player is collides with water;
         if (game.physics.arcade.overlap(player, waters) == true){
             if (underwater === false){
@@ -572,89 +599,6 @@ Tan.LevelOne.prototype = {
             playerSpeed = 150;
         };
 
-        cursors = game.input.keyboard.createCursorKeys();
-        game.physics.arcade.collide(enemies, player, collisionHandler, null, this);
-        game.physics.arcade.collide(pincers, player, bossCollisionHandler, null, this);
-        
-        if (crabbyCrab.body.velocity.x != 0){
-            crabbyCrab.animations.play('crabWalk');
-        } else {
-            crabbyCrab.animations.stop();
-        }
-
-        function collisionHandler (player, enemy) {
-            if (enemy == crabbyCrab) {
-                player.destroy();
-                literallyDying(bossMusic);
-                game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);
-            } else if (enemy.body.touching.up){
-                poofSound.play();
-                var collision = game.add.sprite(enemy.position.x-3,enemy.position.y-5,'collision');
-                collision.animations.add('explode', [0, 1, 2], 20, false);
-                collision.animations.play('explode');
-                var cleanup = function (){
-                    collision.destroy();
-                }
-                enemy.kill();
-                player.body.velocity.y = -200;
-                game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
-            } else {
-                player.destroy();
-                literallyDying(music);
-                game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);
-            }
-        }
-
-        function restartScreen(){
-            game.state.start('GameOver');
-        }
-
-        function literallyDying (currentMusic){
-            currentMusic.stop();
-            var suspenseSound = game.add.audio('suspense');
-            suspenseSound.play();
-            gameOverMusic.play();
-            var deadPlayer = game.add.sprite(player.position.x,player.position.y+20,'heart');
-            deadPlayer.animations.add('dead', [0,1,2,3], 1, false);
-            deadPlayer.animations.play('dead');
-            var deathScreen = game.add.sprite(game.camera.view.x,game.camera.view.y,'death-tint');
-            deathScreen.animations.add('tint', [0,1,2], 10, false);
-            deathScreen.animations.play('tint');
-
-        }
-
-        function bossCollisionHandler (player, enemy) {
-            player.destroy();
-            literallyDying(bossMusic);
-            game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);;
-        }
-
-        function bossCoconutHandler() {
-            crabLife--;
-            crabbyCrab.animations.play('hurt');
-            var collision = game.add.sprite(coconut.position.x,coconut.position.y-5,'collision');
-            collision.animations.add('explode', [0, 1, 2], 20, false);
-            collision.animations.play('explode');
-            crackSound.play();
-            var cleanup = function (){
-                collision.destroy();
-                switchAnimation();
-            }
-            var switchAnimation = function(){
-                crabbyCrab.animations.play('crabWalk')
-            };
-            game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
-            coconut.destroy();
-            needNewCoconut = true;
-            if (crabLife === 0){
-                bossMusic.stop();
-                music.play();
-                console.log("YOU WIN!")
-                crabbyCrab.destroy();
-                leftPincer.destroy();
-                rightPincer.destroy();
-            }
-        }
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
 
@@ -676,6 +620,8 @@ Tan.LevelOne.prototype = {
                 }
             }
         }
+
+        // Player Movement
 
         switch (playerForm){
           case 'brick':
@@ -832,6 +778,10 @@ Tan.LevelOne.prototype = {
         }
 
         if (player.position.x > 3200 && bossTime === false){
+            bossFight();
+        }
+
+        function bossFight(){
             bossTime = true;
             bossMusic = game.add.audio('boss');
             music.stop();
@@ -890,13 +840,11 @@ Tan.LevelOne.prototype = {
                 coconut = game.add.sprite(3550, 300, 'coconut-roll', 0, coconuts);
                 needNewCoconut = false;
             }
-            // game.physics.arcade.enable(coconut);
-
-            // coconut.body.bounce.y = 0;
             coconut.body.gravity.y = 600;
             coconut.animations.add('roll', [0,1,2,3,4,5,6,7,8], 20, true);
         }
 
+        // Coconut Move
         if (coconut.body.velocity.x > 0) {
             coconut.animations.play('roll');
         } else if (coconut.body.velocity.x < 0) {
@@ -905,35 +853,74 @@ Tan.LevelOne.prototype = {
             coconut.animations.stop;
         }
 
-        if (pauseKey.isDown && pauser === false){
-            pauser = true;
-            pauseMenu();
+        function restartScreen(){
+            game.state.start('GameOver');
         }
 
-        function pauseMenu(){
-            menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
-            menuText.anchor.setTo(0.5, 0.5);
-            game.paused = true;
-            game.input.onDown.addOnce(unpause,self);
-        }  
-    
-        function unpause(event){
-            // Only act if paused
-            console.log(event)
-            if(game.paused && pauser === true){
-                // menu.destroy();
-                menuText.destroy();
+        function bossCollisionHandler (player, enemy) {
+            player.destroy();
+            literallyDying(bossMusic);
+            game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);;
+        }
 
-                // Unpause the game
-                game.paused = false;
-                pauser = false;
+        function bossCoconutHandler() {
+            crabLife--;
+            crabbyCrab.animations.play('hurt');
+            var collision = game.add.sprite(coconut.position.x,coconut.position.y-5,'collision');
+            collision.animations.add('explode', [0, 1, 2], 20, false);
+            collision.animations.play('explode');
+            crackSound.play();
+            var cleanup = function (){
+                collision.destroy();
+                switchAnimation();
             }
-        };
+            var switchAnimation = function(){
+                crabbyCrab.animations.play('crabWalk')
+            };
+            game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
+            coconut.destroy();
+            needNewCoconut = true;
+            if (crabLife === 0){
+                bossMusic.stop();
+                music.play();
+                console.log("YOU WIN!")
+                crabbyCrab.destroy();
+                leftPincer.destroy();
+                rightPincer.destroy();
+                crabDead = true;
+            }
+        }
+
+        if (crabbyCrab.body.velocity.x != 0){
+            crabbyCrab.animations.play('crabWalk');
+        } else {
+            crabbyCrab.animations.stop();
+        }
+
+        function collisionHandler (player, enemy) {
+            if (enemy == crabbyCrab) {
+                player.destroy();
+                literallyDying(bossMusic);
+                game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);
+            } else if (enemy.body.touching.up){
+                poofSound.play();
+                var collision = game.add.sprite(enemy.position.x-3,enemy.position.y-5,'collision');
+                collision.animations.add('explode', [0, 1, 2], 20, false);
+                collision.animations.play('explode');
+                var cleanup = function (){
+                    collision.destroy();
+                }
+                enemy.kill();
+                player.body.velocity.y = -200;
+                game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
+            } else {
+                player.destroy();
+                literallyDying(music);
+                game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);
+            }
+        }
 
         game.physics.arcade.overlap(enemies, enemyMovementTriggers, function(enemy, trigger) {
-        // Do a simple check to ensure the trigger only changes the enemy's direction
-        // once by storing it in a property on the enemy. This prevents enemies getting
-        // 'stuck' inside a trigger if they overlap into it too far.
             if (enemy.lastTrigger !== trigger) {
                 // Reverse the velocity of the enemy and remember the last trigger.
                 enemy.scale.x *= -1;
@@ -943,18 +930,53 @@ Tan.LevelOne.prototype = {
         });
 
         game.physics.arcade.overlap(platforms, platformMovementTriggers, function(platform, trigger) {
-        // Do a simple check to ensure the trigger only changes the enemy's direction
-        // once by storing it in a property on the enemy. This prevents enemies getting
-        // 'stuck' inside a trigger if they overlap into it too far.
             if (platform.lastTrigger !== trigger) {
-                // Reverse the velocity of the enemy and remember the last trigger.
+                // Reverse the velocity of the platform and remember the last trigger.
                 platform.body.velocity.x *= -1;
                 platform.lastTrigger = trigger;
             }
         });
+
+        function literallyDying (currentMusic){
+            currentMusic.stop();
+            var suspenseSound = game.add.audio('suspense');
+            suspenseSound.play();
+            gameOverMusic.play();
+            var deadPlayer = game.add.sprite(player.position.x,player.position.y+20,'heart');
+            deadPlayer.animations.add('dead', [0,1,2,3], 1, false);
+            deadPlayer.animations.play('dead');
+            var deathScreen = game.add.sprite(game.camera.view.x,game.camera.view.y,'death-tint');
+            deathScreen.animations.add('tint', [0,1,2], 10, false);
+            deathScreen.animations.play('tint');
+
+        }
+
+        // endOne StartTwo
+        if (crabDead == true && player.position.x > 4500){
+            game.state.start('LevelTwo');
+        }
     }
 
 };
+
+Tan.LevelTwo = function(game){};
+
+Tan.LevelTwo.prototype = {
+    preload: function(){
+        // load death screen images
+        game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
+
+    },
+    create: function(){
+        var levelTwoText = "Level Two"
+        var text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
+    },
+    update: function(){
+
+
+    }
+
+}
 
 Tan.GameOver = function(game){};
 
@@ -980,7 +1002,7 @@ Tan.GameOver.prototype = {
         // restart from last checkpoint (start of level, boss)
         if (restartKey.isDown){
             restartMusic.stop();
-            gramCount = 0;
+            gramCount = 1;
             playerGrams = {};
             coinCount = 0;
             game.state.start('LevelOne');
@@ -995,6 +1017,7 @@ Tan.GameOver.prototype = {
 }
 
 game.state.add('LevelOne', Tan.LevelOne);
+game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
 game.state.start('LevelOne');
