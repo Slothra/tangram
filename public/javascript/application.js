@@ -60,6 +60,9 @@ var crackSound;
 var coinSound;
 var gramSound;
 
+var muteKey;
+var muted = false;
+
 
 // Heads up display
 var coinText;
@@ -69,6 +72,9 @@ var togglerPadding = 50;
 var toggleOn = false;
 var togglePosition = 0;
 
+Tan.MainMenu = function(game){};
+
+Tan.MainMenu.prototype = {
 
 
 Tan.LevelOne = function(game){};
@@ -115,6 +121,7 @@ Tan.LevelOne.prototype = {
 
         pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.P);
         toggleKey = game.input.keyboard.addKey(Phaser.Keyboard.F);
+        muteKey = game.input.keyboard.addKey(Phaser.Keyboard.M);
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -400,6 +407,20 @@ Tan.LevelOne.prototype = {
         game.physics.arcade.overlap(player, coins, collectCoin, null, this);
 
         cursors = game.input.keyboard.createCursorKeys();
+
+        if (muteKey.isDown && muted === false){
+            muted = true;
+            game.time.events.add(Phaser.Timer.SECOND * .5, mute, this);
+        }
+
+        function mute(){
+            if (game.sound.volume === 1){
+                game.sound.volume = 0;    
+            } else {
+                game.sound.volume = 1;
+            }
+            muted = false;
+        }
 
         // Checks if player is collides with water;
         if (game.physics.arcade.overlap(player, waters) == true){
@@ -821,6 +842,7 @@ Tan.GameOver.prototype = {
             playerGrams = {};
             coinCount = 0;
             game.state.start('LevelOne');
+            playerForm = 'brick';
         }
         if (endKey.isDown){
             restartMusic.stop();
@@ -831,5 +853,6 @@ Tan.GameOver.prototype = {
 }
 
 game.state.add('LevelOne', Tan.LevelOne);
+game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
 game.state.start('LevelOne');
