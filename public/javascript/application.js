@@ -90,17 +90,21 @@ Tan.MainMenu.prototype = {
     preload: function(){
         // menu graphics and sound
         game.load.spritesheet('menu', 'assets/sprites/MainMenu.png', 399.125, 393, 8);
-        game.load.image('button', 'assets/sprites/button.png');
+        // game.load.image('button', 'assets/sprites/button.png');
+        game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
+
     },
     create: function(){
         // play sound create main menu including buttons for start/password
-        mainMenu = game.add.sprite(400, 200, 'menu');
+        mainMenu = game.add.sprite(400, 300, 'menu');
         mainMenu.anchor.setTo(.5,.5);
         mainMenu.animations.add('start', [0,1,2,3,4,5,6,7,6,5,4,3,2,1], 10, true)
 
-        var button = game.add.sprite(400, 500, 'button');
-        button.anchor.setTo(.5,.5);
-        
+        // var button = game.add.sprite(400, 500, 'button');
+        // button.anchor.setTo(.5,.5);
+
+        var restartText = "Click to begin"
+        var text = game.add.bitmapText(250, 500, 'font', restartText, 25);
         x1 = gameWidth/2 - 270/2; 
         x2 = gameWidth/2 + 270/2;
         y1 = gameHeight/2 - 180/2;
