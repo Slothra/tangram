@@ -24,7 +24,11 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 0;
+var xStartPos = 800;
+
+
+
+
 var yStartPos = gameHeight;
 var player;
 var playerGrams = {};
@@ -199,6 +203,10 @@ Tan.LevelOne.prototype = {
         game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
     
         game.load.image('ground_sand', 'assets/scene/ground_sand_tile3.png');
+        game.load.image('plat01', 'assets/scene/plat01.png');
+        game.load.image('plat04', 'assets/scene/plat04_160x450.png');
+
+
     },
 
     create: function(){
@@ -212,8 +220,6 @@ Tan.LevelOne.prototype = {
 
         background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
-
-
 
 
         music = game.add.audio('exploring');
@@ -243,7 +249,7 @@ Tan.LevelOne.prototype = {
         ground.body.immovable = true;
 
         var water01 = createWater((xWorldBounds/10 + 1000), 25, 1000, 300);
-        var plat01 = createPlatform(20, 40, 300, 250);
+        var plat01 = createPlatform(20, 20, 300, 250);
         makeImmovable(plat01);
         var plat02 = createPlatform(6, 3, 600, 400);
         makeImmovable(plat02);
@@ -293,13 +299,6 @@ Tan.LevelOne.prototype = {
         movPlat.allowGravity = false;
         movPlat.body.velocity.x = 50;
         movPlat.body.immovable = true;
-
-        
-
-
-        // Scenic overlay
-        game.add.tileSprite(0, 745, xWorldBounds, 70, 'ground_sand')
-
 
         // Create a gram
         function createGram(xPos, yPos, imgKey, gramName){
@@ -498,6 +497,21 @@ Tan.LevelOne.prototype = {
         }
         
         createHeadsUpDisplay();
+
+        // Scenic overlay
+        game.add.tileSprite(0, 745, xWorldBounds, 70, 'ground_sand');
+        game.add.sprite(295, 541, 'plat01');
+        game.add.sprite(895, 290, 'plat04');
+
+
+
+
+
+
+
+
+
+
 
 
     },
