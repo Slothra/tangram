@@ -76,9 +76,9 @@ var muted = false;
 var toggleKey;
 var coinText;
 var toggler;
-var togglerDefaultPad = 210;
-var togglerPaddingLeft = 210;
-var togglerPaddingTop = 30;
+var togglerDefaultPadding = 236;
+var togglerPaddingLeft = togglerDefaultPadding;
+var togglerPaddingTop = 10;
 var toggleOn = false;
 var togglePosition = 0;
 
@@ -424,10 +424,19 @@ Tan.LevelOne.prototype = {
             createHeadsUpText(63, 57, "x ", 15);
             coinText = createHeadsUpText(85, 55, coinCount.toString(), 20);
 
-            toggler = createHeadsUpIcon(game.camera.view.x + 50, 100, 'toggler');
+            toggler = createHeadsUpIcon(game.camera.view.x + togglerDefaultPadding, togglerPaddingTop, 'toggler');
+            toggler.scale.setTo(0.75, 0.75);
             toggler.displayed = false;
             toggler.fixedToCamera = true;
         }
+
+
+
+
+
+
+
+
 
 
 
@@ -699,10 +708,10 @@ Tan.LevelOne.prototype = {
                 togglerPaddingLeft += 50;
                 togglePosition++;
             } else {
-                togglerPaddingLeft = 10;
+                togglerPaddingLeft = togglerDefaultPadding;
                 togglePosition = 0;
             }
-            toggler.position.y = 100;
+            toggler.position.y = togglerPaddingTop;
             toggler.position.x = togglerPaddingLeft;
             toggler.fixedToCamera = true;
         } else if (toggleKey.isUp){
@@ -711,6 +720,12 @@ Tan.LevelOne.prototype = {
 
         displayGrams();
         displayToggler();
+
+
+
+
+
+
 
 
 
