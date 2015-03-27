@@ -197,6 +197,8 @@ Tan.LevelOne.prototype = {
         game.load.audio('menu-select', 'assets/sound/form-change.wav');
 
         game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
+    
+        game.load.image('ground_sand', 'assets/scene/ground_sand_tile3.png');
     },
 
     create: function(){
@@ -210,6 +212,9 @@ Tan.LevelOne.prototype = {
 
         background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
+
+
+
 
         music = game.add.audio('exploring');
         gameOverMusic = game.add.audio('gameover');
@@ -288,6 +293,13 @@ Tan.LevelOne.prototype = {
         movPlat.allowGravity = false;
         movPlat.body.velocity.x = 50;
         movPlat.body.immovable = true;
+
+        
+
+
+        // Scenic overlay
+        game.add.tileSprite(0, 745, xWorldBounds, 70, 'ground_sand')
+
 
         // Create a gram
         function createGram(xPos, yPos, imgKey, gramName){
@@ -509,7 +521,7 @@ Tan.LevelOne.prototype = {
         }
 
         player.z = 1;
-        grassGroup.z = 2;
+        // grassGroup.z = 2;
 
         function mute(){
             if (game.sound.volume === 1){
@@ -960,4 +972,4 @@ Tan.GameOver.prototype = {
 game.state.add('LevelOne', Tan.LevelOne);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('MainMenu');
+game.state.start('LevelOne');
