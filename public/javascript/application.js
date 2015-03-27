@@ -139,7 +139,7 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('coin','assets/sprites/coin_spritesheet1.png', 32, 22, 8);
         game.load.image('displayCoin', 'assets/sprites/coin.png');
         game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
-        game.load.image('badfish', 'assets/sprites/badfish.png');
+        game.load.spritesheet('badfish', 'assets/sprites/badfish-swim.png', 99, 72, 3);
         game.load.image('toggler', 'assets/sprites/gram_toggler.png');
 
 
@@ -278,6 +278,9 @@ Tan.LevelOne.prototype = {
             if (enemyKey == 'pigeon'){
                 newEnemy.animations.add('pigeon-step', [0,1,2], 10, true);
                 newEnemy.animations.play('pigeon-step');
+            } else if (enemyKey == 'badfish'){
+                newEnemy.animations.add('badfish-swim',[0,1,2], 10, true);
+                newEnemy.animations.play('badfish-swim');
             }
             newEnemy.anchor.setTo(.5,0)
             createLeftTrigger(newEnemy, leftTrigger);
@@ -712,7 +715,7 @@ Tan.LevelOne.prototype = {
             }
             toggler.position.y = 100;
             toggler.position.x = togglerPadding;
-            // toggler.fixedToCamera = true;
+            toggler.fixedToCamera = true;
         } else if (toggleKey.isUp){
             toggleOn = false;
         }
@@ -896,4 +899,4 @@ Tan.GameOver.prototype = {
 game.state.add('LevelOne', Tan.LevelOne);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('MainMenu');
+game.state.start('LevelOne');
