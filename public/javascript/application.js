@@ -57,6 +57,8 @@ var crabVel = -50;
 var deadPlayer;
 var bossTime = false;
 
+var grassGroup;
+
 var music;
 var bossMusic;
 var gameOverMusic;
@@ -124,12 +126,13 @@ Tan.LevelOne.prototype = {
     preload: function(){
         game.load.image('sky', 'assets/sky.png');
         game.load.image('platform', 'assets/platform_10x10.png');
+        game.load.image('grass', 'assets/grass.png');
         // game.load.image('pigeon', 'assets/sprites/pigeons.png');
         game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 12);
         game.load.spritesheet('heart', 'assets/sprites/heart.png', 38,30,4)
         game.load.image('sm_triangle', 'assets/grams/sm_triangle2.png');
-        game.load.image('triangle2', 'assets/grams/sm_triangle.png');
+        // game.load.image('triangle2', 'assets/grams/sm_triangle.png');
         game.load.spritesheet('death-tint', 'assets/sprites/deathtint.png', 800,600,3)
 
         game.load.image('water', 'assets/water.png');
@@ -189,6 +192,9 @@ Tan.LevelOne.prototype = {
 
         grams = game.add.group();
         grams.enableBody = true;
+
+        grassGroup = game.add.group();
+        grassGroup.z = 2;
 
         var ground = platforms.create(0, game.world.height - 50, 'platform');
         ground.scale.setTo(xWorldBounds/10, 7);
@@ -393,6 +399,7 @@ Tan.LevelOne.prototype = {
             player.body.collideWorldBounds = true;
             player.body.setSize(32, 32, 0, 32);
             player.anchor.setTo(.5, 0);
+            player.z = 1;
         }
 
         function initializeCamera(){
@@ -432,19 +439,13 @@ Tan.LevelOne.prototype = {
             toggler.displayed = false;
             toggler.fixedToCamera = true;
         }
-
-
-
-
-
-
-
-
-
-
-
         createHeadsUpDisplay();
 
+
+
+
+        var grass = grassGroup.create(300, 525, 'grass');
+        
 
     },
 
@@ -465,6 +466,9 @@ Tan.LevelOne.prototype = {
             muted = true;
             game.time.events.add(Phaser.Timer.SECOND * .5, mute, this);
         }
+
+        player.z = 1;
+        grassGroup.z = 2;
 
         function mute(){
             if (game.sound.volume === 1){
