@@ -352,21 +352,13 @@ Tan.LevelOne.prototype = {
         }
 
         function anchorAndFixToCam(obj){
-            // obj.anchor.setTo(0.5, 0.5);
             obj.fixedToCamera = true;
             return obj;
         }
 
-        function createHeadsUpText(xPos, yPos, text){
-            // var text = game.add.text(xPos, yPos, text);
-            var text = game.add.bitmapText(xPos, yPos, 'font', text, 30);
-
-            // var text = game.add.bitmapText(xPos, yPos, 'font', text, 64)
-            // var text = game.add.bitmapText(200, 100, 'font','Phaser & Pixi \nrocking!', 64)
-
-            // this.add.text(70, 380, “TOUCH TO\nSTART”, {font: “30px Orbitron”, align:”center”, fill:”#fff”});
+        function createHeadsUpText(xPos, yPos, text, size){
+            var text = game.add.bitmapText(xPos, yPos, 'font', text, size);
             anchorAndFixToCam(text);
-            // text.font = 'Press+Start+2P';
             return text;
         }
 
@@ -378,15 +370,15 @@ Tan.LevelOne.prototype = {
 
         // Creates head up display
         function createHeadsUpDisplay(){
-            var marginTop = 30;
+            var margin = 30;
 
-            createHeadsUpText(100, marginTop, "Tan's Grams:");
-            createHeadsUpText(740, marginTop, "x ");
+            createHeadsUpText(margin, margin, "Tan's Grams:", 20);
 
-            coinText = createHeadsUpText(760, 30, null);
-            coinText.text = coinCount;
+            createHeadsUpIcon(35, 55, 'displayCoin');
+            createHeadsUpText(63, 57, "x ", 15);
+            coinText = createHeadsUpText(85, 55, coinCount.toString(), 20);
 
-            createHeadsUpIcon(700, marginTop + 2, 'displayCoin');
+
 
             toggler = createHeadsUpIcon(game.camera.view.x + 50, game.camera.view.y + 275, 'toggler');
             toggler.displayed = false;
