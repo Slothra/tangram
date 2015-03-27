@@ -509,7 +509,6 @@ Tan.LevelOne.prototype = {
         }
 
         player.z = 1;
-        grassGroup.z = 2;
 
         function mute(){
             if (game.sound.volume === 1){
