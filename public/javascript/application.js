@@ -50,7 +50,7 @@ var coconut;
 var coconuts;
 var crabLife = 3;
 var display;
-var gramCount = 0;
+var gramCount = 1;
 var coins;
 var coinCount = 0;
 var crabVel = -50;
@@ -253,10 +253,10 @@ Tan.LevelOne.prototype = {
             gram.body.gravity.y = 6;
             gram.name = gramName;
             gram.displayed = false;
+            return gram;
         }
 
-        createGram(200, game.world.height - 70, 'sm_triangle', 'hat');
-        createGram(600, game.world.height -70, 'sm_triangle', 'brick');
+        createGram(200, game.world.height -70, 'sm_triangle', 'hat');
 
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
@@ -430,7 +430,14 @@ Tan.LevelOne.prototype = {
             toggler.scale.setTo(0.75, 0.75);
             toggler.displayed = false;
             toggler.fixedToCamera = true;
+
+            // create small square icon
+            var sq_icon = createGram(0, 0, 'sm_square', 'brick');
+            sq_icon.displayIndex = 0;
+            sq_icon.visible = false; 
+            playerGrams.brick = sq_icon;
         }
+
 
 
 
@@ -578,16 +585,27 @@ Tan.LevelOne.prototype = {
         // Set playerForm
         // if ((underwater && playerGrams.hat) || (playerForm == 'fish' && !underwater && !player.body.touching.down)){
         //     playerForm = 'fish';
-        if (underwater && playerForm == 'brick'){
-            playerForm = 'brickUnderwater';
-        } else {   
+        // if (underwater){
+        //     if (playerForm == 'brick'){
+        //         playerForm = 'brickUnderwater';
+        //     } else if (playerForm == 'hat' || playerForm = 'brickUnderwater'){
+        //         playerForm = 'fish';
+        //     }
+        // } else {   
             for (var key in playerGrams){
                 var gram = playerGrams[key];
                 if (togglePosition == gram.displayIndex){
                     playerForm = gram.name;
+                    if (underwater){
+                        if (playerForm == 'brick'){
+                            playerForm = 'brickUnderwater';
+                        } else if (playerForm == 'hat'){
+                            playerForm = 'fish';
+                        }
+                    }
                 }
             }
-        }
+        // }
 
         switch (playerForm){
           case 'brick':
@@ -660,7 +678,7 @@ Tan.LevelOne.prototype = {
         }
 
         function moveAsBrickUnderwater(){
-            movePlayer(0, 'walkUnderwater', 'jump', 10, -400);
+            movePlayer(0, 'walkUnderwater', 'jump', 10, -250);
         }
 
         function moveAsBrickHat(){
