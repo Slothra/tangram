@@ -62,12 +62,14 @@ var gramSound;
 
 
 // Heads up display
+var toggleKey;
 var coinText;
 var toggler;
-var toggleKey;
 var togglerPadding = 50;
 var toggleOn = false;
 var togglePosition = 0;
+
+
 
 
 
@@ -96,7 +98,6 @@ Tan.LevelOne.prototype = {
         game.load.image('badfish', 'assets/sprites/badfish.png');
         game.load.image('toggler', 'assets/sprites/gram_toggler.png');
 
-
         game.load.audio('exploring', 'assets/sound/exploring.m4a');
         game.load.audio('boss', 'assets/sound/boss.m4a');
         game.load.audio('suspense', 'assets/sound/suspense.m4a');
@@ -109,9 +110,13 @@ Tan.LevelOne.prototype = {
         game.load.audio('coin', 'assets/sound/coin.mp3');
         game.load.audio('gram', 'assets/sound/gram.wav');
 
+        game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
+
+
     },
 
     create: function(){
+
 
         pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.P);
         toggleKey = game.input.keyboard.addKey(Phaser.Keyboard.F);
@@ -347,14 +352,21 @@ Tan.LevelOne.prototype = {
         }
 
         function anchorAndFixToCam(obj){
-            obj.anchor.setTo(0.5, 0.5);
+            // obj.anchor.setTo(0.5, 0.5);
             obj.fixedToCamera = true;
             return obj;
         }
 
         function createHeadsUpText(xPos, yPos, text){
-            var text = game.add.text(xPos, yPos, text);
+            // var text = game.add.text(xPos, yPos, text);
+            var text = game.add.bitmapText(xPos, yPos, 'font', text, 30);
+
+            // var text = game.add.bitmapText(xPos, yPos, 'font', text, 64)
+            // var text = game.add.bitmapText(200, 100, 'font','Phaser & Pixi \nrocking!', 64)
+
+            // this.add.text(70, 380, “TOUCH TO\nSTART”, {font: “30px Orbitron”, align:”center”, fill:”#fff”});
             anchorAndFixToCam(text);
+            // text.font = 'Press+Start+2P';
             return text;
         }
 
@@ -382,6 +394,15 @@ Tan.LevelOne.prototype = {
         }
 
         createHeadsUpDisplay();
+
+        // var texting = game.add.bitmapText(300, 300, 'font', 'TESTING', 50);
+
+
+
+
+
+
+
 
 
     },
@@ -611,13 +632,6 @@ Tan.LevelOne.prototype = {
             playerGrams[gram.name] = gram;
             gram.kill();
         }
-
-        // for (var key in playerGrams){
-        //     var gram = playerGrams[key];
-        //     if (togglePosition == gram.displayIndex){
-        //         playerForm = gram.name;
-        //     }
-        // }
 
         function collectCoin(player, coin){
             coinSound.play();
