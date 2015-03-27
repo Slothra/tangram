@@ -81,6 +81,7 @@ var togglerPaddingLeft = togglerDefaultPadding;
 var togglerPaddingTop = 10;
 var toggleOn = false;
 var togglePosition = 0;
+var toggleForm;
 
 Tan.MainMenu = function(game){};
 
@@ -583,32 +584,23 @@ Tan.LevelOne.prototype = {
         player.body.velocity.x = 0;
 
         // Set playerForm
-        // if ((underwater && playerGrams.hat) || (playerForm == 'fish' && !underwater && !player.body.touching.down)){
-        //     playerForm = 'fish';
-        // if (underwater){
-        //     if (playerForm == 'brick'){
-        //         playerForm = 'brickUnderwater';
-        //     } else if (playerForm == 'hat' || playerForm = 'brickUnderwater'){
-        //         playerForm = 'fish';
-        //     }
-        // } else {   
-            for (var key in playerGrams){
-                var gram = playerGrams[key];
-                if (togglePosition == gram.displayIndex){
-                    playerForm = gram.name;
-                    if (underwater){
-                        if (playerForm == 'brick'){
-                            playerForm = 'brickUnderwater';
-                        } else if (playerForm == 'hat'){
-                            playerForm = 'fish';
-                        }
-                    }
-                    if (playerForm == 'fish' && !underwater && !player.body.touching.down){
+        for (var key in playerGrams){
+            var gram = playerGrams[key];
+            if (togglePosition == gram.displayIndex){
+                toggleForm = gram.name;
+                if (underwater){
+                    if (toggleForm == 'brick'){
+                        playerForm = 'brickUnderwater';
+                    } else if (toggleForm == 'hat'){
                         playerForm = 'fish';
                     }
+                } else if (playerForm == 'fish' && !underwater && !player.body.touching.down) {
+                    playerForm = 'fish';
+                } else {
+                    playerForm = gram.name;
                 }
             }
-        // }
+        }
 
         switch (playerForm){
           case 'brick':
@@ -734,6 +726,7 @@ Tan.LevelOne.prototype = {
             coin.kill();
         }
 
+        // Moves toggle position
         if (toggleKey.isDown && toggleOn == false){
             toggleOn = true;
             if (togglePosition < gramCount-1){
@@ -752,14 +745,7 @@ Tan.LevelOne.prototype = {
 
         displayGrams();
         displayToggler();
-
-
-
-
-
-
-
-
+        
 
         // Claw moves to platform (needs animations)
         
