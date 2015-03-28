@@ -24,7 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 500;
+var xStartPos = 30;
 
 
 
@@ -213,6 +213,8 @@ Tan.LevelOne.prototype = {
         game.load.image('plat_end_rounded', 'assets/scene/plat_end_rounded.png');
         game.load.image('water_overlay', 'assets/scene/water_overlay.png');
         game.load.image('branch', 'assets/scene/branch.png');
+        game.load.image('plank', 'assets/scene/plank.png');
+
 
 
 
@@ -514,6 +516,7 @@ Tan.LevelOne.prototype = {
 
     // Scenic overlay
         var sands = game.add.group();
+        var planks = game.add.group();
         //Sand
         game.add.tileSprite(0, 745, xWorldBounds, 70, 'ground_sand');
         sands.create(295, 541, 'plat01');
@@ -523,9 +526,19 @@ Tan.LevelOne.prototype = {
         sands.create(2695, 445, 'plat12');
         game.add.tileSprite(3950, 445, xWorldBounds, 350, 'plat_end');
         sands.create(3895, 445, 'plat_end_rounded');
+        
+        planks.create(600, 400, 'plank');
+
+
+
+
         // Transparent layer over water
         var waterOverlay = game.add.sprite(1062, 500, 'water_overlay');
         waterOverlay.scale.setTo((xWorldBounds/10 + 1000), 30);
+
+
+
+
 
 
     },
