@@ -215,21 +215,9 @@ Tan.LevelOne.prototype = {
         game.load.image('plat_end_rounded', 'assets/scene/plat_end_rounded.png');
         game.load.image('water_overlay', 'assets/scene/water_overlay.png');
         game.load.image('branch', 'assets/scene/branch.png');
-        game.load.image('plank', 'assets/scene/plank.png');
+        game.load.image('plank', 'assets/scene/plank2.png');
         game.load.image('plank_short', 'assets/scene/plank_short.png');
         game.load.image('plank_long', 'assets/scene/plank_long.png');
-        game.load.image('plank2', 'assets/scene/plank2.png');
-
-
-
-
-
-
-
-
-
-
-
 
     },
 
@@ -364,7 +352,7 @@ Tan.LevelOne.prototype = {
             return right;
         }
 
-        createMovingPlat(1300, 500, 'plank2', 150, 150);
+        createMovingPlat(1300, 500, 'plank', 150, 150);
 
 
 
