@@ -24,11 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 500;
-
-
-
-
+var xStartPos = 0;
 var yStartPos = gameHeight;
 var player;
 var playerGrams = {};
@@ -61,6 +57,10 @@ var crabVel = -50;
 var deadPlayer;
 var bossTime = false;
 var crabDead = false;
+var firstTimeUnderwater = true;
+var hint;
+
+var currentLevel = 1;
 
 var grassGroup;
 
@@ -187,6 +187,7 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
         game.load.spritesheet('badfish', 'assets/sprites/badfish-swim.png', 99, 72, 3);
         game.load.image('toggler', 'assets/sprites/gram_toggler2.png');
+        game.load.spritesheet('hints', 'assets/sprites/hints.png', 57,38,2);
 
         game.load.audio('exploring', 'assets/sound/exploring.m4a');
         game.load.audio('boss', 'assets/sound/boss.m4a');
@@ -675,7 +676,8 @@ Tan.LevelOne.prototype = {
                 if (cursors.up.isDown && player.position.y > 470){
                     player.body.velocity.y = yVel;
                 }
-            }
+           }
+
               //  Allow the player to jump if they are touching the ground.
             else {
                 if (!underwater && cursors.up.isDown && player.body.touching.down){
@@ -692,12 +694,35 @@ Tan.LevelOne.prototype = {
             }            
         }
 
+        function showHint(hintName){
+            hint = game.add.sprite(player.position.x, player.position.y - 20, 'hints')
+            hint.animations.add('water-hint', [0], 10, true);
+            hint.animations.add('crab-hint', [1], 10, true);
+            if (hintName === 'underwater'){
+                hint.animations.play('water-hint')
+                game.time.events.add(Phaser.Timer.SECOND * 3, hideHint, this);
+            } else if (hintName === 'crab'){
+                hint.animations.play('crab-hint')   
+                game.time.events.add(Phaser.Timer.SECOND * 3, hideHint, this);
+            }
+            
+        }
+
+        function hideHint(){
+            hint.destroy()
+        }
+
         function moveAsBrick(){
             movePlayer(0, 'walk', 'jump', playerSpeed, -400);
         }
 
         function moveAsBrickUnderwater(){
             movePlayer(0, 'walkUnderwater', 'jump', playerSpeed/3, -300);
+                if (firstTimeUnderwater === true && player.body.touching.down){
+                    firstTimeUnderwater = false;
+                    showHint('underwater');
+                }
+ 
         }
 
         function moveAsBrickHat(){
@@ -784,8 +809,9 @@ Tan.LevelOne.prototype = {
             rightPincer.body.velocity.x = crabVel;
         }
 
-        if (player.position.x > 3200 && bossTime === false){
+        if (player.position.x > 3000 && bossTime === false){
             bossFight();
+            showHint('crab');
         }
 
         function bossFight(){
@@ -975,6 +1001,7 @@ Tan.LevelTwo.prototype = {
 
     },
     create: function(){
+        currentLevel = 2;
         var levelTwoText = "Level Two"
         var text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
     },
@@ -1006,14 +1033,26 @@ Tan.GameOver.prototype = {
     update: function(){
         var restartKey = game.input.keyboard.addKey(Phaser.Keyboard.Y);
         var endKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
+
         // restart from last checkpoint (start of level, boss)
         if (restartKey.isDown){
             restartMusic.stop();
-            gramCount = 1;
-            playerGrams = {};
-            coinCount = 0;
-            game.state.start('LevelOne');
-            playerForm = 'brick';
+            reloadCurrentLevel();
+        }
+
+        function reloadCurrentLevel(){
+            if (currentLevel ===1){
+                gramCount = 1;
+                playerGrams = {};
+                coinCount = 0;
+                game.state.start('LevelOne');
+                playerForm = 'brick';
+                bossTime = false;
+                crabLife = 3;
+                countdown = false;
+            } else if (currentLevel === 2){
+                game.state.start('LevelTwo');
+            }
         }
         if (endKey.isDown){
             restartMusic.stop();
