@@ -24,10 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 30;
-
-
-
+var xStartPos = 2500;
 
 var yStartPos = gameHeight;
 var player;
@@ -61,6 +58,10 @@ var crabVel = -50;
 var deadPlayer;
 var bossTime = false;
 var crabDead = false;
+var firstTimeUnderwater = true;
+var hint;
+
+var currentLevel = 1;
 
 var grassGroup;
 
@@ -187,6 +188,7 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
         game.load.spritesheet('badfish', 'assets/sprites/badfish-swim.png', 99, 72, 3);
         game.load.image('toggler', 'assets/sprites/gram_toggler2.png');
+        game.load.spritesheet('hints', 'assets/sprites/hints.png', 57,38,2);
 
         game.load.audio('exploring', 'assets/sound/exploring.m4a');
         game.load.audio('boss', 'assets/sound/boss.m4a');
@@ -214,6 +216,10 @@ Tan.LevelOne.prototype = {
         game.load.image('water_overlay', 'assets/scene/water_overlay.png');
         game.load.image('branch', 'assets/scene/branch.png');
         game.load.image('plank', 'assets/scene/plank.png');
+        game.load.image('plank_short', 'assets/scene/plank_short.png');
+        game.load.image('plank_long', 'assets/scene/plank_long.png');
+
+
 
 
 
@@ -267,9 +273,9 @@ Tan.LevelOne.prototype = {
         var water01 = createWater((xWorldBounds/10 + 1000), 25, 1000, 300);
         var plat01 = createPlatform(20, 20, 300, 250);
         makeImmovable(plat01);
-        var plat02 = createPlatform(6, 3, 600, 400);
+        var plat02 = createPlatform(7, 3, 600, 400);
         makeImmovable(plat02);
-        var plat03 = createPlatform(6, 3, 700, 500);
+        var plat03 = createPlatform(7, 3, 700, 500);
         makeImmovable(plat03);
         var plat04 = createPlatform(16, 45, 900, 500);
         makeImmovable(plat04);
@@ -283,9 +289,9 @@ Tan.LevelOne.prototype = {
         makeImmovable(plat08);
         var plat09 = createPlatform(12, 3, 1800, 380);
         makeImmovable(plat09);
-        var plat10 = createPlatform(15, 3, 2000, 500);
+        var plat10 = createPlatform(17, 3, 2000, 500);
         makeImmovable(plat10);
-        var plat11 = createPlatform(18, 3, 2400, 440);
+        var plat11 = createPlatform(17, 3, 2400, 440);
         makeImmovable(plat11);
         var plat12 = createPlatform(30, 30, 2700, 350);
         makeImmovable(plat12);
@@ -527,7 +533,15 @@ Tan.LevelOne.prototype = {
         game.add.tileSprite(3950, 445, xWorldBounds, 350, 'plat_end');
         sands.create(3895, 445, 'plat_end_rounded');
         
-        planks.create(600, 400, 'plank');
+        planks.create(590, 395, 'plank_short');
+        planks.create(690, 295, 'plank_short');
+        planks.create(1695, 595, 'plank_short');
+        planks.create(1790, 415, 'plank');
+        planks.create(1995, 295, 'plank_long');
+        planks.create(2395, 355, 'plank_long');
+
+
+
 
 
 
@@ -688,7 +702,8 @@ Tan.LevelOne.prototype = {
                 if (cursors.up.isDown && player.position.y > 470){
                     player.body.velocity.y = yVel;
                 }
-            }
+           }
+
               //  Allow the player to jump if they are touching the ground.
             else {
                 if (!underwater && cursors.up.isDown && player.body.touching.down){
@@ -705,12 +720,35 @@ Tan.LevelOne.prototype = {
             }            
         }
 
+        function showHint(hintName){
+            hint = game.add.sprite(player.position.x, player.position.y - 20, 'hints')
+            hint.animations.add('water-hint', [0], 10, true);
+            hint.animations.add('crab-hint', [1], 10, true);
+            if (hintName === 'underwater'){
+                hint.animations.play('water-hint')
+                game.time.events.add(Phaser.Timer.SECOND * 3, hideHint, this);
+            } else if (hintName === 'crab'){
+                hint.animations.play('crab-hint')   
+                game.time.events.add(Phaser.Timer.SECOND * 3, hideHint, this);
+            }
+            
+        }
+
+        function hideHint(){
+            hint.destroy()
+        }
+
         function moveAsBrick(){
             movePlayer(0, 'walk', 'jump', playerSpeed, -400);
         }
 
         function moveAsBrickUnderwater(){
             movePlayer(0, 'walkUnderwater', 'jump', playerSpeed/3, -300);
+                if (firstTimeUnderwater === true && player.body.touching.down){
+                    firstTimeUnderwater = false;
+                    showHint('underwater');
+                }
+ 
         }
 
         function moveAsBrickHat(){
@@ -797,8 +835,9 @@ Tan.LevelOne.prototype = {
             rightPincer.body.velocity.x = crabVel;
         }
 
-        if (player.position.x > 3200 && bossTime === false){
+        if (player.position.x > 3000 && bossTime === false){
             bossFight();
+            showHint('crab');
         }
 
         function bossFight(){
@@ -988,6 +1027,7 @@ Tan.LevelTwo.prototype = {
 
     },
     create: function(){
+        currentLevel = 2;
         var levelTwoText = "Level Two"
         var text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
     },
@@ -1019,14 +1059,26 @@ Tan.GameOver.prototype = {
     update: function(){
         var restartKey = game.input.keyboard.addKey(Phaser.Keyboard.Y);
         var endKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
+
         // restart from last checkpoint (start of level, boss)
         if (restartKey.isDown){
             restartMusic.stop();
-            gramCount = 1;
-            playerGrams = {};
-            coinCount = 0;
-            game.state.start('LevelOne');
-            playerForm = 'brick';
+            reloadCurrentLevel();
+        }
+
+        function reloadCurrentLevel(){
+            if (currentLevel ===1){
+                gramCount = 1;
+                playerGrams = {};
+                coinCount = 0;
+                game.state.start('LevelOne');
+                playerForm = 'brick';
+                bossTime = false;
+                crabLife = 3;
+                countdown = false;
+            } else if (currentLevel === 2){
+                game.state.start('LevelTwo');
+            }
         }
         if (endKey.isDown){
             restartMusic.stop();
