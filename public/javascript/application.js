@@ -188,7 +188,7 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
         game.load.spritesheet('badfish', 'assets/sprites/badfish-swim.png', 99, 72, 3);
         game.load.image('toggler', 'assets/sprites/gram_toggler2.png');
-        game.load.spritesheet('hints', 'assets/sprites/hints.png', 57,38,2);
+        game.load.spritesheet('hints', 'assets/sprites/LevelOneHints.png', 118,77,2);
 
         game.load.audio('exploring', 'assets/sound/exploring.m4a');
         game.load.audio('boss', 'assets/sound/boss.m4a');
@@ -721,7 +721,7 @@ Tan.LevelOne.prototype = {
         }
 
         function showHint(hintName){
-            hint = game.add.sprite(player.position.x, player.position.y - 20, 'hints')
+            hint = game.add.sprite(player.position.x - 20, player.position.y - 50, 'hints')
             hint.animations.add('water-hint', [0], 10, true);
             hint.animations.add('crab-hint', [1], 10, true);
             if (hintName === 'underwater'){
