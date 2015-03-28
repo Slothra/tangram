@@ -24,11 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 500;
-
-
-
-
+var xStartPos = 0;
 var yStartPos = gameHeight;
 var player;
 var playerGrams = {};
@@ -63,6 +59,8 @@ var bossTime = false;
 var crabDead = false;
 var firstTimeUnderwater = true;
 var hint;
+
+var currentLevel = 1;
 
 var grassGroup;
 
@@ -696,12 +694,8 @@ Tan.LevelOne.prototype = {
             }            
         }
 
-        // if (hint){
-        //     // hint.body.velocity = player.body.velocity;
-        // }
-
         function showHint(hintName){
-            hint = game.add.sprite(player.position.x, player.position.y - 40, 'hints')
+            hint = game.add.sprite(player.position.x, player.position.y - 20, 'hints')
             hint.animations.add('water-hint', [0], 10, true);
             hint.animations.add('crab-hint', [1], 10, true);
             if (hintName === 'underwater'){
@@ -724,7 +718,7 @@ Tan.LevelOne.prototype = {
 
         function moveAsBrickUnderwater(){
             movePlayer(0, 'walkUnderwater', 'jump', playerSpeed/3, -300);
-                if (firstTimeUnderwater === true){
+                if (firstTimeUnderwater === true && player.body.touching.down){
                     firstTimeUnderwater = false;
                     showHint('underwater');
                 }
@@ -815,8 +809,9 @@ Tan.LevelOne.prototype = {
             rightPincer.body.velocity.x = crabVel;
         }
 
-        if (player.position.x > 3200 && bossTime === false){
+        if (player.position.x > 3000 && bossTime === false){
             bossFight();
+            showHint('crab');
         }
 
         function bossFight(){
@@ -1006,6 +1001,7 @@ Tan.LevelTwo.prototype = {
 
     },
     create: function(){
+        currentLevel = 2;
         var levelTwoText = "Level Two"
         var text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
     },
@@ -1037,14 +1033,26 @@ Tan.GameOver.prototype = {
     update: function(){
         var restartKey = game.input.keyboard.addKey(Phaser.Keyboard.Y);
         var endKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
+
         // restart from last checkpoint (start of level, boss)
         if (restartKey.isDown){
             restartMusic.stop();
-            gramCount = 1;
-            playerGrams = {};
-            coinCount = 0;
-            game.state.start('LevelOne');
-            playerForm = 'brick';
+            reloadCurrentLevel();
+        }
+
+        function reloadCurrentLevel(){
+            if (currentLevel ===1){
+                gramCount = 1;
+                playerGrams = {};
+                coinCount = 0;
+                game.state.start('LevelOne');
+                playerForm = 'brick';
+                bossTime = false;
+                crabLife = 3;
+                countdown = false;
+            } else if (currentLevel === 2){
+                game.state.start('LevelTwo');
+            }
         }
         if (endKey.isDown){
             restartMusic.stop();
