@@ -24,7 +24,8 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 0;
+var xStartPos = 1500;
+
 var yStartPos = gameHeight;
 var player;
 var playerGrams = {};
@@ -214,13 +215,9 @@ Tan.LevelOne.prototype = {
         game.load.image('plat_end_rounded', 'assets/scene/plat_end_rounded.png');
         game.load.image('water_overlay', 'assets/scene/water_overlay.png');
         game.load.image('branch', 'assets/scene/branch.png');
-
-
-
-
-
-
-
+        game.load.image('plank', 'assets/scene/plank2.png');
+        game.load.image('plank_short', 'assets/scene/plank_short.png');
+        game.load.image('plank_long', 'assets/scene/plank_long.png');
 
     },
 
@@ -266,9 +263,9 @@ Tan.LevelOne.prototype = {
         var water01 = createWater((xWorldBounds/10 + 1000), 25, 1000, 300);
         var plat01 = createPlatform(20, 20, 300, 250);
         makeImmovable(plat01);
-        var plat02 = createPlatform(6, 3, 600, 400);
+        var plat02 = createPlatform(7, 3, 600, 400);
         makeImmovable(plat02);
-        var plat03 = createPlatform(6, 3, 700, 500);
+        var plat03 = createPlatform(7, 3, 700, 500);
         makeImmovable(plat03);
         var plat04 = createPlatform(16, 45, 900, 500);
         makeImmovable(plat04);
@@ -282,15 +279,15 @@ Tan.LevelOne.prototype = {
         makeImmovable(plat08);
         var plat09 = createPlatform(12, 3, 1800, 380);
         makeImmovable(plat09);
-        var plat10 = createPlatform(15, 3, 2000, 500);
+        var plat10 = createPlatform(17, 3, 2000, 500);
         makeImmovable(plat10);
-        var plat11 = createPlatform(18, 3, 2400, 440);
+        var plat11 = createPlatform(17, 3, 2400, 440);
         makeImmovable(plat11);
         var plat12 = createPlatform(30, 30, 2700, 350);
         makeImmovable(plat12);
-        var plat13 = createPlatform(12, 3, 3200, 450);
+        var plat13 = createPlatform(13, 3, 3200, 450);
         makeImmovable(plat13);
-        var plat14 = createPlatform(12, 3, 3500, 470);
+        var plat14 = createPlatform(12, 3, 3550, 470);
         makeImmovable(plat14);
         var plat15 = createPlatform((xWorldBounds/10 + 3900), 30, 3900, 350);
         makeImmovable(plat15);
@@ -299,21 +296,65 @@ Tan.LevelOne.prototype = {
         var plat17 = createPlatform(8, 3, 1700, 200);
         makeImmovable(plat17);
 
+        // platformMovementTriggers = game.add.group();
+        // platformMovementTriggers.enableBody = true;
+        // platformMovementTriggers.allowGravity = false;
+        // platformMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
+
+        // platformLeftTrigger = game.add.sprite(1200, 300, null, 0, platformMovementTriggers);
+        // platformLeftTrigger.body.setSize(40, 500, 0, 0);
+        // platformRightTrigger = game.add.sprite(1400, 300, null, 0, platformMovementTriggers);
+        // platformRightTrigger.body.setSize(40, 100, 0, 0);
+
+        // movPlat = createPlatform(10,3, 1300, 500);
+        // game.physics.enable(movPlat, Phaser.Physics.ARCADE);
+        // movPlat.allowGravity = false;
+        // movPlat.body.velocity.x = 50;
+        // movPlat.body.immovable = true;
+
+
+
+        // var movPlatPlank = planks.create(1300, 500, 'plank');
+        // game.physics.enable(movPlatPlank, Phaser.Physics.ARCADE);
+        // movPlatPlank.allowGravity = false;
+        // movPlatPlank.body.velocity.x = 50;
+        // movPlatPlank.body.immovable = true;
+
         platformMovementTriggers = game.add.group();
         platformMovementTriggers.enableBody = true;
         platformMovementTriggers.allowGravity = false;
         platformMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
 
-        platformLeftTrigger = game.add.sprite(1200, 300, null, 0, platformMovementTriggers);
-        platformLeftTrigger.body.setSize(40, 500, 0, 0);
-        platformRightTrigger = game.add.sprite(1400, 300, null, 0, platformMovementTriggers);
-        platformRightTrigger.body.setSize(40, 100, 0, 0);
 
-        movPlat = createPlatform(10,3, 1300, 500);
-        game.physics.enable(movPlat, Phaser.Physics.ARCADE);
-        movPlat.allowGravity = false;
-        movPlat.body.velocity.x = 50;
-        movPlat.body.immovable = true;
+        function createMovingPlat(xPixFromLeft, yPixFromBottom, imgKey, leftTrigger, rightTrigger){
+            var newMovePlat = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey, 0, enemies);
+            game.physics.enable(newMovePlat, Phaser.Physics.ARCADE);
+            newMovePlat.allowGravity = false;
+            newMovePlat.body.velocity.x = 60;
+            newMovePlat.body.immovable = true;
+
+            createPlatLeftTrigger(newMovePlat, leftTrigger);
+            createPlatRightTrigger(newMovePlat, rightTrigger);
+            // debugger;
+
+            return newMovePlat;
+        }
+
+        function createPlatLeftTrigger(platform, leftTrigger){
+            var left = game.add.sprite(platform.position.x - leftTrigger, platform.position.y, null, 0, platformMovementTriggers);
+            left.body.setSize(40, 500, 0, 0);
+            return left;
+        }
+
+        function createPlatRightTrigger(platform, rightTrigger){
+            var right = game.add.sprite(platform.position.x + rightTrigger, platform.position.y, null, 0, platformMovementTriggers);
+            right.body.setSize(40, 100, 0, 0);
+            return right;
+        }
+
+        createMovingPlat(1300, 500, 'plank', 150, 150);
+
+
 
         // Create a gram
         function createGram(xPos, yPos, imgKey, gramName){
@@ -513,7 +554,9 @@ Tan.LevelOne.prototype = {
         
         createHeadsUpDisplay();
 
+
     // Scenic overlay
+        var planks = game.add.group();
         var sands = game.add.group();
         //Sand
         game.add.tileSprite(0, 745, xWorldBounds, 70, 'ground_sand');
@@ -524,9 +567,25 @@ Tan.LevelOne.prototype = {
         sands.create(2695, 445, 'plat12');
         game.add.tileSprite(3950, 445, xWorldBounds, 350, 'plat_end');
         sands.create(3895, 445, 'plat_end_rounded');
+
+        // Planks
+        planks.create(590, 395, 'plank_short');
+        planks.create(690, 295, 'plank_short');
+        planks.create(1695, 595, 'plank_short');
+        planks.create(1790, 415, 'plank');
+        planks.create(1995, 295, 'plank_long');
+        planks.create(2395, 355, 'plank_long');
+        planks.create(3000, 595, 'plank_short');
+        planks.create(3195, 345, 'plank');
+        planks.create(3545, 325, 'plank');
+
         // Transparent layer over water
         var waterOverlay = game.add.sprite(1062, 500, 'water_overlay');
         waterOverlay.scale.setTo((xWorldBounds/10 + 1000), 30);
+
+
+
+
 
 
     },
