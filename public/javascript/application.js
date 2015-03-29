@@ -130,7 +130,8 @@ Tan.MainMenu.prototype = {
     },
     update: function(){
         // if clicked starts game
-        game.input.onDown.add(loading,self);    
+        game.input.onDown.add(loading,self);   
+        selectSound.volume = .1; 
         var clickMenu = false;
 
         function clicked(){
@@ -150,7 +151,7 @@ Tan.MainMenu.prototype = {
             clickMenu = false;
             mainMenu.destroy();
 
-            var mainMenuText = "Left Arrow  - Move left\nRight Arrow - Move right\nF button    - change form\nM button    - Mute game\nP button    - Pause game"
+            var mainMenuText = "Left Arrow  - Move left\nRight Arrow - Move right\nUp Arrow    - Jump\nF button    - change form\nM button    - Mute game\nP button    - Pause game"
             var text = game.add.bitmapText(150, 200, 'font', mainMenuText, 25);
             game.input.onDown.add(startGame,self);
         }
@@ -214,7 +215,7 @@ Tan.LevelOne.prototype = {
         game.load.image('plat_end', 'assets/scene/platEnd.png');
         game.load.image('plat_end_rounded', 'assets/scene/plat_end_rounded.png');
         game.load.image('water_overlay', 'assets/scene/water_overlay.png');
-        game.load.image('branch', 'assets/scene/branch.png');
+        // game.load.image('branch', 'assets/scene/branch.png');
         game.load.image('plank', 'assets/scene/plank2.png');
         game.load.image('plank_short', 'assets/scene/plank_short.png');
         game.load.image('plank_long', 'assets/scene/plank_long.png');
@@ -643,7 +644,7 @@ Tan.LevelOne.prototype = {
         }
 
         function pauseMenu(){
-            menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
+            menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click to resume', { font: '30px Arial', fill: '#fff' });
             menuText.anchor.setTo(0.5, 0.5);
             game.paused = true;
             game.input.onDown.addOnce(unpause,self);
@@ -651,7 +652,6 @@ Tan.LevelOne.prototype = {
     
         function unpause(event){
             // Only act if paused
-            console.log(event)
             if(game.paused && pauser === true){
                 // menu.destroy();
                 menuText.destroy();
@@ -1082,9 +1082,13 @@ Tan.LevelTwo.prototype = {
         currentLevel = 2;
         var levelTwoText = "Level Two"
         var text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
+
     },
     update: function(){
-
+        game.time.events.add(Phaser.Timer.SECOND * 3, comingSoon, this);
+        function comingSoon(){
+            var soonText = game.add.bitmapText(120, 400, 'font', "... coming soon", 25);
+        }
 
     }
 
@@ -1144,4 +1148,4 @@ game.state.add('LevelOne', Tan.LevelOne);
 game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelOne');
+game.state.start('LevelTwo');
