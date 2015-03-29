@@ -1148,4 +1148,4 @@ game.state.add('LevelOne', Tan.LevelOne);
 game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelTwo');
+game.state.start('MainMenu');
