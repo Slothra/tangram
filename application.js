@@ -3,6 +3,7 @@ var express = require('express')
 var app = express();
 
 // app.use(express.static('public'));
+var port = process.env.PORT || 8080;
 
 app.get('/', function (req, res) {
 	res.send("<!DOCTYPE html> \
@@ -20,5 +21,9 @@ app.get('/', function (req, res) {
 </body> \
 </html>");
 })
+
+app.listen(port, function() {
+    console.log('Our app is running on http://localhost:' + port);
+});
 
 // app.listen(3000);
