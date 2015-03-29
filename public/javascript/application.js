@@ -24,7 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 1500;
+var xStartPos = 30;
 
 var yStartPos = gameHeight;
 var player;
@@ -219,6 +219,8 @@ Tan.LevelOne.prototype = {
         game.load.image('plank_short', 'assets/scene/plank_short.png');
         game.load.image('plank_long', 'assets/scene/plank_long.png');
 
+        game.load.spritesheet('hat_glow', 'assets/grams/grams_anim3.png', 64,64,8);
+
     },
 
     create: function(){
@@ -255,6 +257,8 @@ Tan.LevelOne.prototype = {
 
         grams = game.add.group();
         grams.enableBody = true;
+        grams.physicsBodyType = Phaser.Physics.ARCADE;
+
 
         var ground = platforms.create(0, game.world.height - 50, 'platform');
         ground.scale.setTo(xWorldBounds/10, 7);
@@ -357,15 +361,21 @@ Tan.LevelOne.prototype = {
 
 
         // Create a gram
-        function createGram(xPos, yPos, imgKey, gramName){
+        function createGram(xPos, yPos, imgKey, gramName, animate){
             var gram = grams.create(xPos, yPos, imgKey);
             gram.body.gravity.y = 6;
             gram.name = gramName;
             gram.displayed = false;
+            if (animate == true) {
+                var glow = gram.animations.add('glow');
+                glow.play(7, true);
+                gram.animated = true;
+            }
             return gram;
         }
 
-        createGram(200, game.world.height -70, 'sm_triangle', 'hat');
+        createGram(200, game.world.height - 110, 'hat_glow', 'hat', true);
+
 
         function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
@@ -506,6 +516,7 @@ Tan.LevelOne.prototype = {
             player.anchor.setTo(.5, 0);
             player.z = 1;
         }
+
 
         function initializeCamera(){
             game.camera.follow(player);
@@ -795,7 +806,15 @@ Tan.LevelOne.prototype = {
         function displayGram(gram){
             var marginLeft = 210;
             var padding = 50;
-            var displayGram = game.add.sprite(marginLeft + ((gram.displayIndex + 1) * padding), 38, gram.key);
+            var topPadding;
+
+            if (gram.animated){
+                topPadding = 28;
+            }else{
+                topPadding = 38
+            }
+
+            var displayGram = game.add.sprite(marginLeft + ((gram.displayIndex + 1) * padding), topPadding, gram.key);
             displayGram.anchor.setTo(0.5, 0.5);
             displayGram.fixedToCamera = true;
         }
