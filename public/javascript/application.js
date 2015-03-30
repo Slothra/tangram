@@ -24,7 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 30;
+var xStartPos = 1200;
 
 var yStartPos = gameHeight;
 var player;
@@ -214,8 +214,6 @@ Tan.LevelOne.prototype = {
         game.load.image('plat12', 'assets/scene/plat12_300x300.png');
         game.load.image('plat_end', 'assets/scene/platEnd.png');
         game.load.image('plat_end_rounded', 'assets/scene/plat_end_rounded.png');
-        game.load.image('water_overlay', 'assets/scene/water_overlay.png');
-        // game.load.image('branch', 'assets/scene/branch.png');
         game.load.image('plank', 'assets/scene/plank2.png');
         game.load.image('plank_short', 'assets/scene/plank_short.png');
         game.load.image('plank_long', 'assets/scene/plank_long.png');
@@ -223,10 +221,11 @@ Tan.LevelOne.prototype = {
         game.load.image('rocks_small', 'assets/scene/rocks.png');
         game.load.image('rocks', 'assets/scene/rocks2.png');
 
-
-
-
         game.load.spritesheet('hat_glow', 'assets/grams/grams_anim3.png', 64,64,8);
+        game.load.image('water_anim', 'assets/scene/water_anim3.png');
+        game.load.image('water_anim2', 'assets/scene/water_anim4.png');
+
+
 
     },
 
@@ -262,6 +261,12 @@ Tan.LevelOne.prototype = {
         platforms = game.add.group();
         platforms.enableBody = true;
 
+        var water2 = game.add.tileSprite(1062, 490, xWorldBounds, 512, 'water_anim2');
+        var waterTween = game.add.tween(water2)
+        .to( { y: 500}, 1000, Phaser.Easing.Linear.In, true, 0, -1)
+        .yoyo(true).repeat(1000000).start();
+
+
         // Keep this group behind player
         var sceneElemBack = game.add.group();
 
@@ -270,9 +275,28 @@ Tan.LevelOne.prototype = {
         grams.physicsBodyType = Phaser.Physics.ARCADE;
 
 
+
+        // var water1 = game.add.tileSprite(0, 300, xWorldBounds, 512, 'water_anim');
+        // var waterTween = game.add.tween(water1)
+        // .to( { y: 325, alpha: 0.4 }, 1000, Phaser.Easing.Linear.In, true, 0, -1)
+        // .yoyo(true).repeat(5000).start();
+
+
+
         var ground = platforms.create(0, game.world.height - 50, 'platform');
         ground.scale.setTo(xWorldBounds/10, 7);
         ground.body.immovable = true;
+
+
+
+
+
+
+
+
+
+
+
 
         var water01 = createWater((xWorldBounds/10 + 1000), 25, 1000, 300);
         var plat01 = createPlatform(20, 20, 300, 250, true);
@@ -609,10 +633,10 @@ Tan.LevelOne.prototype = {
         createSceneElem(1.5, 3490, 80, 'rocks');
         createSceneElem(1, 3590, 70, 'rocks', true);
 
-
-        // Transparent layer over water
-        var waterOverlay = game.add.sprite(1062, 500, 'water_overlay');
-        waterOverlay.scale.setTo((xWorldBounds/10 + 1000), 30);
+        var water1 = game.add.tileSprite(1062, 505, xWorldBounds, 512, 'water_anim');
+        var waterTween = game.add.tween(water1)
+        .to( { y: 495, alpha: 0.4 }, 2000, Phaser.Easing.Linear.In, true, 0, -1)
+        .yoyo(true).repeat(1000000).start();
 
     },
 
