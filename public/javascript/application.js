@@ -24,7 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 3000;
+var xStartPos = 30;
 
 var yStartPos = gameHeight;
 var player;
