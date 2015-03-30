@@ -24,7 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 2500;
+var xStartPos = 3000;
 
 var yStartPos = gameHeight;
 var player;
@@ -220,6 +220,9 @@ Tan.LevelOne.prototype = {
         game.load.image('plank_short', 'assets/scene/plank_short.png');
         game.load.image('plank_long', 'assets/scene/plank_long.png');
         game.load.image('seaweed', 'assets/scene/seaweed.png');
+        game.load.image('rocks_small', 'assets/scene/rocks.png');
+        game.load.image('rocks', 'assets/scene/rocks2.png');
+
 
 
 
@@ -259,7 +262,8 @@ Tan.LevelOne.prototype = {
         platforms = game.add.group();
         platforms.enableBody = true;
 
-        var seaweedsBack = game.add.group();
+        // Keep this group behind player
+        var sceneElemBack = game.add.group();
 
         grams = game.add.group();
         grams.enableBody = true;
@@ -535,21 +539,21 @@ Tan.LevelOne.prototype = {
         
         createHeadsUpDisplay();
 
-        function createSeaweed(scale, xPixFromLeft, yPixFromBottom, front){
+        function createSceneElem(scale, xPixFromLeft, yPixFromBottom, imgKey, front){
             if (front == true){
-                var newSeaweed = seaweeds.create(xPixFromLeft, game.world.height - yPixFromBottom, 'seaweed');
+                var newElement = sceneElem.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey);
             } else {
-                var newSeaweed = seaweedsBack.create(xPixFromLeft, game.world.height - yPixFromBottom, 'seaweed');
+                var newElement = sceneElemBack.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey);
             }
-                newSeaweed.scale.setTo(scale, scale);
-                return newSeaweed;
+                newElement.scale.setTo(scale, scale);
+                return newElement;
         }
 
 
     // Scenic overlay
         var planks = game.add.group();
         var sands = game.add.group();
-        var seaweeds = game.add.group();
+        var sceneElem = game.add.group();
         //Sand
         game.add.tileSprite(0, 745, xWorldBounds, 70, 'ground_sand');
         sands.create(295, 541, 'plat01');
@@ -570,20 +574,34 @@ Tan.LevelOne.prototype = {
         planks.create(3000, 595, 'plank_short');
         planks.create(3195, 345, 'plank');
         planks.create(3545, 325, 'plank');
-        createSeaweed(.75, 1100, 240);
-        createSeaweed(.6, 1150, 200, true);
-        createSeaweed(.5, 1070, 170, true);
-        createSeaweed(.5, 1380, 180);
-        createSeaweed(.7, 1410, 235, true);
-        createSeaweed(.9, 1700, 280, true);
-        createSeaweed(.6, 1670, 200);
-        createSeaweed(.6, 1780, 200);
-        createSeaweed(.5, 2050, 180, true);
-        createSeaweed(.75, 2100, 240);
-        createSeaweed(.35, 2190, 130, true);
-        createSeaweed(.5, 2230, 180);
-        createSeaweed(.75, 2210, 240);
-        createSeaweed(.35, 2270, 130, true);
+        createSceneElem(.75, 1100, 240, 'seaweed' );
+        createSceneElem(.6, 1150, 200, 'seaweed', true);
+        createSceneElem(.5, 1070, 170, 'seaweed', true);
+        createSceneElem(.5, 1380, 180, 'seaweed');
+        createSceneElem(.7, 1410, 235, 'seaweed', true);
+        createSceneElem(.9, 1700, 280, 'seaweed', true);
+        createSceneElem(.6, 1670, 200, 'seaweed');
+        createSceneElem(.6, 1780, 200, 'seaweed');
+        createSceneElem(.5, 2050, 180, 'seaweed', true);
+        createSceneElem(.75, 2100, 240, 'seaweed');
+        createSceneElem(.35, 2190, 130, 'seaweed', true);
+        createSceneElem(.5, 2230, 180, 'seaweed');
+        createSceneElem(.75, 2210, 240, 'seaweed');
+        createSceneElem(.35, 2270, 130, 'seaweed', true);
+        createSceneElem(1, 1100, 70, 'rocks');
+        createSceneElem(1, 1190, 70, 'rocks_small', true);
+        createSceneElem(1, 1380, 70, 'rocks');
+        createSceneElem(1, 1700, 70, 'rocks', true);
+        createSceneElem(1, 1780, 70, 'rocks_small');
+        createSceneElem(.7, 1900, 67, 'rocks', true);
+        createSceneElem(1, 2100, 70, 'rocks_small');
+        createSceneElem(.6, 2300, 65, 'rocks', true);
+        createSceneElem(.4, 2350, 61, 'rocks_small');
+        createSceneElem(1.8, 3100, 85, 'rocks_small', true);
+        createSceneElem(1.5, 3010, 80, 'rocks');
+        createSceneElem(1.8, 3400, 85, 'rocks_small', true);
+        createSceneElem(1.5, 3490, 80, 'rocks');
+        createSceneElem(1, 3590, 70, 'rocks', true);
 
 
         // Transparent layer over water
