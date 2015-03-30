@@ -224,6 +224,7 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('hat_glow', 'assets/grams/grams_anim3.png', 64,64,8);
         game.load.image('water_anim', 'assets/scene/water_anim3.png');
         game.load.image('water_anim2', 'assets/scene/water_anim4.png');
+        game.load.image('bubble', 'assets/scene/bubble.png');
 
 
 
@@ -581,6 +582,7 @@ Tan.LevelOne.prototype = {
 
 
     // Scenic overlay
+        var bubbles = game.add.group();
         var planks = game.add.group();
         var sands = game.add.group();
         var sceneElem = game.add.group();
@@ -633,10 +635,48 @@ Tan.LevelOne.prototype = {
         createSceneElem(1.5, 3490, 80, 'rocks');
         createSceneElem(1, 3590, 70, 'rocks', true);
 
+
+        // var delay = 0;
+
+        // for (var i = 0; i < 30; i++) {
+        //     var sprite = game.add.sprite(-100 + (game.world.randomX), 600, 'bubble');
+
+        //     sprite.scale.set(game.rnd.realInRange(0.5, 0.6));
+
+        //     var speed = game.rnd.between(4000, 6000);
+
+        //     game.add.tween(sprite).to({ y: -256 }, speed, Phaser.Easing.Sinusoidal.InOut, true, delay, 1000, false);
+
+        //     delay += 200;
+        // }
+
+
+
         var water1 = game.add.tileSprite(1062, 505, xWorldBounds, 512, 'water_anim');
         var waterTween = game.add.tween(water1)
         .to( { y: 495, alpha: 0.4 }, 2000, Phaser.Easing.Linear.In, true, 0, -1)
         .yoyo(true).repeat(1000000).start();
+
+
+
+        var delay = 0;
+        function createBubbles(){
+            // Creates 25 coins in random places
+            for (var i = 0; i < 25; i++){
+                var bubble = bubbles.create(game.rnd.integerInRange(1200, xWorldBounds-1800), game.rnd.integerInRange(675, 750), 'bubble');
+                bubble.scale.set(game.rnd.realInRange(0.2, 0.9));
+                // var rise = game.rnd.between(2000, 5000);
+                game.add.tween(bubble).to({ y: 500, alpha: 0 }, 2000, Phaser.Easing.Sinusoidal.InOut, true, delay, 1000, false);
+            delay += 200;
+
+                
+                // var coinAnim = coin.animations.add('rotate');
+                // // coins rotate at various speeds
+                // coinAnim.play(game.rnd.integerInRange(5, 10), true);
+            }
+
+        }
+        createBubbles();
 
     },
 
