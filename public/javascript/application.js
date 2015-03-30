@@ -222,11 +222,9 @@ Tan.LevelOne.prototype = {
         game.load.image('rocks', 'assets/scene/rocks2.png');
 
         game.load.spritesheet('hat_glow', 'assets/grams/grams_anim3.png', 64,64,8);
-        game.load.image('water_anim', 'assets/scene/water_anim3.png');
-        game.load.image('water_anim2', 'assets/scene/water_anim4.png');
+        game.load.image('water_front', 'assets/scene/water_anim3.png');
+        game.load.image('water_back', 'assets/scene/water_anim4.png');
         game.load.image('bubble', 'assets/scene/bubble.png');
-
-
 
     },
 
@@ -262,7 +260,7 @@ Tan.LevelOne.prototype = {
         platforms = game.add.group();
         platforms.enableBody = true;
 
-        var waterBack = game.add.tileSprite(1062, 490, xWorldBounds, 512, 'water_anim2');
+        var waterBack = game.add.tileSprite(1062, 490, xWorldBounds, 512, 'water_back');
         var waterTween = game.add.tween(waterBack)
         .to( { y: 500}, 1000, Phaser.Easing.Linear.In, true, 0, -1)
         .yoyo(true).repeat(1000000).start();
@@ -331,7 +329,6 @@ Tan.LevelOne.prototype = {
         }
 
         createMovingPlat(1300, 500, 'plank', 150, 150);
-
 
 
         // Create a gram
@@ -615,12 +612,14 @@ Tan.LevelOne.prototype = {
         createSceneElem(1.5, 3490, 80, 'rocks');
         createSceneElem(1, 3590, 70, 'rocks', true);
 
-        var waterFront = game.add.tileSprite(1062, 505, xWorldBounds, 512, 'water_anim');
+        // Creates water (front layer)
+        var waterFront = game.add.tileSprite(1062, 505, xWorldBounds, 512, 'water_front');
         var waterTween = game.add.tween(waterFront)
         .to( { y: 495, alpha: 0.4 }, 2000, Phaser.Easing.Linear.In, true, 0, -1)
-        .yoyo(true).repeat(1000000).start();
+        .yoyo(true)
+        .repeat(1000000)
+        .start();
 
-        
         // Creates 28 random bubbles in the water
         var bubbleDelay = 0;
         function createBubbles(){
