@@ -181,8 +181,8 @@ Tan.LevelOne.prototype = {
 
         game.load.image('water', 'assets/water.png');
         game.load.spritesheet('crab', 'assets/sprites/crab.png', 298.3, 143, 3);
-        game.load.image('claw', 'assets/sprites/claw.png');
-        game.load.image('left', 'assets/sprites/rightClaw.png');
+        game.load.spritesheet('right-claw', 'assets/sprites/right-claw.png', 138, 133, 2);
+        game.load.spritesheet('left-claw', 'assets/sprites/left-claw.png', 138, 133, 2);
         game.load.spritesheet('coconut-roll','assets/sprites/coconut-roll.png', 31,32,8);
         game.load.spritesheet('coin','assets/sprites/coin_spritesheet1.png', 32, 22, 8);
         game.load.image('displayCoin', 'assets/sprites/coin.png');
@@ -449,13 +449,19 @@ Tan.LevelOne.prototype = {
         rightTriggerCrabby = game.add.sprite(3885, yWorldBounds - 200, null, 0, enemyMovementTriggers);
         rightTriggerCrabby.body.setSize(4, 32, 0, 0);
 
-        leftPincer = game.add.sprite(crabbyCrab.position.x - 150, 530, 'left', 0, pincers);
-        rightPincer = game.add.sprite(crabbyCrab.position.x+10, 530, 'claw', 0, pincers);
+        leftPincer = game.add.sprite(crabbyCrab.position.x - 150, 510, 'left-claw', 0, pincers);
+        leftPincer.animations.add('leftPincerMove', [1], 10, true);
+        leftPincer.animations.add('leftPinchAni', [0], 10, true);
+        leftPincer.animations.play('leftPincerMove');
+        rightPincer = game.add.sprite(crabbyCrab.position.x+149, 510, 'right-claw', 0, pincers);
+        rightPincer.anchor.setTo(1,0);
+        rightPincer.animations.add('rightPincerMove', [0], 10, true);
+        rightPincer.animations.add('rightPinchAni', [1], 10, true);
+        rightPincer.animations.play('rightPincerMove');
         leftPincer.body.immovable = true;
         rightPincer.body.immovable = true;
 
         coconut = game.add.sprite(3550, 300, 'coconut-roll', 0, coconuts);
-
 
 
         // Creating coins
@@ -908,6 +914,11 @@ Tan.LevelOne.prototype = {
             bossMusic.play();
         }
 
+        if (crabbyCrab.body.velocity.x != 0){
+            leftPincer.animations.play('leftPincerMove')
+            rightPincer.animations.play('rightPincerMove')
+        }
+
         if (player.position.x > 3200 && countdown == false){
             countdown = true;
             createCoconut();
@@ -918,10 +929,12 @@ Tan.LevelOne.prototype = {
             tempCrabVel = crabbyCrab.body.velocity.x;
             crabbyCrab.body.velocity.x = 0;
             if (player.position.x > 3500){
-                game.physics.arcade.moveToXY(rightPincer,3505, 266, 120);
+                game.physics.arcade.moveToXY(rightPincer,3645, 266, 120);
+                rightPincer.animations.play('rightPinchAni')
                 pincer = 1;
             } else {
                 game.physics.arcade.moveToXY(leftPincer,3250,260, 120);
+                leftPincer.animations.play('leftPinchAni')
                 pincer = -1;
             }
             game.time.events.add(Phaser.Timer.SECOND * 2.25, returnPinch, this);
@@ -929,15 +942,17 @@ Tan.LevelOne.prototype = {
 
         function returnPinch(){
             if (pincer === 1){
-                game.physics.arcade.moveToXY(rightPincer,crabbyCrab.position.x, 530);   
+                game.physics.arcade.moveToXY(rightPincer,crabbyCrab.position.x+149, 530);
+                rightPincer.animations.stop();
             } else if (pincer === -1){
                 game.physics.arcade.moveToXY(leftPincer,crabbyCrab.position.x - 150, 530);
+                leftPincer.animations.stop();
             }
             game.time.events.add(Phaser.Timer.SECOND * 4.5, pausePinch, this);
         }
 
         function pausePinch(){
-            if (countdown == true){
+            if (countdown == true){    
                 leftPincer.body.velocity.y = 0;
                 leftPincer.body.velocity.x = 0;
                 rightPincer.body.velocity.y = 0;
