@@ -24,7 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 30;
+var xStartPos = 2500;
 
 var yStartPos = gameHeight;
 var player;
@@ -219,6 +219,9 @@ Tan.LevelOne.prototype = {
         game.load.image('plank', 'assets/scene/plank2.png');
         game.load.image('plank_short', 'assets/scene/plank_short.png');
         game.load.image('plank_long', 'assets/scene/plank_long.png');
+        game.load.image('seaweed', 'assets/scene/seaweed.png');
+
+
 
         game.load.spritesheet('hat_glow', 'assets/grams/grams_anim3.png', 64,64,8);
 
@@ -255,6 +258,8 @@ Tan.LevelOne.prototype = {
 
         platforms = game.add.group();
         platforms.enableBody = true;
+
+        var seaweedsBack = game.add.group();
 
         grams = game.add.group();
         grams.enableBody = true;
@@ -566,10 +571,21 @@ Tan.LevelOne.prototype = {
         
         createHeadsUpDisplay();
 
+        function createSeaweed(scale, xPixFromLeft, yPixFromBottom, front){
+            if (front == true){
+                var newSeaweed = seaweeds.create(xPixFromLeft, game.world.height - yPixFromBottom, 'seaweed');
+            } else {
+                var newSeaweed = seaweedsBack.create(xPixFromLeft, game.world.height - yPixFromBottom, 'seaweed');
+            }
+                newSeaweed.scale.setTo(scale, scale);
+                return newSeaweed;
+        }
+
 
     // Scenic overlay
         var planks = game.add.group();
         var sands = game.add.group();
+        var seaweeds = game.add.group();
         //Sand
         game.add.tileSprite(0, 745, xWorldBounds, 70, 'ground_sand');
         sands.create(295, 541, 'plat01');
@@ -590,6 +606,29 @@ Tan.LevelOne.prototype = {
         planks.create(3000, 595, 'plank_short');
         planks.create(3195, 345, 'plank');
         planks.create(3545, 325, 'plank');
+        createSeaweed(.75, 1100, 240);
+        createSeaweed(.6, 1150, 200, true);
+        createSeaweed(.5, 1070, 170, true);
+        createSeaweed(.5, 1380, 180);
+        createSeaweed(.7, 1410, 235, true);
+        createSeaweed(.9, 1700, 280, true);
+        createSeaweed(.6, 1670, 200);
+        createSeaweed(.6, 1780, 200);
+        createSeaweed(.5, 2050, 180, true);
+        createSeaweed(.75, 2100, 240);
+        createSeaweed(.35, 2190, 130, true);
+        createSeaweed(.5, 2230, 180);
+        createSeaweed(.75, 2210, 240);
+        createSeaweed(.35, 2270, 130, true);
+
+
+
+
+
+
+
+
+
 
         // Transparent layer over water
         var waterOverlay = game.add.sprite(1062, 500, 'water_overlay');
@@ -1148,4 +1187,4 @@ game.state.add('LevelOne', Tan.LevelOne);
 game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('MainMenu');
+game.state.start('LevelOne');
