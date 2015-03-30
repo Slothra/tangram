@@ -219,6 +219,12 @@ Tan.LevelOne.prototype = {
         game.load.image('plank', 'assets/scene/plank2.png');
         game.load.image('plank_short', 'assets/scene/plank_short.png');
         game.load.image('plank_long', 'assets/scene/plank_long.png');
+        game.load.image('seaweed', 'assets/scene/seaweed.png');
+        game.load.image('rocks_small', 'assets/scene/rocks.png');
+        game.load.image('rocks', 'assets/scene/rocks2.png');
+
+
+
 
         game.load.spritesheet('hat_glow', 'assets/grams/grams_anim3.png', 64,64,8);
 
@@ -256,6 +262,9 @@ Tan.LevelOne.prototype = {
         platforms = game.add.group();
         platforms.enableBody = true;
 
+        // Keep this group behind player
+        var sceneElemBack = game.add.group();
+
         grams = game.add.group();
         grams.enableBody = true;
         grams.physicsBodyType = Phaser.Physics.ARCADE;
@@ -266,64 +275,23 @@ Tan.LevelOne.prototype = {
         ground.body.immovable = true;
 
         var water01 = createWater((xWorldBounds/10 + 1000), 25, 1000, 300);
-        var plat01 = createPlatform(20, 20, 300, 250);
-        makeImmovable(plat01);
-        var plat02 = createPlatform(7, 3, 600, 400);
-        makeImmovable(plat02);
-        var plat03 = createPlatform(7, 3, 700, 500);
-        makeImmovable(plat03);
-        var plat04 = createPlatform(16, 45, 900, 500);
-        makeImmovable(plat04);
-        var plat05 = createPlatform(17, 7, 1500, 500);
-        makeImmovable(plat05);
-        var plat06 = createPlatform(4, 19, 1500, 430);
-        makeImmovable(plat06);
-        var plat07 = createPlatform(17, 15, 1500, 200);
-        makeImmovable(plat07);
-        var plat08 = createPlatform(9, 18, 1580, 380);
-        makeImmovable(plat08);
-        var plat09 = createPlatform(12, 3, 1800, 380);
-        makeImmovable(plat09);
-        var plat10 = createPlatform(17, 3, 2000, 500);
-        makeImmovable(plat10);
-        var plat11 = createPlatform(17, 3, 2400, 440);
-        makeImmovable(plat11);
-        var plat12 = createPlatform(30, 30, 2700, 350);
-        makeImmovable(plat12);
-        var plat13 = createPlatform(13, 3, 3200, 450);
-        makeImmovable(plat13);
-        var plat14 = createPlatform(12, 3, 3550, 470);
-        makeImmovable(plat14);
-        var plat15 = createPlatform((xWorldBounds/10 + 3900), 30, 3900, 350);
-        makeImmovable(plat15);
-        var plat16 = createPlatform(8, 3, 3000, 200);
-        makeImmovable(plat16);
-        var plat17 = createPlatform(8, 3, 1700, 200);
-        makeImmovable(plat17);
-
-        // platformMovementTriggers = game.add.group();
-        // platformMovementTriggers.enableBody = true;
-        // platformMovementTriggers.allowGravity = false;
-        // platformMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
-
-        // platformLeftTrigger = game.add.sprite(1200, 300, null, 0, platformMovementTriggers);
-        // platformLeftTrigger.body.setSize(40, 500, 0, 0);
-        // platformRightTrigger = game.add.sprite(1400, 300, null, 0, platformMovementTriggers);
-        // platformRightTrigger.body.setSize(40, 100, 0, 0);
-
-        // movPlat = createPlatform(10,3, 1300, 500);
-        // game.physics.enable(movPlat, Phaser.Physics.ARCADE);
-        // movPlat.allowGravity = false;
-        // movPlat.body.velocity.x = 50;
-        // movPlat.body.immovable = true;
-
-
-
-        // var movPlatPlank = planks.create(1300, 500, 'plank');
-        // game.physics.enable(movPlatPlank, Phaser.Physics.ARCADE);
-        // movPlatPlank.allowGravity = false;
-        // movPlatPlank.body.velocity.x = 50;
-        // movPlatPlank.body.immovable = true;
+        var plat01 = createPlatform(20, 20, 300, 250, true);
+        var plat02 = createPlatform(7, 3, 600, 400, true);
+        var plat03 = createPlatform(7, 3, 700, 500, true);
+        var plat04 = createPlatform(16, 45, 900, 500, true);
+        var plat05 = createPlatform(17, 7, 1500, 500, true);
+        var plat06 = createPlatform(4, 19, 1500, 430, true);
+        var plat07 = createPlatform(17, 15, 1500, 200, true);
+        var plat08 = createPlatform(9, 18, 1580, 380, true);
+        var plat09 = createPlatform(12, 3, 1800, 380, true);
+        var plat10 = createPlatform(17, 3, 2000, 500, true);
+        var plat11 = createPlatform(17, 3, 2400, 440, true);
+        var plat12 = createPlatform(30, 30, 2700, 350, true);
+        var plat13 = createPlatform(13, 3, 3200, 450, true);
+        var plat14 = createPlatform(12, 3, 3550, 470, true);
+        var plat15 = createPlatform((xWorldBounds/10 + 3900), 30, 3900, 350, true);
+        var plat16 = createPlatform(8, 3, 3000, 200, true);
+        var plat17 = createPlatform(8, 3, 1700, 200, true);
 
         platformMovementTriggers = game.add.group();
         platformMovementTriggers.enableBody = true;
@@ -332,7 +300,7 @@ Tan.LevelOne.prototype = {
 
 
         function createMovingPlat(xPixFromLeft, yPixFromBottom, imgKey, leftTrigger, rightTrigger){
-            var newMovePlat = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey, 0, enemies);
+            var newMovePlat = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey, 0, platforms);
             game.physics.enable(newMovePlat, Phaser.Physics.ARCADE);
             newMovePlat.allowGravity = false;
             newMovePlat.body.velocity.x = 60;
@@ -378,11 +346,19 @@ Tan.LevelOne.prototype = {
         createGram(200, game.world.height - 110, 'hat_glow', 'hat', true);
 
 
-        function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
+        function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom, immovable){
             var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
             newPlatform.scale.setTo(widthScale, heightScale);
+            if (immovable == true){
+                newPlatform.body.immovable = true;
+            }
             return newPlatform;
         }
+
+        function makeImmovable(sprite){
+            sprite.body.immovable = true;
+        }
+
 
         function createWater(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newWater = waters.create(xPixFromLeft, game.world.height - yPixFromBottom, 'water');
@@ -435,9 +411,6 @@ Tan.LevelOne.prototype = {
         createEnemy(2000, 150, 'badfish', 150, 150);
         createEnemy(2000, 300, 'badfish', 100, 600);
 
-        function makeImmovable(sprite){
-            sprite.body.immovable = true;
-        }
 
         initializePlayer();
         initializeCamera();
@@ -572,10 +545,21 @@ Tan.LevelOne.prototype = {
         
         createHeadsUpDisplay();
 
+        function createSceneElem(scale, xPixFromLeft, yPixFromBottom, imgKey, front){
+            if (front == true){
+                var newElement = sceneElem.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey);
+            } else {
+                var newElement = sceneElemBack.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey);
+            }
+                newElement.scale.setTo(scale, scale);
+                return newElement;
+        }
+
 
     // Scenic overlay
         var planks = game.add.group();
         var sands = game.add.group();
+        var sceneElem = game.add.group();
         //Sand
         game.add.tileSprite(0, 745, xWorldBounds, 70, 'ground_sand');
         sands.create(295, 541, 'plat01');
@@ -596,15 +580,39 @@ Tan.LevelOne.prototype = {
         planks.create(3000, 595, 'plank_short');
         planks.create(3195, 345, 'plank');
         planks.create(3545, 325, 'plank');
+        createSceneElem(.75, 1100, 240, 'seaweed' );
+        createSceneElem(.6, 1150, 200, 'seaweed', true);
+        createSceneElem(.5, 1070, 170, 'seaweed', true);
+        createSceneElem(.5, 1380, 180, 'seaweed');
+        createSceneElem(.7, 1410, 235, 'seaweed', true);
+        createSceneElem(.9, 1700, 280, 'seaweed', true);
+        createSceneElem(.6, 1670, 200, 'seaweed');
+        createSceneElem(.6, 1780, 200, 'seaweed');
+        createSceneElem(.5, 2050, 180, 'seaweed', true);
+        createSceneElem(.75, 2100, 240, 'seaweed');
+        createSceneElem(.35, 2190, 130, 'seaweed', true);
+        createSceneElem(.5, 2230, 180, 'seaweed');
+        createSceneElem(.75, 2210, 240, 'seaweed');
+        createSceneElem(.35, 2270, 130, 'seaweed', true);
+        createSceneElem(1, 1100, 70, 'rocks');
+        createSceneElem(1, 1190, 70, 'rocks_small', true);
+        createSceneElem(1, 1380, 70, 'rocks');
+        createSceneElem(1, 1700, 70, 'rocks', true);
+        createSceneElem(1, 1780, 70, 'rocks_small');
+        createSceneElem(.7, 1900, 67, 'rocks', true);
+        createSceneElem(1, 2100, 70, 'rocks_small');
+        createSceneElem(.6, 2300, 65, 'rocks', true);
+        createSceneElem(.4, 2350, 61, 'rocks_small');
+        createSceneElem(1.8, 3100, 85, 'rocks_small', true);
+        createSceneElem(1.5, 3010, 80, 'rocks');
+        createSceneElem(1.8, 3400, 85, 'rocks_small', true);
+        createSceneElem(1.5, 3490, 80, 'rocks');
+        createSceneElem(1, 3590, 70, 'rocks', true);
+
 
         // Transparent layer over water
         var waterOverlay = game.add.sprite(1062, 500, 'water_overlay');
         waterOverlay.scale.setTo((xWorldBounds/10 + 1000), 30);
-
-
-
-
-
 
     },
 
