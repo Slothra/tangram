@@ -262,8 +262,8 @@ Tan.LevelOne.prototype = {
         platforms = game.add.group();
         platforms.enableBody = true;
 
-        var water2 = game.add.tileSprite(1062, 490, xWorldBounds, 512, 'water_anim2');
-        var waterTween = game.add.tween(water2)
+        var waterBack = game.add.tileSprite(1062, 490, xWorldBounds, 512, 'water_anim2');
+        var waterTween = game.add.tween(waterBack)
         .to( { y: 500}, 1000, Phaser.Easing.Linear.In, true, 0, -1)
         .yoyo(true).repeat(1000000).start();
 
@@ -275,29 +275,9 @@ Tan.LevelOne.prototype = {
         grams.enableBody = true;
         grams.physicsBodyType = Phaser.Physics.ARCADE;
 
-
-
-        // var water1 = game.add.tileSprite(0, 300, xWorldBounds, 512, 'water_anim');
-        // var waterTween = game.add.tween(water1)
-        // .to( { y: 325, alpha: 0.4 }, 1000, Phaser.Easing.Linear.In, true, 0, -1)
-        // .yoyo(true).repeat(5000).start();
-
-
-
         var ground = platforms.create(0, game.world.height - 50, 'platform');
         ground.scale.setTo(xWorldBounds/10, 7);
         ground.body.immovable = true;
-
-
-
-
-
-
-
-
-
-
-
 
         var water01 = createWater((xWorldBounds/10 + 1000), 25, 1000, 300);
         var plat01 = createPlatform(20, 20, 300, 250, true);
@@ -635,46 +615,21 @@ Tan.LevelOne.prototype = {
         createSceneElem(1.5, 3490, 80, 'rocks');
         createSceneElem(1, 3590, 70, 'rocks', true);
 
-
-        // var delay = 0;
-
-        // for (var i = 0; i < 30; i++) {
-        //     var sprite = game.add.sprite(-100 + (game.world.randomX), 600, 'bubble');
-
-        //     sprite.scale.set(game.rnd.realInRange(0.5, 0.6));
-
-        //     var speed = game.rnd.between(4000, 6000);
-
-        //     game.add.tween(sprite).to({ y: -256 }, speed, Phaser.Easing.Sinusoidal.InOut, true, delay, 1000, false);
-
-        //     delay += 200;
-        // }
-
-
-
-        var water1 = game.add.tileSprite(1062, 505, xWorldBounds, 512, 'water_anim');
-        var waterTween = game.add.tween(water1)
+        var waterFront = game.add.tileSprite(1062, 505, xWorldBounds, 512, 'water_anim');
+        var waterTween = game.add.tween(waterFront)
         .to( { y: 495, alpha: 0.4 }, 2000, Phaser.Easing.Linear.In, true, 0, -1)
         .yoyo(true).repeat(1000000).start();
 
-
-
-        var delay = 0;
+        
+        // Creates 28 random bubbles in the water
+        var bubbleDelay = 0;
         function createBubbles(){
-            // Creates 25 coins in random places
-            for (var i = 0; i < 25; i++){
-                var bubble = bubbles.create(game.rnd.integerInRange(1200, xWorldBounds-1800), game.rnd.integerInRange(675, 750), 'bubble');
-                bubble.scale.set(game.rnd.realInRange(0.2, 0.9));
-                // var rise = game.rnd.between(2000, 5000);
-                game.add.tween(bubble).to({ y: 500, alpha: 0 }, 2000, Phaser.Easing.Sinusoidal.InOut, true, delay, 1000, false);
-            delay += 200;
-
-                
-                // var coinAnim = coin.animations.add('rotate');
-                // // coins rotate at various speeds
-                // coinAnim.play(game.rnd.integerInRange(5, 10), true);
+            for (var i = 0; i < 28; i++){
+                var bubble = bubbles.create(game.rnd.integerInRange(1200, xWorldBounds-1200), game.rnd.integerInRange(675, 750), 'bubble');
+                bubble.scale.set(game.rnd.realInRange(0.3, 0.7));
+                game.add.tween(bubble).to({ y: 500, alpha: 0 }, 2000, Phaser.Easing.Sinusoidal.InOut, true, bubbleDelay, 1000, false);
+                bubbleDelay += 200;
             }
-
         }
         createBubbles();
 
