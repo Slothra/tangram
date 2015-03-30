@@ -24,7 +24,9 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 30;
+var xStartPos = 0;
+
+var cursors;
 
 var yStartPos = gameHeight;
 var player;
@@ -60,6 +62,7 @@ var bossTime = false;
 var crabDead = false;
 var firstTimeUnderwater = true;
 var hint;
+var levelTwoStart = 4500;
 
 var currentLevel = 1;
 
@@ -160,7 +163,7 @@ Tan.MainMenu.prototype = {
             clicked();
             selectSound.play();
             introMusic.stop();
-            game.state.start('LevelOne');
+            game.state.start('Loading');
         }
     }
 }
@@ -276,7 +279,7 @@ Tan.LevelOne.prototype = {
         ground.scale.setTo(xWorldBounds/10, 7);
         ground.body.immovable = true;
 
-        var water01 = createWater((xWorldBounds/10 + 1000), 25, 1000, 300);
+        var water01 = createWater((xWorldBounds-levelTwoStart/10), 25, 1000, 300);
         var plat01 = createPlatform(20, 20, 300, 250, true);
         var plat02 = createPlatform(7, 3, 600, 400, true);
         var plat03 = createPlatform(7, 3, 700, 500, true);
@@ -291,7 +294,7 @@ Tan.LevelOne.prototype = {
         var plat12 = createPlatform(30, 30, 2700, 350, true);
         var plat13 = createPlatform(13, 3, 3200, 450, true);
         var plat14 = createPlatform(12, 3, 3550, 470, true);
-        var plat15 = createPlatform((xWorldBounds/10 + 3900), 30, 3900, 350, true);
+        var plat15 = createPlatform(((xWorldBounds - levelTwoStart)/10), 30, 3900, 350, true);
         var plat16 = createPlatform(8, 3, 3000, 200, true);
         var plat17 = createPlatform(8, 3, 1700, 200, true);
 
@@ -310,7 +313,6 @@ Tan.LevelOne.prototype = {
 
             createPlatLeftTrigger(newMovePlat, leftTrigger);
             createPlatRightTrigger(newMovePlat, rightTrigger);
-            // debugger;
 
             return newMovePlat;
         }
@@ -417,6 +419,25 @@ Tan.LevelOne.prototype = {
         initializePlayer();
         initializeCamera();
 
+        function initializePlayer(){
+            //could probably be moved outside of create
+            player = game.add.sprite(xStartPos, yStartPos, 'brick');
+            game.physics.arcade.enable(player);
+
+            player.body.bounce.y = 0;
+            player.body.gravity.y = 400;
+            player.body.collideWorldBounds = true;
+            player.body.setSize(32, 32, 0, 32);
+            player.anchor.setTo(.5, 0);
+            player.z = 1;
+        }
+
+
+        function initializeCamera(){
+            game.camera.follow(player);
+            game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
+        }
+
         player.animations.add('walk', [0, 1, 2], 10, true);
         player.animations.add('jump', [1]);
         player.animations.add('walkHat', [3, 4, 5], 10, true);
@@ -424,13 +445,6 @@ Tan.LevelOne.prototype = {
         player.animations.add('swim', [6, 7, 8], 10, true);
         player.animations.add('jumpFish', [10]);
         player.animations.add('walkUnderwater', [0, 1, 2], 6, true);
-
-
-        // camera mechanics
-        game.camera.follow(player);
-
-        // deadzone
-        game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
 
         pincers = game.add.group();
         pincers.enableBody = true;
@@ -486,25 +500,6 @@ Tan.LevelOne.prototype = {
         }
 
 
-        function initializePlayer(){
-            //could probably be moved outside of create
-            player = game.add.sprite(xStartPos, yStartPos, 'brick');
-            game.physics.arcade.enable(player);
-
-            player.body.bounce.y = 0;
-            player.body.gravity.y = 400;
-            player.body.collideWorldBounds = true;
-            player.body.setSize(32, 32, 0, 32);
-            player.anchor.setTo(.5, 0);
-            player.z = 1;
-        }
-
-
-        function initializeCamera(){
-            game.camera.follow(player);
-            game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
-        }
-
         function anchorAndFixToCam(obj){
             obj.fixedToCamera = true;
             return obj;
@@ -553,8 +548,8 @@ Tan.LevelOne.prototype = {
             } else {
                 var newElement = sceneElemBack.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey);
             }
-                newElement.scale.setTo(scale, scale);
-                return newElement;
+            newElement.scale.setTo(scale, scale);
+            return newElement;
         }
 
 
@@ -783,6 +778,9 @@ Tan.LevelOne.prototype = {
         }
 
         function showHint(hintName){
+            if (hint){
+                hint.destroy();
+            }
             hint = game.add.sprite(player.position.x - 20, player.position.y - 50, 'hints')
             hint.animations.add('water-hint', [0], 10, true);
             hint.animations.add('crab-hint', [1], 10, true);
@@ -1026,18 +1024,20 @@ Tan.LevelOne.prototype = {
                 bossMusic.stop();
                 music.play();
                 // console.log("YOU WIN!")
-                crabbyCrab.animations.play('hurt');
                 spiral = game.add.sprite(crabbyCrab.position.x, crabbyCrab.position.y, 'spiral')
                 spiral.animations.add('spiral-move', [0,1,2,3], 5, true);
+                crabDead = true;
+            }
+        }
+
+        if (crabDead === true){
+                crabbyCrab.animations.play('hurt');
                 spiral.animations.play('spiral-move');
                 crabbyCrab.body.velocity.x = 0;
                 leftPincer.body.velocity.y = 0;
                 leftPincer.body.velocity.x = 0;
                 rightPincer.body.velocity.y = 0;
                 rightPincer.body.velocity.x = 0;
-                crabDead = true;
-
-            }
         }
 
         if (crabbyCrab.body.velocity.x != 0){
@@ -1104,9 +1104,10 @@ Tan.LevelOne.prototype = {
 
         }
 
-        // endOne StartTwo
-        if (crabDead == true && player.position.x > 4500){
-            game.state.start('LevelTwo');
+        // if (crabDead == true && player.position.x > levelTwoStart){
+        if (player.position.x > levelTwoStart){
+            game.state.start('Loading');
+            currentLevel = 2;
         }
     }
 
@@ -1116,24 +1117,205 @@ Tan.LevelTwo = function(game){};
 
 Tan.LevelTwo.prototype = {
     preload: function(){
-        // load death screen images
-        game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
+        // load level two assets
 
     },
     create: function(){
-        currentLevel = 2;
-        var levelTwoText = "Level Two"
-        var text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
+        // create map
+        background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
+        game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
+        platforms = game.add.group();
+        platforms.enableBody = true;
+
+        // Keep this group behind player
+        var sceneElemBack = game.add.group();
+
+        // grams = game.add.group();
+        // grams.enableBody = true;
+        // grams.physicsBodyType = Phaser.Physics.ARCADE;
+
+
+        var ground = platforms.create(0, game.world.height - 50, 'platform');
+        ground.scale.setTo(xWorldBounds/10, 7);
+        ground.body.immovable = true;
+
+        function initializePlayer(){
+            //could probably be moved outside of create
+            player = game.add.sprite(xStartPos, yStartPos, 'brick');
+            game.physics.arcade.enable(player);
+
+            player.body.bounce.y = 0;
+            player.body.gravity.y = 400;
+            player.body.collideWorldBounds = true;
+            player.body.setSize(32, 32, 0, 32);
+            player.anchor.setTo(.5, 0);
+            player.z = 1;
+        }
+
+
+        function initializeCamera(){
+            game.camera.follow(player);
+            game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
+        }
+
+        initializePlayer();
+        initializeCamera();
+
+        player.animations.add('walk', [0, 1, 2], 10, true);
+        player.animations.add('jump', [1]);
+        player.animations.add('walkHat', [3, 4, 5], 10, true);
+        player.animations.add('jumpHat', [4]);
+
+
+
 
     },
     update: function(){
-        game.time.events.add(Phaser.Timer.SECOND * 3, comingSoon, this);
-        function comingSoon(){
-            var soonText = game.add.bitmapText(120, 400, 'font', "... coming soon", 25);
+        game.physics.arcade.collide(player, platforms);
+        // game.time.events.add(Phaser.Timer.SECOND * 3, comingSoon, this);
+        // function comingSoon(){
+        //     var soonText = game.add.bitmapText(120, 400, 'font', "... coming soon", 25);
+        // }
+
+        if (muteKey.isDown && muted === false){
+            muted = true;
+            game.time.events.add(Phaser.Timer.SECOND * .5, mute, this);
+        }
+
+        function mute(){
+            if (game.sound.volume === 1){
+                game.sound.volume = 0;    
+            } else {
+                game.sound.volume = 1;
+            }
+            muted = false;
+        }
+
+        // Sets up pause Screen
+        if (pauseKey.isDown && pauser === false){
+            pauser = true;
+            pauseMenu();
+        }
+
+        function pauseMenu(){
+            menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click to resume', { font: '30px Arial', fill: '#fff' });
+            menuText.anchor.setTo(0.5, 0.5);
+            game.paused = true;
+            game.input.onDown.addOnce(unpause,self);
+        }  
+    
+        function unpause(event){
+            // Only act if paused
+            if(game.paused && pauser === true){
+                // menu.destroy();
+                menuText.destroy();
+
+                // Unpause the game
+                game.paused = false;
+                pauser = false;
+            }
+        };
+
+        //  Reset the players velocity (movement)
+        player.body.velocity.x = 0;
+
+        // Set playerForm
+        for (var key in playerGrams){
+            var gram = playerGrams[key];
+            if (togglePosition == gram.displayIndex){
+                toggleForm = gram.name;
+                playerForm = gram.name;
+            }
+        }
+
+        function moveAsBrick(){
+            movePlayer(0, 'walk', 'jump', playerSpeed, -400);
+        }
+
+        function moveAsBrickHat(){
+            movePlayer(3, 'walkHat', 'jumpHat', playerSpeed, -400);
+        }
+
+        // Player Movement
+
+        switch (playerForm){
+          case 'brick':
+            moveAsBrick();
+            break;
+          case 'hat':
+            moveAsBrickHat();
+            break;
+          default:
+            moveAsBrick();
+        }
+
+        function movePlayer(staticFrame, walkAnim, jumpAnim, xVel, yVel){
+            if (cursors.left.isDown){
+                //  Move to the left
+                player.body.velocity.x = -(xVel);
+                if (player.scale.x == -1){
+                    player.animations.play(walkAnim);
+                } else {
+                    player.scale.x *= -1; 
+                }
+            } else if (cursors.right.isDown) {
+              //  Move to the right
+                player.body.velocity.x = (xVel);
+                if (player.scale.x == 1){
+                    player.animations.play(walkAnim);
+                } else {
+                    player.scale.x *= -1; 
+                }
+            } else {
+              //  Stand still
+              player.animations.stop();
+              player.frame = staticFrame;
+            }
+
+            if (cursors.up.isDown && player.body.touching.down){
+                player.body.velocity.y = yVel;
+            }
+
+            if (!player.body.touching.down){
+                player.animations.play(jumpAnim);
+                
+            }            
+
         }
 
     }
 
+}
+
+Tan.Loading = function(game){};
+
+Tan.Loading.prototype = {
+    preload: function(){
+    },
+    create: function(){
+        if (currentLevel === 1) {
+            var levelOneText = "Level One"
+            var text = game.add.bitmapText(120, 300, 'font', levelOneText, 25);
+
+        } else if (currentLevel === 2){
+            var levelTwoText = "Level Two"
+            var text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
+        }
+    },
+    update: function(){
+        game.time.events.add(Phaser.Timer.SECOND * 3, nextLevel, this);
+
+        function nextLevel(){
+            if (currentLevel === 1){
+                game.state.start('LevelOne')
+            } else if (currentLevel === 2){
+                game.state.start('LevelTwo')
+            }
+        }
+        // function comingSoon(){
+        //     var soonText = game.add.bitmapText(120, 400, 'font', "... coming soon", 25);
+        // }
+    }
 }
 
 Tan.GameOver = function(game){};
@@ -1182,12 +1364,12 @@ Tan.GameOver.prototype = {
             restartMusic.stop();
             console.Log("Bye!");
         }
-
     }
 }
 
 game.state.add('LevelOne', Tan.LevelOne);
 game.state.add('LevelTwo', Tan.LevelTwo);
+game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelOne');
+game.state.start('MainMenu');
