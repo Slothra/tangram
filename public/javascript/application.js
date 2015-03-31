@@ -1034,17 +1034,14 @@ Tan.LevelTwo.prototype = {
             grams.enableBody = true;
             grams.physicsBodyType = Phaser.Physics.ARCADE;
         }
-        loadLevelOneStuff()
-
-
-
+        loadLevelOneStuff();
 
     },
 
     create: function(){
         // create map
-        xStartPos = 2200;
-        yStartPos = 700;
+        xStartPos = 60;
+        yStartPos = 200;
 
         xWorldBounds = 5000;
         yWorldBounds = 1000;
@@ -1090,6 +1087,8 @@ Tan.LevelTwo.prototype = {
         ground.body.immovable = true;
 
         createPlatform(3, yWorldBounds, 0, yWorldBounds, true);
+        createPlatform(xWorldBounds/10, 20, 90, yWorldBounds, true);
+
         createPlatform(28, 7, 30, 300, true);
         createPlatform(10, 12, 30, 250, true);
         createPlatform(15, 45, 90, 800, true);
@@ -1125,24 +1124,11 @@ Tan.LevelTwo.prototype = {
         createPlatform(10, 5, 3500, 300, true);
         createPlatform(5, 5, 2750, 330, true);
         createPlatform(50, 5, 2180, 490, true);
-        createPlatform(10, 10, 2180, 440, true);
-        createPlatform(35, 5, 2180, 340, true);
+        createPlatform(10, 17, 2180, 440, true);
+        createPlatform(16, 5, 2340, 340, true);
         createPlatform(17, 20, 2500, 340, true);
         createPlatform(5, 10, 2670, 240, true);
         createPlatform(32, 10, 2180, 200, true);
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     },
     update: function(){
