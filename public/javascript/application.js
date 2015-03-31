@@ -972,7 +972,7 @@ Tan.LevelTwo.prototype = {
         function loadLevelOneStuff(){
             game.load.image('platform', 'assets/platform_10x10.png');
             game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
-            game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 12);
+            game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 15);
             game.load.spritesheet('heart', 'assets/sprites/heart.png', 38,30,4)
             game.load.image('sm_triangle', 'assets/grams/sm_triangle2.png');
             game.load.image('sm_square', 'assets/grams/tan-square.png');
@@ -1072,6 +1072,8 @@ Tan.LevelTwo.prototype = {
         player.animations.add('jump', [1]);
         player.animations.add('walkHat', [3, 4, 5], 10, true);
         player.animations.add('jumpHat', [4]);
+        player.animations.add('walkCandle', [12, 13, 14], 10, true);
+        player.animations.add('jumpCandle', [13]);
 
         // shade = game.add.sprite(player.position.x,player.position.y,'sm_shade')
         // shade.anchor.setTo(0.5,0.5)
@@ -1222,6 +1224,10 @@ Tan.LevelTwo.prototype = {
             movePlayer(3, 'walkHat', 'jumpHat', playerSpeed, -400);
         }
 
+        function moveAsCandle(){
+            movePlayer(12, 'walkCandle', 'jumpCandle', playerSpeed, -400);
+        }
+
         // Player Movement
 
         switch (playerForm){
@@ -1230,6 +1236,9 @@ Tan.LevelTwo.prototype = {
             break;
           case 'hat':
             moveAsBrickHat();
+            break;
+          case 'parallel':
+            moveAsCandle();
             break;
           default:
             moveAsBrick();
