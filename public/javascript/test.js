@@ -1,1 +1,3 @@
-console.log("Does a thing");
+function doAThing(){
+	console.log("Does a thing");
+}
