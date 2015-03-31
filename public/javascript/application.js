@@ -65,6 +65,7 @@ var hint;
 var levelTwoStart = 4500;
 var currentLevel = 1;
 var background;
+var grams;
 
 var grassGroup;
 
@@ -1121,23 +1122,25 @@ Tan.LevelTwo.prototype = {
     preload: function(){
         // load level two assets
         game.load.image('underground', 'assets/underground.png');
-        game.load.image('underground_platform', 'assets/underground_platform_10x10.png');
+        game.load.image('rock', 'assets/rock.png');
         game.load.image('sm_shade', 'assets/shade.png');
     },
     create: function(){
         // create map
-        var sceneElemBack = game.add.group();
-        background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight+200, 'underground');
-        background.scale.x = 10;
+        xStartPos = 0;
+        // var sceneElemBack = game.add.group();
+        levelTwoBackground = game.add.tileSprite(-1500, 0, xWorldBounds, gameHeight+200, 'underground');
+        levelTwoBackground.scale.x = 15;
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
         platforms = game.add.group();
         platforms.enableBody = true;
 
         // Keep this group behind player
+        var sceneElemBack = game.add.group();
 
-        var ground = platforms.create(0, game.world.height - 50, 'underground_platform');
-        ground.scale.setTo(xWorldBounds/10, 7);
-        ground.body.immovable = true;
+        grams = game.add.group();
+        grams.enableBody = true;
+        grams.physicsBodyType = Phaser.Physics.ARCADE;
 
         function initializePlayer(){
             //could probably be moved outside of create
@@ -1166,6 +1169,65 @@ Tan.LevelTwo.prototype = {
         player.animations.add('walkHat', [3, 4, 5], 10, true);
         player.animations.add('jumpHat', [4]);
 
+        // Create a gram
+        function createGram(xPos, yPos, imgKey, gramName, animate){
+            var gram = grams.create(xPos, yPos, imgKey);
+            gram.body.gravity.y = 6;
+            gram.name = gramName;
+            gram.displayed = false;
+            if (animate == true) {
+                var glow = gram.animations.add('glow');
+                glow.play(7, true);
+                gram.animated = true;
+            }
+            return gram;
+        }
+
+        function anchorAndFixToCam(obj){
+            obj.fixedToCamera = true;
+            return obj;
+        }
+
+        function createHeadsUpText(xPos, yPos, text, size){
+            var text = game.add.bitmapText(xPos, yPos, 'font', text, size);
+            anchorAndFixToCam(text);
+            return text;
+        }
+
+        function createHeadsUpIcon(xPos, yPos, imgKey){
+            var icon = game.add.sprite(xPos, yPos, imgKey);
+            anchorAndFixToCam(icon);
+            return icon;
+        }
+
+        // Creates head up display
+        function createHeadsUpDisplay(){
+            var margin = 30;
+
+            createHeadsUpText(margin, margin, "Tan's Grams:", 20);
+
+            createHeadsUpIcon(35, 55, 'displayCoin');
+            createHeadsUpText(63, 57, "x ", 15);
+            coinText = createHeadsUpText(85, 55, coinCount.toString(), 20);
+
+            toggler = createHeadsUpIcon(game.camera.view.x + togglerDefaultPadding, togglerPaddingTop, 'toggler');
+            toggler.scale.setTo(0.75, 0.75);
+            toggler.displayed = false;
+            toggler.fixedToCamera = true;
+
+
+            // create small square icon
+            var sq_icon = createGram(0, 0, 'sm_square', 'brick');
+            sq_icon.displayIndex = 0;
+            sq_icon.visible = false; 
+            playerGrams.brick = sq_icon;
+        }
+        
+        createHeadsUpDisplay();
+
+        var ground = platforms.create(0, game.world.height - 50, 'platform');
+        ground.scale.setTo(xWorldBounds/10, 7);
+        ground.body.immovable = true;
 
 
 
@@ -1182,13 +1244,6 @@ Tan.LevelTwo.prototype = {
 
         shade.position.x = player.position.x
         shade.position.y = player.position.y
-        
-
-
-        // game.time.events.add(Phaser.Timer.SECOND * 3, comingSoon, this);
-        // function comingSoon(){
-        //     var soonText = game.add.bitmapText(120, 400, 'font', "... coming soon", 25);
-        // }
 
         if (muteKey.isDown && muted === false){
             muted = true;
