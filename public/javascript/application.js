@@ -1043,8 +1043,8 @@ Tan.LevelTwo.prototype = {
 
     create: function(){
         // create map
-        xStartPos = 2770;
-        yStartPos = 800;
+        xStartPos = 2200;
+        yStartPos = 700;
 
         xWorldBounds = 5000;
         yWorldBounds = 1000;
@@ -1120,6 +1120,16 @@ Tan.LevelTwo.prototype = {
         createPlatform(30, 5, 2890, 600, true);
         createPlatform(20, 20, 2800, 410, true);
         createPlatform(20, 10, 2800, 150, true);
+        createPlatform(10, 5, 3000, 300, true);
+        createPlatform(15, 3, 3230, 250, true);
+        createPlatform(10, 5, 3500, 300, true);
+        createPlatform(5, 5, 2750, 330, true);
+        createPlatform(50, 5, 2180, 490, true);
+        createPlatform(10, 10, 2180, 440, true);
+        createPlatform(35, 5, 2180, 340, true);
+        createPlatform(17, 20, 2500, 340, true);
+        createPlatform(5, 10, 2670, 240, true);
+        createPlatform(32, 10, 2180, 200, true);
 
 
 
