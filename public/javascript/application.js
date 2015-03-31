@@ -169,7 +169,11 @@ Tan.LevelOne = function(game){};
 
 Tan.LevelOne.prototype = {
     preload: function(){
-        game.load.image('sky', 'assets/sky.png');
+        // game.load.image('sky', 'assets/sky.png');
+        // game.load.image('sky', 'assets/scene/blue_gradient.png');
+        game.load.image('sky', 'assets/scene/beach2.png');
+
+
         game.load.image('platform', 'assets/platform_10x10.png');
         game.load.image('grass', 'assets/grass.png');
         game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
@@ -215,8 +219,6 @@ Tan.LevelOne.prototype = {
         game.load.image('plat12', 'assets/scene/plat12_300x300.png');
         game.load.image('plat_end', 'assets/scene/platEnd.png');
         game.load.image('plat_end_rounded', 'assets/scene/plat_end_rounded.png');
-        game.load.image('water_overlay', 'assets/scene/water_overlay.png');
-        // game.load.image('branch', 'assets/scene/branch.png');
         game.load.image('plank', 'assets/scene/plank2.png');
         game.load.image('plank_short', 'assets/scene/plank_short.png');
         game.load.image('plank_long', 'assets/scene/plank_long.png');
@@ -225,10 +227,10 @@ Tan.LevelOne.prototype = {
         game.load.image('rocks', 'assets/scene/rocks2.png');
         game.load.image('sign', 'assets/scene/sign.png');
 
-
-
-
         game.load.spritesheet('hat_glow', 'assets/grams/grams_anim3.png', 64,64,8);
+        game.load.image('water_front', 'assets/scene/water_anim3.png');
+        game.load.image('water_back', 'assets/scene/water_anim4.png');
+        game.load.image('bubble', 'assets/scene/bubble.png');
 
     },
 
@@ -264,13 +266,18 @@ Tan.LevelOne.prototype = {
         platforms = game.add.group();
         platforms.enableBody = true;
 
+        var waterBack = game.add.tileSprite(1062, 490, xWorldBounds, 512, 'water_back');
+        var waterTween = game.add.tween(waterBack)
+        .to( { y: 500}, 1000, Phaser.Easing.Linear.In, true, 0, -1)
+        .yoyo(true).repeat(1000000).start();
+
+
         // Keep this group behind player
         var sceneElemBack = game.add.group();
 
         grams = game.add.group();
         grams.enableBody = true;
         grams.physicsBodyType = Phaser.Physics.ARCADE;
-
 
         var ground = platforms.create(0, game.world.height - 50, 'platform');
         ground.scale.setTo(xWorldBounds/10, 7);
@@ -328,7 +335,6 @@ Tan.LevelOne.prototype = {
         }
 
         createMovingPlat(1300, 500, 'plank', 150, 150);
-
 
 
         // Create a gram
@@ -559,6 +565,7 @@ Tan.LevelOne.prototype = {
 
 
     // Scenic overlay
+        var bubbles = game.add.group();
         var planks = game.add.group();
         var sands = game.add.group();
         var sceneElem = game.add.group();
@@ -611,12 +618,27 @@ Tan.LevelOne.prototype = {
         createSceneElem(1.5, 3490, 80, 'rocks');
         createSceneElem(1, 3590, 70, 'rocks', true);
 
+        // Creates water (front layer)
+        var waterFront = game.add.tileSprite(1062, 505, xWorldBounds, 512, 'water_front');
+        var waterTween = game.add.tween(waterFront)
+        .to( { y: 495, alpha: 0.4 }, 2000, Phaser.Easing.Linear.In, true, 0, -1)
+        .yoyo(true)
+        .repeat(1000000)
+        .start();
+
+        // Creates 28 random bubbles in the water
+        var bubbleDelay = 0;
+        function createBubbles(){
+            for (var i = 0; i < 28; i++){
+                var bubble = bubbles.create(game.rnd.integerInRange(1200, xWorldBounds-1200), game.rnd.integerInRange(675, 750), 'bubble');
+                bubble.scale.set(game.rnd.realInRange(0.3, 0.7));
+                game.add.tween(bubble).to({ y: 500, alpha: 0 }, 2000, Phaser.Easing.Sinusoidal.InOut, true, bubbleDelay, 1000, false);
+                bubbleDelay += 200;
+            }
+        }
+        createBubbles();
 
         game.add.sprite(4260, 386, 'sign');
-
-        // Transparent layer over water
-        var waterOverlay = game.add.sprite(1062, 500, 'water_overlay');
-        waterOverlay.scale.setTo((xWorldBounds/10 + 1000), 30);
 
     },
 
