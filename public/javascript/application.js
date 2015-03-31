@@ -24,7 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 4000;
+var xStartPos = 0;
 
 var cursors;
 
@@ -66,6 +66,8 @@ var levelTwoStart = 4500;
 var currentLevel = 1;
 var background;
 var grams;
+var sceneElemBack;
+var sceneElem;
 
 var grassGroup;
 
@@ -279,7 +281,7 @@ Tan.LevelOne.prototype = {
 
 
         // Keep this group behind player
-        var sceneElemBack = game.add.group();
+        sceneElemBack = game.add.group();
 
         grams = game.add.group();
         grams.enableBody = true;
@@ -313,65 +315,9 @@ Tan.LevelOne.prototype = {
         platformMovementTriggers.allowGravity = false;
         platformMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
 
-
-        function createMovingPlat(xPixFromLeft, yPixFromBottom, imgKey, leftTrigger, rightTrigger){
-            var newMovePlat = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey, 0, platforms);
-            game.physics.enable(newMovePlat, Phaser.Physics.ARCADE);
-            newMovePlat.allowGravity = false;
-            newMovePlat.body.velocity.x = 60;
-            newMovePlat.body.immovable = true;
-
-            createPlatLeftTrigger(newMovePlat, leftTrigger);
-            createPlatRightTrigger(newMovePlat, rightTrigger);
-
-            return newMovePlat;
-        }
-
-        function createPlatLeftTrigger(platform, leftTrigger){
-            var left = game.add.sprite(platform.position.x - leftTrigger, platform.position.y, null, 0, platformMovementTriggers);
-            left.body.setSize(40, 500, 0, 0);
-            return left;
-        }
-
-        function createPlatRightTrigger(platform, rightTrigger){
-            var right = game.add.sprite(platform.position.x + rightTrigger, platform.position.y, null, 0, platformMovementTriggers);
-            right.body.setSize(40, 100, 0, 0);
-            return right;
-        }
-
         createMovingPlat(1300, 500, 'plank', 150, 150);
 
-
-        // Create a gram
-        function createGram(xPos, yPos, imgKey, gramName, animate){
-            var gram = grams.create(xPos, yPos, imgKey);
-            gram.body.gravity.y = 6;
-            gram.name = gramName;
-            gram.displayed = false;
-            if (animate == true) {
-                var glow = gram.animations.add('glow');
-                glow.play(7, true);
-                gram.animated = true;
-            }
-            return gram;
-        }
-
         createGram(200, game.world.height - 110, 'hat_glow', 'hat', true);
-
-
-        function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom, immovable){
-            var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
-            newPlatform.scale.setTo(widthScale, heightScale);
-            if (immovable == true){
-                newPlatform.body.immovable = true;
-            }
-            return newPlatform;
-        }
-
-        function makeImmovable(sprite){
-            sprite.body.immovable = true;
-        }
-
 
         function createWater(widthScale, heightScale, xPixFromLeft, yPixFromBottom){
             var newWater = waters.create(xPixFromLeft, game.world.height - yPixFromBottom, 'water');
@@ -384,38 +330,10 @@ Tan.LevelOne.prototype = {
         enemies.enableBody = true;
         enemies.physicsBodyType = Phaser.Physics.ARCADE;
 
-        function createEnemy(xPixFromLeft, yPixFromBottom, enemyKey, leftTrigger, rightTrigger){
-            var newEnemy = enemies.create(xPixFromLeft, game.world.height - yPixFromBottom, enemyKey, 0, enemies);
-            newEnemy.body.velocity.x = 100;
-            if (enemyKey == 'pigeon'){
-                newEnemy.animations.add('pigeon-step', [0,1,2], 10, true);
-                newEnemy.animations.play('pigeon-step');
-            } else if (enemyKey == 'badfish'){
-                newEnemy.animations.add('badfish-swim',[0,1,2], 10, true);
-                newEnemy.animations.play('badfish-swim');
-            }
-            newEnemy.anchor.setTo(.5,0)
-            createLeftTrigger(newEnemy, leftTrigger);
-            createRightTrigger(newEnemy, rightTrigger);
-            return newEnemy;
-        }
-
         // Enemy movement triggers
         enemyMovementTriggers = game.add.group();
         enemyMovementTriggers.enableBody = true;
         enemyMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
-
-        function createLeftTrigger(enemy, leftTrigger){
-            var left = game.add.sprite(enemy.position.x - leftTrigger, enemy.position.y, '', 0, enemyMovementTriggers);
-            left.body.setSize(4, 32, 0, 0);
-            return left;
-        }
-
-        function createRightTrigger(enemy, rightTrigger){
-            var right = game.add.sprite(enemy.position.x + rightTrigger, enemy.position.y, '', 0, enemyMovementTriggers);
-            right.body.setSize(4, 32, 0, 0);
-            return right;
-        }
 
         // creates enemy with triggers
         createEnemy(200,80, 'pigeon', 50, 50);
@@ -427,25 +345,6 @@ Tan.LevelOne.prototype = {
 
         initializePlayer();
         initializeCamera();
-
-        function initializePlayer(){
-            //could probably be moved outside of create
-            player = game.add.sprite(xStartPos, yStartPos, 'brick');
-            game.physics.arcade.enable(player);
-
-            player.body.bounce.y = 0;
-            player.body.gravity.y = 400;
-            player.body.collideWorldBounds = true;
-            player.body.setSize(32, 32, 0, 32);
-            player.anchor.setTo(.5, 0);
-            player.z = 1;
-        }
-
-
-        function initializeCamera(){
-            game.camera.follow(player);
-            game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
-        }
 
         player.animations.add('walk', [0, 1, 2], 10, true);
         player.animations.add('jump', [1]);
@@ -494,79 +393,14 @@ Tan.LevelOne.prototype = {
         coins.enableBody = true;
         coins.physicsBodyType = Phaser.Physics.ARCADE;
         createCoins();
-
-
-        function createCoins(){
-            // Creates 25 coins in random places
-            for (var i = 0; i < 25; i++){
-                var coin = coins.create(game.rnd.integerInRange(50, xWorldBounds-1800), game.rnd.integerInRange(-200, 200), 'coin');
-                coin.body.gravity.y = 1000;
-                var coinAnim = coin.animations.add('rotate');
-                // coins rotate at various speeds
-                coinAnim.play(game.rnd.integerInRange(5, 10), true);
-            }
-
-        }
-
-
-        function anchorAndFixToCam(obj){
-            obj.fixedToCamera = true;
-            return obj;
-        }
-
-        function createHeadsUpText(xPos, yPos, text, size){
-            var text = game.add.bitmapText(xPos, yPos, 'font', text, size);
-            anchorAndFixToCam(text);
-            return text;
-        }
-
-        function createHeadsUpIcon(xPos, yPos, imgKey){
-            var icon = game.add.sprite(xPos, yPos, imgKey);
-            anchorAndFixToCam(icon);
-            return icon;
-        }
-
-        // Creates head up display
-        function createHeadsUpDisplay(){
-            var margin = 30;
-
-            createHeadsUpText(margin, margin, "Tan's Grams:", 20);
-
-            createHeadsUpIcon(35, 55, 'displayCoin');
-            createHeadsUpText(63, 57, "x ", 15);
-            coinText = createHeadsUpText(85, 55, coinCount.toString(), 20);
-
-            toggler = createHeadsUpIcon(game.camera.view.x + togglerDefaultPadding, togglerPaddingTop, 'toggler');
-            toggler.scale.setTo(0.75, 0.75);
-            toggler.displayed = false;
-            toggler.fixedToCamera = true;
-
-
-            // create small square icon
-            var sq_icon = createGram(0, 0, 'sm_square', 'brick');
-            sq_icon.displayIndex = 0;
-            sq_icon.visible = false; 
-            playerGrams.brick = sq_icon;
-        }
         
         createHeadsUpDisplay();
-
-        function createSceneElem(scale, xPixFromLeft, yPixFromBottom, imgKey, front){
-            if (front == true){
-                var newElement = sceneElem.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey);
-            } else {
-                var newElement = sceneElemBack.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey);
-            }
-            newElement.scale.setTo(scale, scale);
-            return newElement;
-        }
-
 
     // Scenic overlay
         var bubbles = game.add.group();
         var planks = game.add.group();
         var sands = game.add.group();
-        var sceneElem = game.add.group();
+        sceneElem = game.add.group();
         //Sand
         game.add.tileSprite(0, 745, xWorldBounds, 70, 'ground_sand');
         sands.create(295, 541, 'plat01');
@@ -1158,30 +992,11 @@ Tan.LevelTwo.prototype = {
         platforms.enableBody = true;
 
         // Keep this group behind player
-        var sceneElemBack = game.add.group();
+        sceneElemBack = game.add.group();
 
         grams = game.add.group();
         grams.enableBody = true;
         grams.physicsBodyType = Phaser.Physics.ARCADE;
-
-        function initializePlayer(){
-            //could probably be moved outside of create
-            player = game.add.sprite(xStartPos, yStartPos, 'brick');
-            game.physics.arcade.enable(player);
-
-            player.body.bounce.y = 0;
-            player.body.gravity.y = 400;
-            player.body.collideWorldBounds = true;
-            player.body.setSize(32, 32, 0, 32);
-            player.anchor.setTo(.5, 0);
-            player.z = 1;
-        }
-
-
-        function initializeCamera(){
-            game.camera.follow(player);
-            game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
-        }
 
         initializePlayer();
         initializeCamera();
@@ -1191,60 +1006,8 @@ Tan.LevelTwo.prototype = {
         player.animations.add('walkHat', [3, 4, 5], 10, true);
         player.animations.add('jumpHat', [4]);
 
-        // Create a gram
-        function createGram(xPos, yPos, imgKey, gramName, animate){
-            var gram = grams.create(xPos, yPos, imgKey);
-            gram.body.gravity.y = 6;
-            gram.name = gramName;
-            gram.displayed = false;
-            if (animate == true) {
-                var glow = gram.animations.add('glow');
-                glow.play(7, true);
-                gram.animated = true;
-            }
-            return gram;
-        }
-
-        function anchorAndFixToCam(obj){
-            obj.fixedToCamera = true;
-            return obj;
-        }
-
-        function createHeadsUpText(xPos, yPos, text, size){
-            var text = game.add.bitmapText(xPos, yPos, 'font', text, size);
-            anchorAndFixToCam(text);
-            return text;
-        }
-
-        function createHeadsUpIcon(xPos, yPos, imgKey){
-            var icon = game.add.sprite(xPos, yPos, imgKey);
-            anchorAndFixToCam(icon);
-            return icon;
-        }
 
         // Creates head up display
-        function createHeadsUpDisplay(){
-            var margin = 30;
-
-            createHeadsUpText(margin, margin, "Tan's Grams:", 20);
-
-            createHeadsUpIcon(35, 55, 'displayCoin');
-            createHeadsUpText(63, 57, "x ", 15);
-            coinText = createHeadsUpText(85, 55, coinCount.toString(), 20);
-
-            toggler = createHeadsUpIcon(game.camera.view.x + togglerDefaultPadding, togglerPaddingTop, 'toggler');
-            toggler.scale.setTo(0.75, 0.75);
-            toggler.displayed = false;
-            toggler.fixedToCamera = true;
-
-
-            // create small square icon
-            var sq_icon = createGram(0, 0, 'sm_square', 'brick');
-            sq_icon.displayIndex = 0;
-            sq_icon.visible = false; 
-            playerGrams.brick = sq_icon;
-        }
-        
         createHeadsUpDisplay();
 
         var ground = platforms.create(0, game.world.height - 50, 'platform');
@@ -1457,6 +1220,172 @@ Tan.GameOver.prototype = {
     }
 }
 
+// Methods for levels
+
+function initializePlayer(){
+    //could probably be moved outside of create
+    player = game.add.sprite(xStartPos, yStartPos, 'brick');
+    game.physics.arcade.enable(player);
+
+    player.body.bounce.y = 0;
+    player.body.gravity.y = 400;
+    player.body.collideWorldBounds = true;
+    player.body.setSize(32, 32, 0, 32);
+    player.anchor.setTo(.5, 0);
+    player.z = 1;
+}
+
+
+function initializeCamera(){
+    game.camera.follow(player);
+    game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
+}
+
+// Create a gram
+function createGram(xPos, yPos, imgKey, gramName, animate){
+    var gram = grams.create(xPos, yPos, imgKey);
+    gram.body.gravity.y = 6;
+    gram.name = gramName;
+    gram.displayed = false;
+    if (animate == true) {
+        var glow = gram.animations.add('glow');
+        glow.play(7, true);
+        gram.animated = true;
+    }
+    return gram;
+}
+
+function createEnemy(xPixFromLeft, yPixFromBottom, enemyKey, leftTrigger, rightTrigger){
+    var newEnemy = enemies.create(xPixFromLeft, game.world.height - yPixFromBottom, enemyKey, 0, enemies);
+    newEnemy.body.velocity.x = 100;
+    if (enemyKey == 'pigeon'){
+        newEnemy.animations.add('pigeon-step', [0,1,2], 10, true);
+        newEnemy.animations.play('pigeon-step');
+    } else if (enemyKey == 'badfish'){
+        newEnemy.animations.add('badfish-swim',[0,1,2], 10, true);
+        newEnemy.animations.play('badfish-swim');
+    }
+    newEnemy.anchor.setTo(.5,0)
+    createLeftTrigger(newEnemy, leftTrigger);
+    createRightTrigger(newEnemy, rightTrigger);
+    return newEnemy;
+}
+
+function createLeftTrigger(enemy, leftTrigger){
+    var left = game.add.sprite(enemy.position.x - leftTrigger, enemy.position.y, '', 0, enemyMovementTriggers);
+    left.body.setSize(4, 32, 0, 0);
+    return left;
+}
+
+function createRightTrigger(enemy, rightTrigger){
+    var right = game.add.sprite(enemy.position.x + rightTrigger, enemy.position.y, '', 0, enemyMovementTriggers);
+    right.body.setSize(4, 32, 0, 0);
+    return right;
+}
+
+function createMovingPlat(xPixFromLeft, yPixFromBottom, imgKey, leftTrigger, rightTrigger){
+    var newMovePlat = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey, 0, platforms);
+    game.physics.enable(newMovePlat, Phaser.Physics.ARCADE);
+    newMovePlat.allowGravity = false;
+    newMovePlat.body.velocity.x = 60;
+    newMovePlat.body.immovable = true;
+
+    createPlatLeftTrigger(newMovePlat, leftTrigger);
+    createPlatRightTrigger(newMovePlat, rightTrigger);
+
+    return newMovePlat;
+}
+
+function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom, immovable){
+    var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
+    newPlatform.scale.setTo(widthScale, heightScale);
+    if (immovable == true){
+        newPlatform.body.immovable = true;
+    }
+    return newPlatform;
+}
+
+function makeImmovable(sprite){
+    sprite.body.immovable = true;
+}
+
+function createPlatLeftTrigger(platform, leftTrigger){
+    var left = game.add.sprite(platform.position.x - leftTrigger, platform.position.y, null, 0, platformMovementTriggers);
+    left.body.setSize(40, 500, 0, 0);
+    return left;
+}
+
+function createPlatRightTrigger(platform, rightTrigger){
+    var right = game.add.sprite(platform.position.x + rightTrigger, platform.position.y, null, 0, platformMovementTriggers);
+    right.body.setSize(40, 100, 0, 0);
+    return right;
+}
+
+function createCoins(){
+    // Creates 25 coins in random places
+    for (var i = 0; i < 25; i++){
+        var coin = coins.create(game.rnd.integerInRange(50, xWorldBounds-1800), game.rnd.integerInRange(-200, 200), 'coin');
+        coin.body.gravity.y = 1000;
+        var coinAnim = coin.animations.add('rotate');
+        // coins rotate at various speeds
+        coinAnim.play(game.rnd.integerInRange(5, 10), true);
+    }
+
+}
+
+
+function anchorAndFixToCam(obj){
+    obj.fixedToCamera = true;
+    return obj;
+}
+
+function createHeadsUpText(xPos, yPos, text, size){
+    var text = game.add.bitmapText(xPos, yPos, 'font', text, size);
+    anchorAndFixToCam(text);
+    return text;
+}
+
+function createHeadsUpIcon(xPos, yPos, imgKey){
+    var icon = game.add.sprite(xPos, yPos, imgKey);
+    anchorAndFixToCam(icon);
+    return icon;
+}
+
+// Creates head up display
+function createHeadsUpDisplay(){
+    var margin = 30;
+
+    createHeadsUpText(margin, margin, "Tan's Grams:", 20);
+
+    createHeadsUpIcon(35, 55, 'displayCoin');
+    createHeadsUpText(63, 57, "x ", 15);
+    coinText = createHeadsUpText(85, 55, coinCount.toString(), 20);
+
+    toggler = createHeadsUpIcon(game.camera.view.x + togglerDefaultPadding, togglerPaddingTop, 'toggler');
+    toggler.scale.setTo(0.75, 0.75);
+    toggler.displayed = false;
+    toggler.fixedToCamera = true;
+
+
+    // create small square icon
+    var sq_icon = createGram(0, 0, 'sm_square', 'brick');
+    sq_icon.displayIndex = 0;
+    sq_icon.visible = false; 
+    playerGrams.brick = sq_icon;
+}
+
+function createSceneElem(scale, xPixFromLeft, yPixFromBottom, imgKey, front){
+    if (front == true){
+        var newElement = sceneElem.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey);
+    } else {
+        var newElement = sceneElemBack.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey);
+    }
+    newElement.scale.setTo(scale, scale);
+    return newElement;
+}
+
+
+// Adds Level States
 game.state.add('LevelOne', Tan.LevelOne);
 game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('Loading', Tan.Loading);
