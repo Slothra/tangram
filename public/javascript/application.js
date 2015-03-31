@@ -24,7 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 1200;
+var xStartPos = 30;
 
 var yStartPos = gameHeight;
 var player;
@@ -169,7 +169,11 @@ Tan.LevelOne = function(game){};
 
 Tan.LevelOne.prototype = {
     preload: function(){
-        game.load.image('sky', 'assets/sky.png');
+        // game.load.image('sky', 'assets/sky.png');
+        // game.load.image('sky', 'assets/scene/blue_gradient.png');
+        game.load.image('sky', 'assets/scene/beach2.png');
+
+
         game.load.image('platform', 'assets/platform_10x10.png');
         game.load.image('grass', 'assets/grass.png');
         game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
@@ -184,6 +188,7 @@ Tan.LevelOne.prototype = {
         game.load.spritesheet('right-claw', 'assets/sprites/right-claw.png', 138, 133, 2);
         game.load.spritesheet('left-claw', 'assets/sprites/left-claw.png', 138, 133, 2);
         game.load.spritesheet('coconut-roll','assets/sprites/coconut-roll.png', 31,32,8);
+        game.load.spritesheet('spiral', 'assets/sprites/spiral.png', 38.5, 38, 4);
         game.load.spritesheet('coin','assets/sprites/coin_spritesheet1.png', 32, 22, 8);
         game.load.image('displayCoin', 'assets/sprites/coin.png');
         game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
@@ -220,6 +225,7 @@ Tan.LevelOne.prototype = {
         game.load.image('seaweed', 'assets/scene/seaweed.png');
         game.load.image('rocks_small', 'assets/scene/rocks.png');
         game.load.image('rocks', 'assets/scene/rocks2.png');
+        game.load.image('sign', 'assets/scene/sign.png');
 
         game.load.spritesheet('hat_glow', 'assets/grams/grams_anim3.png', 64,64,8);
         game.load.image('water_front', 'assets/scene/water_anim3.png');
@@ -632,6 +638,8 @@ Tan.LevelOne.prototype = {
         }
         createBubbles();
 
+        game.add.sprite(4260, 386, 'sign');
+
     },
 
     update: function(){
@@ -913,7 +921,7 @@ Tan.LevelOne.prototype = {
             leftPincer.body.velocity.x = 0;
         } else if (crabbyCrab.body.velocity.x === 0 && pincer == -1){
             rightPincer.body.velocity.x = 0
-        } else {
+        } else if (crabDead === false) {
             crabVel = crabbyCrab.body.velocity.x;
             leftPincer.body.velocity.x = crabVel;
             rightPincer.body.velocity.x = crabVel;
@@ -937,25 +945,27 @@ Tan.LevelOne.prototype = {
             rightPincer.animations.play('rightPincerMove')
         }
 
-        if (player.position.x > 3200 && countdown == false){
+        if (player.position.x > 3200 && countdown == false && crabDead===false){
             countdown = true;
             createCoconut();
             game.time.events.add(Phaser.Timer.SECOND * 3, pinch, this);
         }
 
         function pinch(){
-            tempCrabVel = crabbyCrab.body.velocity.x;
-            crabbyCrab.body.velocity.x = 0;
-            if (player.position.x > 3500){
-                game.physics.arcade.moveToXY(rightPincer,3645, 266, 120);
-                rightPincer.animations.play('rightPinchAni')
-                pincer = 1;
-            } else {
-                game.physics.arcade.moveToXY(leftPincer,3250,260, 120);
-                leftPincer.animations.play('leftPinchAni')
-                pincer = -1;
+            if (crabDead === false){
+                tempCrabVel = crabbyCrab.body.velocity.x;
+                crabbyCrab.body.velocity.x = 0;
+                if (player.position.x > 3500){
+                    game.physics.arcade.moveToXY(rightPincer,3645, 266, 120);
+                    rightPincer.animations.play('rightPinchAni')
+                    pincer = 1;
+                } else {
+                    game.physics.arcade.moveToXY(leftPincer,3250,260, 120);
+                    leftPincer.animations.play('leftPinchAni')
+                    pincer = -1;
+                }
+                game.time.events.add(Phaser.Timer.SECOND * 2.25, returnPinch, this);
             }
-            game.time.events.add(Phaser.Timer.SECOND * 2.25, returnPinch, this);
         }
 
         function returnPinch(){
@@ -1010,9 +1020,11 @@ Tan.LevelOne.prototype = {
         }
 
         function bossCollisionHandler (player, enemy) {
-            player.destroy();
-            literallyDying(bossMusic);
-            game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);;
+            if (crabDead===false){
+                player.destroy();
+                literallyDying(bossMusic);
+                game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);  
+            }
         }
 
         function bossCoconutHandler() {
@@ -1035,25 +1047,36 @@ Tan.LevelOne.prototype = {
             if (crabLife === 0){
                 bossMusic.stop();
                 music.play();
-                console.log("YOU WIN!")
-                crabbyCrab.destroy();
-                leftPincer.destroy();
-                rightPincer.destroy();
+                // console.log("YOU WIN!")
+                crabbyCrab.animations.play('hurt');
+                spiral = game.add.sprite(crabbyCrab.position.x, crabbyCrab.position.y, 'spiral')
+                spiral.animations.add('spiral-move', [0,1,2,3], 5, true);
+                spiral.animations.play('spiral-move');
+                crabbyCrab.body.velocity.x = 0;
+                leftPincer.body.velocity.y = 0;
+                leftPincer.body.velocity.x = 0;
+                rightPincer.body.velocity.y = 0;
+                rightPincer.body.velocity.x = 0;
                 crabDead = true;
+
             }
         }
 
         if (crabbyCrab.body.velocity.x != 0){
             crabbyCrab.animations.play('crabWalk');
-        } else {
+        } else if (crabDead === false) {
             crabbyCrab.animations.stop();
+        } else {
+            crabbyCrab.animations.play('hurt')
         }
 
         function collisionHandler (player, enemy) {
-            if (enemy == crabbyCrab) {
+            if (enemy == crabbyCrab && crabDead === false) {
                 player.destroy();
                 literallyDying(bossMusic);
                 game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);
+            } else if (enemy == crabbyCrab && crabDead === true){
+
             } else if (enemy.body.touching.up){
                 poofSound.play();
                 var collision = game.add.sprite(enemy.position.x-3,enemy.position.y-5,'collision');
