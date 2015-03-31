@@ -498,7 +498,6 @@ Tan.LevelOne.prototype = {
         }
 
         player.z = 1;
-        // grassGroup.z = 2;
 
         function mute(){
             if (game.sound.volume === 1){
@@ -678,32 +677,32 @@ Tan.LevelOne.prototype = {
             movePlayer(6, 'swim', 'jumpFish', playerSpeed*1.25, -300);
         }
 
-        function displayGram(gram){
-            var marginLeft = 210;
-            var padding = 50;
-            var topPadding;
+        // function displayGram(gram){
+        //     var marginLeft = 210;
+        //     var padding = 50;
+        //     var topPadding;
 
-            if (gram.animated){
-                topPadding = 28;
-            }else{
-                topPadding = 38
-            }
+        //     if (gram.animated){
+        //         topPadding = 28;
+        //     }else{
+        //         topPadding = 38
+        //     }
 
-            var displayGram = game.add.sprite(marginLeft + ((gram.displayIndex + 1) * padding), topPadding, gram.key);
-            displayGram.anchor.setTo(0.5, 0.5);
-            displayGram.fixedToCamera = true;
-        }
+        //     var displayGram = game.add.sprite(marginLeft + ((gram.displayIndex + 1) * padding), topPadding, gram.key);
+        //     displayGram.anchor.setTo(0.5, 0.5);
+        //     displayGram.fixedToCamera = true;
+        // }
 
-        function displayGrams(){
-            for (var key in playerGrams) {
-                var gram = playerGrams[key];
-              if (playerGrams.hasOwnProperty(key) && gram.displayed == false) {
-                toggler.displayed = true;
-                gram.displayed = true;
-                displayGram(gram);
-              }
-            }
-        }
+        // function displayGrams(){
+        //     for (var key in playerGrams) {
+        //         var gram = playerGrams[key];
+        //       if (playerGrams.hasOwnProperty(key) && gram.displayed == false) {
+        //         toggler.displayed = true;
+        //         gram.displayed = true;
+        //         displayGram(gram);
+        //       }
+        //     }
+        // }
         function displayToggler(){
             if (toggler.displayed == false){
                 toggler.visible = false;
@@ -949,22 +948,8 @@ Tan.LevelOne.prototype = {
             }
         });
 
-        function literallyDying (currentMusic){
-            currentMusic.stop();
-            var suspenseSound = game.add.audio('suspense');
-            suspenseSound.play();
-            gameOverMusic.play();
-            var deadPlayer = game.add.sprite(player.position.x,player.position.y+20,'heart');
-            deadPlayer.animations.add('dead', [0,1,2,3], 1, false);
-            deadPlayer.animations.play('dead');
-            var deathScreen = game.add.sprite(game.camera.view.x,game.camera.view.y,'death-tint');
-            deathScreen.animations.add('tint', [0,1,2], 10, false);
-            deathScreen.animations.play('tint');
-
-        }
-
-        // if (crabDead == true && player.position.x > levelTwoStart){
-        if (player.position.x > levelTwoStart){
+        if (crabDead == true && player.position.x > levelTwoStart){
+        // if (player.position.x > levelTwoStart){
             game.state.start('Loading');
             currentLevel = 2;
         }
@@ -984,7 +969,7 @@ Tan.LevelTwo.prototype = {
     create: function(){
         // create map
         xStartPos = 0;
-        // var sceneElemBack = game.add.group();
+        sceneElemBack = game.add.group();
         levelTwoBackground = game.add.tileSprite(-1500, 0, xWorldBounds, gameHeight+200, 'underground');
         levelTwoBackground.scale.x = 15;
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
@@ -1136,6 +1121,8 @@ Tan.LevelTwo.prototype = {
 
         }
 
+        displayGrams();
+
     }
 
 }
@@ -1165,9 +1152,6 @@ Tan.Loading.prototype = {
                 game.state.start('LevelTwo')
             }
         }
-        // function comingSoon(){
-        //     var soonText = game.add.bitmapText(120, 400, 'font', "... coming soon", 25);
-        // }
     }
 }
 
@@ -1220,6 +1204,7 @@ Tan.GameOver.prototype = {
     }
 }
 
+// ==================================
 // Methods for levels
 
 function initializePlayer(){
@@ -1382,6 +1367,49 @@ function createSceneElem(scale, xPixFromLeft, yPixFromBottom, imgKey, front){
     }
     newElement.scale.setTo(scale, scale);
     return newElement;
+}
+
+// ========================
+// Update functions
+function literallyDying (currentMusic){
+    currentMusic.stop();
+    var suspenseSound = game.add.audio('suspense');
+    suspenseSound.play();
+    gameOverMusic.play();
+    var deadPlayer = game.add.sprite(player.position.x,player.position.y+20,'heart');
+    deadPlayer.animations.add('dead', [0,1,2,3], 1, false);
+    deadPlayer.animations.play('dead');
+    var deathScreen = game.add.sprite(game.camera.view.x,game.camera.view.y,'death-tint');
+    deathScreen.animations.add('tint', [0,1,2], 10, false);
+    deathScreen.animations.play('tint');
+
+}
+
+function displayGram(gram){
+    var marginLeft = 210;
+    var padding = 50;
+    var topPadding;
+
+    if (gram.animated){
+        topPadding = 28;
+    }else{
+        topPadding = 38
+    }
+
+    var displayGram = game.add.sprite(marginLeft + ((gram.displayIndex + 1) * padding), topPadding, gram.key);
+    displayGram.anchor.setTo(0.5, 0.5);
+    displayGram.fixedToCamera = true;
+}
+
+function displayGrams(){
+    for (var key in playerGrams) {
+        var gram = playerGrams[key];
+      if (playerGrams.hasOwnProperty(key) && gram.displayed == false) {
+        toggler.displayed = true;
+        gram.displayed = true;
+        displayGram(gram);
+      }
+    }
 }
 
 
