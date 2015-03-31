@@ -24,7 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 0;
+var xStartPos = 4000;
 
 var cursors;
 
@@ -63,10 +63,12 @@ var crabDead = false;
 var firstTimeUnderwater = true;
 var hint;
 var levelTwoStart = 4500;
-
 var currentLevel = 1;
+var background;
 
 var grassGroup;
+
+var shade;
 
 var music;
 var introMusic;
@@ -1118,24 +1120,22 @@ Tan.LevelTwo = function(game){};
 Tan.LevelTwo.prototype = {
     preload: function(){
         // load level two assets
-
+        game.load.image('underground', 'assets/underground.png');
+        game.load.image('underground_platform', 'assets/underground_platform_10x10.png');
+        game.load.image('sm_shade', 'assets/shade.png');
     },
     create: function(){
         // create map
-        background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
+        var sceneElemBack = game.add.group();
+        background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight+200, 'underground');
+        background.scale.x = 10;
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
         platforms = game.add.group();
         platforms.enableBody = true;
 
         // Keep this group behind player
-        var sceneElemBack = game.add.group();
 
-        // grams = game.add.group();
-        // grams.enableBody = true;
-        // grams.physicsBodyType = Phaser.Physics.ARCADE;
-
-
-        var ground = platforms.create(0, game.world.height - 50, 'platform');
+        var ground = platforms.create(0, game.world.height - 50, 'underground_platform');
         ground.scale.setTo(xWorldBounds/10, 7);
         ground.body.immovable = true;
 
@@ -1172,6 +1172,19 @@ Tan.LevelTwo.prototype = {
     },
     update: function(){
         game.physics.arcade.collide(player, platforms);
+        
+        if (!shade){
+            shade = game.add.sprite(player.position.x,player.position.y,'sm_shade')
+            shade.anchor.setTo(0.5,0.5)
+            shade.scale.x = 1.5;
+            shade.scale.y = 1.5;
+        }
+
+        shade.position.x = player.position.x
+        shade.position.y = player.position.y
+        
+
+
         // game.time.events.add(Phaser.Timer.SECOND * 3, comingSoon, this);
         // function comingSoon(){
         //     var soonText = game.add.bitmapText(120, 400, 'font', "... coming soon", 25);
@@ -1372,4 +1385,4 @@ game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('MainMenu');
+game.state.start('LevelOne');
