@@ -86,6 +86,7 @@ var crackSound;
 var coinSound;
 var gramSound;
 var fallingSound;
+var laughSound;
 
 var muteKey;
 var muted = false;
@@ -101,6 +102,27 @@ var togglerPaddingTop = 10;
 var toggleOn = false;
 var togglePosition = 0;
 var toggleForm;
+
+// Level 2 Vars
+
+var random;
+var moleBoss;
+var leftClaw;
+var rightClaw;
+var moleLife = 3;
+var moleSpeed = 100;
+var resetMole = false;
+var moleCountdown;
+var moleExists = false;
+var leftClawExists = false;
+var rightClawExists = false;
+var moleHit = false;
+
+var bossZoneY = gameHeight - 70;
+var bossZoneX = 1000;
+var holePadding = 100;
+
+
 
 Tan.MainMenu = function(game){};
 
@@ -956,13 +978,32 @@ Tan.LevelOne.prototype = {
 Tan.LevelTwo = function(game){};
 
 Tan.LevelTwo.prototype = {
+
+    // var random;
+    // var moleBoss;
+    // var leftClaw;
+    // var rightClaw;
+    // var moleLife = 3;
+    // var moleSpeed = 100;
+    // var resetMole;
+
+    // var bossZoneY = 600;
+    // var bossZoneX = 1000;
+    
     preload: function(){
         // load level two assets
         game.load.image('underground', 'assets/underground.png');
         game.load.image('rock', 'assets/rock.png');
         game.load.image('sm_shade', 'assets/shade.png');
+        game.load.spritesheet('moleMan', 'assets/sprites/mole.png', 247, 102, 2);
+        game.load.spritesheet('claws', 'assets/sprites/mole-claws.png', 186, 210, 2);
+
+        game.load.audio('laugh', 'assets/sound/mole-laugh.wav');
     },
     create: function(){
+        bossTime = false;
+        laughSound = game.add.audio('laugh');
+
         // create map
         xStartPos = 0;
         sceneElemBack = game.add.group();
@@ -996,6 +1037,25 @@ Tan.LevelTwo.prototype = {
         createHeadsUpDisplay();
         playerGrams['hat'].displayed=false;
 
+        function addProperties(sprite){
+            game.physics.arcade.enable(sprite);
+            sprite.body.immovable = true;
+
+        }
+
+        moleBoss = game.add.sprite(bossZoneX, bossZoneY, 'moleMan')
+        addProperties(moleBoss);
+        moleBoss.animations.add('moleMove', [0], 10, true);
+        moleBoss.animations.add('moleHurt', [1], 10, true);
+        moleBoss.animations.play('moleMove');
+        leftClaw = game.add.sprite(bossZoneX - holePadding, bossZoneY, 'claws')
+        addProperties(leftClaw);
+        leftClaw.animations.add('leftClaw', [0], 10, true);
+        leftClaw.animations.play('leftClaw');
+        rightClaw = game.add.sprite(bossZoneX + holePadding, bossZoneY, 'claws')
+        addProperties(rightClaw);
+        rightClaw.animations.add('rightClaw', [1], 10, true);
+        rightClaw.animations.play('rightClaw');
 
         var ground = platforms.create(0, game.world.height - 50, 'platform');
         ground.scale.setTo(xWorldBounds/10, 7);
@@ -1118,6 +1178,125 @@ Tan.LevelTwo.prototype = {
 
         displayGrams();
 
+        // ========================
+        // Boss Logic
+
+        // When player enters Boss Room (rectangle), boss mode on (mole laughs, music changes), animations start
+
+        // Stomp on head to hit
+        // Stomp three times to defeat
+        // Touch claws dies (Same as pincers)
+        
+        // Mole head pops out of one of the three random spots
+        // Claws pop out of the other two
+        // After short time, claws and head disappear into holes(destroy sprites?)
+
+        // To figure out:
+        // Consistant appear/disappear times
+        // Life
+
+        if (player.position.x >= 500 && bossTime == false && moleLife != 0){
+            moleFight();
+        }
+
+        function moleFight(){
+            bossTime = true;
+            moleCountdown = true;
+            laughSound.play();
+        }
+
+        if (moleCountdown == true && bossTime == true){
+            moleCountdown = false;
+            moleSpeed = 100;
+            game.time.events.add(Phaser.Timer.SECOND * (moleLife+1), positionsMole, this);
+        }
+
+        // halts mole
+        // if (moleExists === true){
+        //     if (moleBoss.position.y <= (bossZoneY - 200)){
+        //         pauseMole(2);
+        //     } else {
+        //         whackAMole();
+        //         pauseMole(.5);
+        //     }
+
+        //     // destroys mole sprite
+        //     if (resetMole === true && moleBoss.position.y >= (bossZoneY + 250) && leftClawExists === true && rightClawExists === true){
+        //         clearMole();
+        //         resetMole = false;
+        //         moleCountdown = true;
+        //     }
+        //     leftClaw.body.velocity.y = moleBoss.body.velocity.y
+        //     rightClaw.body.velocity.y = moleBoss.body.velocity.y
+        // }
+
+        // function clearMole(){
+        //     moleBoss.destroy();
+        //     leftClaw.destroy();
+        //     rightClaw.destroy();
+        // }
+
+        function randomHole(){
+            return random = Math.floor(Math.random() * (5))+1;
+        }
+
+        function rightClawPos(){
+            if (random == 5){
+                return 4;
+            } else if (random == 1){
+                return 3
+            } else {
+                return (random + 1);
+            }
+        }
+        function leftClawPos(){
+            if (random == 5){
+                return 3;
+            } else if (random == 1){
+                return 2;
+            } else {
+                return (random - 1);
+            }
+        }
+
+        function positionsMole(){
+            moleBoss.position.x = (bossZoneX + (randomHole() * holePadding));
+            leftClaw.position.x = (bossZoneX + (leftClawPos() * holePadding));
+            rightClaw.position.x = (bossZoneX + (rightClawPos() * holePadding));
+
+            game.time.events.add(Phaser.Timer.SECOND * .5, moveMole, this);
+        }
+
+        function moveMole(){
+            moleBoss.body.velocity.y = -(moleSpeed);
+        }
+
+        function pauseMole(duration){
+            moleBoss.body.velocity.y = 0;
+            resetMole = true;
+            game.time.events.add(Phaser.Timer.SECOND * duration, hideMole, this);
+        }
+
+        function hideMole(){
+            moleBoss.body.velocity.y = (moleSpeed);
+        }
+
+        function whackAMole(){
+            moleBoss.animations.play('moleHurt');
+            moleLife--;
+            moleSpeed = 300;
+            moleHit = false;
+        }
+
+        if (moleBoss.position.y <= (bossZoneY - 400)){
+            pauseMole(2);
+        } else if (moleHit === true){
+            whackAMole();
+            pauseMole(.5);
+        }
+
+        leftClaw.body.velocity.y = moleBoss.body.velocity.y;
+        rightClaw.body.velocity.y = moleBoss.body.velocity.y;
     }
 
 }
