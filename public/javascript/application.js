@@ -175,7 +175,6 @@ Tan.LevelOne.prototype = {
 
 
         game.load.image('platform', 'assets/platform_10x10.png');
-        game.load.image('grass', 'assets/grass.png');
         game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 12);
         game.load.spritesheet('heart', 'assets/sprites/heart.png', 38,30,4)
@@ -231,6 +230,12 @@ Tan.LevelOne.prototype = {
         game.load.image('water_front', 'assets/scene/water_anim3.png');
         game.load.image('water_back', 'assets/scene/water_anim4.png');
         game.load.image('bubble', 'assets/scene/bubble.png');
+        game.load.image('cloud', 'assets/scene/cloud.png');
+        game.load.image('tree', 'assets/scene/palmtree.png');
+        game.load.image('grass', 'assets/scene/grass.png');
+
+
+
 
     },
 
@@ -244,7 +249,10 @@ Tan.LevelOne.prototype = {
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
         background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
+        var clouds = game.add.group();
+
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
+
 
 
         music = game.add.audio('exploring');
@@ -553,13 +561,19 @@ Tan.LevelOne.prototype = {
         
         createHeadsUpDisplay();
 
-        function createSceneElem(scale, xPixFromLeft, yPixFromBottom, imgKey, front){
+        function createSceneElem(scale, horizFlip, xPixFromLeft, yPixFromBottom, imgKey, front){
             if (front == true){
                 var newElement = sceneElem.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey);
             } else {
                 var newElement = sceneElemBack.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey);
             }
-                newElement.scale.setTo(scale, scale);
+
+            newElement.anchor.setTo(.5,.5)
+            if (horizFlip == true){
+                newElement.scale.setTo(-scale, scale);
+            } else {
+                newElement.scale.setTo(scale);
+            }
                 return newElement;
         }
 
@@ -589,42 +603,43 @@ Tan.LevelOne.prototype = {
         planks.create(3000, 595, 'plank_short');
         planks.create(3195, 345, 'plank');
         planks.create(3545, 325, 'plank');
-        createSceneElem(.75, 1100, 240, 'seaweed' );
-        createSceneElem(.6, 1150, 200, 'seaweed', true);
-        createSceneElem(.5, 1070, 170, 'seaweed', true);
-        createSceneElem(.5, 1380, 180, 'seaweed');
-        createSceneElem(.7, 1410, 235, 'seaweed', true);
-        createSceneElem(.9, 1700, 280, 'seaweed', true);
-        createSceneElem(.6, 1670, 200, 'seaweed');
-        createSceneElem(.6, 1780, 200, 'seaweed');
-        createSceneElem(.5, 2050, 180, 'seaweed', true);
-        createSceneElem(.75, 2100, 240, 'seaweed');
-        createSceneElem(.35, 2190, 130, 'seaweed', true);
-        createSceneElem(.5, 2230, 180, 'seaweed');
-        createSceneElem(.75, 2210, 240, 'seaweed');
-        createSceneElem(.35, 2270, 130, 'seaweed', true);
-        createSceneElem(1, 1100, 70, 'rocks');
-        createSceneElem(1, 1190, 70, 'rocks_small', true);
-        createSceneElem(1, 1380, 70, 'rocks');
-        createSceneElem(1, 1700, 70, 'rocks', true);
-        createSceneElem(1, 1780, 70, 'rocks_small');
-        createSceneElem(.7, 1900, 67, 'rocks', true);
-        createSceneElem(1, 2100, 70, 'rocks_small');
-        createSceneElem(.6, 2300, 65, 'rocks', true);
-        createSceneElem(.4, 2350, 61, 'rocks_small');
-        createSceneElem(1.8, 3100, 85, 'rocks_small', true);
-        createSceneElem(1.5, 3010, 80, 'rocks');
-        createSceneElem(1.8, 3400, 85, 'rocks_small', true);
-        createSceneElem(1.5, 3490, 80, 'rocks');
-        createSceneElem(1, 3590, 70, 'rocks', true);
+        createSceneElem(.5, false, 1100, 110, 'seaweed', true);
+        createSceneElem(.75, false, 1150, 150, 'seaweed' );
+        createSceneElem(.6, false, 1200, 120, 'seaweed', true);
+        createSceneElem(.5, false, 1390, 120, 'seaweed');
+        createSceneElem(.7, false, 1420, 140, 'seaweed', true);
+        createSceneElem(.6, false, 1720, 120, 'seaweed');
+        createSceneElem(.9, false, 1750, 170, 'seaweed', true);
+        createSceneElem(.6, true, 1800, 120, 'seaweed');
+        createSceneElem(.5, false, 2070, 110, 'seaweed', true);
+        createSceneElem(.75, true, 2120, 150, 'seaweed');
+        createSceneElem(.35, false, 2190, 95, 'seaweed', true);
+        createSceneElem(.75, false, 2230, 150, 'seaweed');
+        createSceneElem(.5, true, 2260, 110, 'seaweed');
+        createSceneElem(.35, true, 2300, 95, 'seaweed', true);
+        createSceneElem(1, false, 1110, 60, 'rocks');
+        createSceneElem(1, false, 1190, 60, 'rocks_small', true);
+        createSceneElem(1, true, 1400, 60, 'rocks');
+        createSceneElem(1, false, 1720, 60, 'rocks', true);
+        createSceneElem(1, true, 1780, 60, 'rocks_small');
+        createSceneElem(.7, true, 1900, 56, 'rocks', true);
+        createSceneElem(1, false, 2100, 60, 'rocks_small');
+        createSceneElem(.6, true, 2300, 55, 'rocks', true);
+        createSceneElem(.4, false, 2350, 55, 'rocks_small');
+        createSceneElem(1.5, false, 3070, 60, 'rocks');
+        createSceneElem(1.8, false, 3150, 60, 'rocks_small', true);
+        createSceneElem(1.8, false, 3450, 60, 'rocks_small', true);
+        createSceneElem(1.5, true, 3510, 60, 'rocks');
+        createSceneElem(1, false, 3590, 60, 'rocks', true);
+        createSceneElem(1, false, 230, 235, 'tree');
+        createSceneElem(.7, true, 775, 180, 'tree');
+
 
         // Creates water (front layer)
         var waterFront = game.add.tileSprite(1062, 505, xWorldBounds, 512, 'water_front');
         var waterTween = game.add.tween(waterFront)
         .to( { y: 495, alpha: 0.4 }, 2000, Phaser.Easing.Linear.In, true, 0, -1)
-        .yoyo(true)
-        .repeat(1000000)
-        .start();
+        .yoyo(true).repeat(1000000).start();
 
         // Creates 28 random bubbles in the water
         var bubbleDelay = 0;
@@ -637,6 +652,18 @@ Tan.LevelOne.prototype = {
             }
         }
         createBubbles();
+
+        // Creates clouds
+        function createClouds(){
+            for (var i = 0; i < 20; i++){
+                var xStart = i * 250;
+                var cloud = clouds.create(xStart, game.rnd.integerInRange(100,400), 'cloud');
+                cloud.alpha = game.rnd.realInRange(0.1, 0.5);
+                cloud.scale.set(game.rnd.realInRange(0.7, 4));
+                game.add.tween(cloud).to({ x: xStart-1000}, 150000, Phaser.Easing.Linear.InOut, true, 0, 1000, false);
+            }
+        }
+        createClouds();
 
         game.add.sprite(4260, 386, 'sign');
 
