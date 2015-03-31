@@ -1043,10 +1043,15 @@ Tan.LevelTwo.prototype = {
 
     create: function(){
         // create map
-        xStartPos = 460;
-        yStartPos = 380;
+        xStartPos = 2600;
+        yStartPos = 176;
+
+        xWorldBounds = 5000;
+        yWorldBounds = 1000;
+        gamePadding = yWorldBounds - gameHeight
+
         sceneElemBack = game.add.group();
-        levelTwoBackground = game.add.tileSprite(-1500, 0, xWorldBounds, gameHeight+200, 'underground');
+        levelTwoBackground = game.add.tileSprite(-1500, 0, xWorldBounds, gameHeight+gamePadding, 'underground');
         levelTwoBackground.scale.x = 15;
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
         platforms = game.add.group();
@@ -1094,8 +1099,27 @@ Tan.LevelTwo.prototype = {
         createPlatform(18, 17, 360, 350, true);
         createPlatform(35, 5, 190, 180, true);
         createPlatform(30, 20, 440, 800, true);
-        createPlatform(15, 45, 740, 800, true);
-        createPlatform(10, 5, 640, 500, true);
+        createPlatform(15, 55, 740, 800, true);
+        createPlatform(7, 5, 670, 500, true);
+        createPlatform(13, 22, 610, 350, true);
+        createPlatform(17, 20, 800, 175, true);
+        createPlatform(40, 40, 890, 650, true);
+        createPlatform(15, 7, 1050, 175, true);
+        createPlatform(30, 55, 1290, 650, true);
+        createPlatform(30, 60, 1790, 650, true);
+        createPlatform(7, 5, 1720, 250, true);
+        createPlatform(7, 5, 1590, 375, true);
+        createPlatform(7, 5, 1720, 525, true);
+        createPlatform(70, 10, 2090, 650, true);
+        createPlatform(25, 5, 2090, 760, true);
+        createPlatform(25, 5, 2450, 760, true);
+        createPlatform(10, 20, 2790, 750, true);
+
+
+
+
+
+
 
 
 
