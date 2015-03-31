@@ -699,29 +699,29 @@ Tan.LevelOne.prototype = {
             movePlayer(6, 'swim', 'jumpFish', playerSpeed*1.25, -300);
         }
 
-        function displayToggler(){
-            if (toggler.displayed == false){
-                toggler.visible = false;
-            }
-            else{
-                toggler.visible = true;
-            }            
-        }
+        // function displayToggler(){
+        //     if (toggler.displayed == false){
+        //         toggler.visible = false;
+        //     }
+        //     else{
+        //         toggler.visible = true;
+        //     }            
+        // }
 
-        function collectGram(player, gram){
-            gram.displayIndex = gramCount;
-            gramSound.play();
-            gramCount++;
-            playerGrams[gram.name] = gram;
-            gram.kill();
-        }
+        // function collectGram(player, gram){
+        //     gram.displayIndex = gramCount;
+        //     gramSound.play();
+        //     gramCount++;
+        //     playerGrams[gram.name] = gram;
+        //     gram.kill();
+        // }
 
-        function collectCoin(player, coin){
-            coinSound.play();
-            coinCount++;
-            coinText.text = coinCount;
-            coin.kill();
-        }
+        // function collectCoin(player, coin){
+        //     coinSound.play();
+        //     coinCount++;
+        //     coinText.text = coinCount;
+        //     coin.kill();
+        // }
 
         // Moves toggle position
         if (toggleKey.isDown && toggleOn == false){
@@ -966,6 +966,8 @@ Tan.LevelTwo.prototype = {
         game.load.image('underground', 'assets/underground.png');
         game.load.image('rock', 'assets/rock.png');
         game.load.image('sm_shade', 'assets/shade.png');
+        game.load.spritesheet('parallel_glow', 'assets/grams/parallel_glow.png', 64, 64, 8);
+
 
         function loadLevelOneStuff(){
             game.load.image('platform', 'assets/platform_10x10.png');
@@ -1061,6 +1063,8 @@ Tan.LevelTwo.prototype = {
         grams.enableBody = true;
         grams.physicsBodyType = Phaser.Physics.ARCADE;
 
+        createGram(240, 640, 'parallel_glow', 'parallel', true);
+
         initializePlayer();
         initializeCamera();
 
@@ -1133,6 +1137,10 @@ Tan.LevelTwo.prototype = {
     },
     update: function(){
         game.physics.arcade.collide(player, platforms);
+        game.physics.arcade.collide(grams, platforms);
+        game.physics.arcade.overlap(player, grams, collectGram, null, this);
+
+
 
         // shade.position.x = player.position.x
         // shade.position.y = player.position.y
@@ -1175,6 +1183,24 @@ Tan.LevelTwo.prototype = {
                 pauser = false;
             }
         };
+
+        if (toggleKey.isDown && toggleOn == false){
+            toggleOn = true;
+            selectSound.play();
+            if (togglePosition < gramCount-1){
+                togglerPaddingLeft += 50;
+                togglePosition++;
+            } else {
+                togglerPaddingLeft = togglerDefaultPadding;
+                togglePosition = 0;
+            }
+            toggler.position.y = togglerPaddingTop;
+            toggler.position.x = togglerPaddingLeft;
+            toggler.fixedToCamera = true;
+        } else if (toggleKey.isUp){
+            toggleOn = false;
+        }
+
 
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
@@ -1549,6 +1575,29 @@ function displayGrams(){
     }
 }
 
+function collectGram(player, gram){
+    gram.displayIndex = gramCount;
+    gramSound.play();
+    gramCount++;
+    playerGrams[gram.name] = gram;
+    gram.kill();
+}
+
+function collectCoin(player, coin){
+    coinSound.play();
+    coinCount++;
+    coinText.text = coinCount;
+    coin.kill();
+}
+
+function displayToggler(){
+    if (toggler.displayed == false){
+        toggler.visible = false;
+    }
+    else{
+        toggler.visible = true;
+    }            
+}
 
 // Adds Level States
 game.state.add('LevelOne', Tan.LevelOne);
