@@ -24,7 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 4500;
+var xStartPos = 30;
 
 var cursors;
 
@@ -1043,8 +1043,8 @@ Tan.LevelTwo.prototype = {
 
     create: function(){
         // create map
-        xStartPos = 2600;
-        yStartPos = 176;
+        xStartPos = 2770;
+        yStartPos = 800;
 
         xWorldBounds = 5000;
         yWorldBounds = 1000;
@@ -1089,8 +1089,7 @@ Tan.LevelTwo.prototype = {
         ground.scale.setTo(xWorldBounds/10, 7);
         ground.body.immovable = true;
 
-
-        createPlatform(3, 80, 0, 800, true);
+        createPlatform(3, yWorldBounds, 0, yWorldBounds, true);
         createPlatform(28, 7, 30, 300, true);
         createPlatform(10, 12, 30, 250, true);
         createPlatform(15, 45, 90, 800, true);
@@ -1114,6 +1113,13 @@ Tan.LevelTwo.prototype = {
         createPlatform(25, 5, 2090, 760, true);
         createPlatform(25, 5, 2450, 760, true);
         createPlatform(10, 20, 2790, 750, true);
+        createPlatform(40, 5, 2890, 750, true);
+        createPlatform(20, 20, 3290, 750, true);
+        createPlatform(40, yWorldBounds, 3600, yWorldBounds, true);
+        createPlatform(80, 8, 2800, 490, true);
+        createPlatform(30, 5, 2890, 600, true);
+        createPlatform(20, 20, 2800, 410, true);
+        createPlatform(20, 10, 2800, 150, true);
 
 
 
