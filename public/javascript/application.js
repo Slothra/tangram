@@ -24,7 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 0;
+var xStartPos = 4500;
 
 var cursors;
 
@@ -140,7 +140,7 @@ Tan.MainMenu.prototype = {
     update: function(){
         // if clicked starts game
         game.input.onDown.add(loading,self);   
-        selectSound.volume = .1; 
+        selectSound.volume = .1;
         var clickMenu = false;
 
         function clicked(){
@@ -953,6 +953,11 @@ Tan.LevelOne.prototype = {
 
 };
 
+
+
+
+
+
 Tan.LevelTwo = function(game){};
 
 Tan.LevelTwo.prototype = {
@@ -961,10 +966,85 @@ Tan.LevelTwo.prototype = {
         game.load.image('underground', 'assets/underground.png');
         game.load.image('rock', 'assets/rock.png');
         game.load.image('sm_shade', 'assets/shade.png');
+
+        function loadLevelOneStuff(){
+            game.load.image('platform', 'assets/platform_10x10.png');
+            game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
+            game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 12);
+            game.load.spritesheet('heart', 'assets/sprites/heart.png', 38,30,4)
+            game.load.image('sm_triangle', 'assets/grams/sm_triangle2.png');
+            game.load.image('sm_square', 'assets/grams/tan-square.png');
+            game.load.spritesheet('death-tint', 'assets/sprites/deathtint.png', 800,600,3)
+
+            game.load.spritesheet('spiral', 'assets/sprites/spiral.png', 38.5, 38, 4);
+            game.load.spritesheet('coin','assets/sprites/coin_spritesheet1.png', 32, 22, 8);
+            game.load.image('displayCoin', 'assets/sprites/coin.png');
+            game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
+            game.load.image('toggler', 'assets/sprites/gram_toggler2.png');
+            game.load.spritesheet('hints', 'assets/sprites/LevelOneHints.png', 118,77,2);
+
+            game.load.audio('exploring', 'assets/sound/exploring.m4a');
+            game.load.audio('boss', 'assets/sound/boss.m4a');
+            game.load.audio('suspense', 'assets/sound/suspense.m4a');
+            game.load.audio('gameover', 'assets/sound/gameover.m4a');
+            game.load.audio('restart', 'assets/sound/restart.m4a');
+            game.load.audio('jumpSound', 'assets/sound/jump.wav');
+            game.load.audio('poof', 'assets/sound/poof.wav');
+            game.load.audio('splash', 'assets/sound/splash.wav');
+            game.load.audio('crack', 'assets/sound/crack.mp3');
+            game.load.audio('coin', 'assets/sound/coin.mp3');
+            game.load.audio('gram', 'assets/sound/gram.wav');
+            game.load.audio('menu-select', 'assets/sound/form-change.wav');
+
+            game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt');
+
+            cursors = game.input.keyboard.createCursorKeys();
+            pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.P);
+            toggleKey = game.input.keyboard.addKey(Phaser.Keyboard.F);
+            muteKey = game.input.keyboard.addKey(Phaser.Keyboard.M);
+
+            game.physics.startSystem(Phaser.Physics.ARCADE);
+
+            background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
+            var clouds = game.add.group();
+
+            game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
+
+            music = game.add.audio('exploring');
+            gameOverMusic = game.add.audio('gameover');
+            music.loop = true;
+            music.play();
+            jumpSound = game.add.audio('jumpSound');
+            poofSound = game.add.audio('poof');
+            splashSound = game.add.audio('splash');
+            crackSound = game.add.audio('crack');
+            coinSound = game.add.audio('coin');
+            gramSound = game.add.audio('gram');
+            selectSound = game.add.audio('menu-select');
+            selectSound.volume = .1;
+
+
+            platforms = game.add.group();
+            platforms.enableBody = true;
+
+            // Keep this group behind player
+            sceneElemBack = game.add.group();
+
+            grams = game.add.group();
+            grams.enableBody = true;
+            grams.physicsBodyType = Phaser.Physics.ARCADE;
+        }
+        loadLevelOneStuff()
+
+
+
+
     },
+
     create: function(){
         // create map
-        xStartPos = 0;
+        xStartPos = 460;
+        yStartPos = 380;
         sceneElemBack = game.add.group();
         levelTwoBackground = game.add.tileSprite(-1500, 0, xWorldBounds, gameHeight+200, 'underground');
         levelTwoBackground.scale.x = 15;
@@ -987,19 +1067,40 @@ Tan.LevelTwo.prototype = {
         player.animations.add('walkHat', [3, 4, 5], 10, true);
         player.animations.add('jumpHat', [4]);
 
-        shade = game.add.sprite(player.position.x,player.position.y,'sm_shade')
-        shade.anchor.setTo(0.5,0.5)
-        shade.scale.x = 1.5;
-        shade.scale.y = 1.5;
+        // shade = game.add.sprite(player.position.x,player.position.y,'sm_shade')
+        // shade.anchor.setTo(0.5,0.5)
+        // shade.scale.x = 1.5;
+        // shade.scale.y = 1.5;
 
         // Creates head up display
         createHeadsUpDisplay();
-        playerGrams['hat'].displayed=false;
 
+        if (playerGrams.hat){
+            playerGrams.hat.displayed = false;
+        }
+   
 
         var ground = platforms.create(0, game.world.height - 50, 'platform');
         ground.scale.setTo(xWorldBounds/10, 7);
         ground.body.immovable = true;
+
+
+        createPlatform(3, 80, 0, 800, true);
+        createPlatform(28, 7, 30, 300, true);
+        createPlatform(10, 12, 30, 250, true);
+        createPlatform(15, 45, 90, 800, true);
+        createPlatform(20, 30, 240, 800, true);
+        createPlatform(14, 10, 300, 450, true);
+        createPlatform(18, 17, 360, 350, true);
+        createPlatform(35, 5, 190, 180, true);
+        createPlatform(30, 20, 440, 800, true);
+        createPlatform(15, 45, 740, 800, true);
+        createPlatform(10, 5, 640, 500, true);
+
+
+
+
+
 
 
 
@@ -1007,8 +1108,8 @@ Tan.LevelTwo.prototype = {
     update: function(){
         game.physics.arcade.collide(player, platforms);
 
-        shade.position.x = player.position.x
-        shade.position.y = player.position.y
+        // shade.position.x = player.position.x
+        // shade.position.y = player.position.y
 
         if (muteKey.isDown && muted === false){
             muted = true;
@@ -1107,12 +1208,13 @@ Tan.LevelTwo.prototype = {
 
             if (cursors.up.isDown && player.body.touching.down){
                 player.body.velocity.y = yVel;
+                jumpSound.play();
             }
 
             if (!player.body.touching.down){
                 player.animations.play(jumpAnim);
                 
-            }            
+            }     
 
         }
 
@@ -1152,6 +1254,12 @@ Tan.Loading.prototype = {
         }
     }
 }
+
+
+
+
+
+
 
 Tan.GameOver = function(game){};
 
@@ -1422,4 +1530,4 @@ game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelOne');
+game.state.start('LevelTwo');
