@@ -93,6 +93,7 @@ var coinSound;
 var gramSound;
 var fallingSound;
 var laughSound;
+var victorySound;
 
 var muteKey;
 var muted = false;
@@ -125,6 +126,8 @@ var claws;
 var bossZoneY = 950;
 var bossZoneX = 3250;
 var holePadding = 100;
+
+var undergroundMusic;
 
 
 
@@ -238,6 +241,7 @@ Tan.LevelOne.prototype = {
         game.load.audio('coin', 'assets/sound/coin.mp3');
         game.load.audio('gram', 'assets/sound/gram.wav');
         game.load.audio('menu-select', 'assets/sound/form-change.wav');
+        game.load.audio('victorySound', 'assets/sound/victory.m4a');
 
         game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
     
@@ -298,6 +302,7 @@ Tan.LevelOne.prototype = {
         gramSound = game.add.audio('gram');
         selectSound = game.add.audio('menu-select');
         selectSound.volume = .1;
+        victorySound = game.add.audio('victorySound');
 
         waters = game.add.group();
         waters.enableBody = true;
@@ -858,10 +863,6 @@ Tan.LevelOne.prototype = {
             coconut.animations.stop;
         }
 
-        function restartScreen(){
-            game.state.start('GameOver');
-        }
-
         function bossCollisionHandler (player, enemy) {
             if (crabDead===false){
                 player.destroy();
@@ -889,6 +890,7 @@ Tan.LevelOne.prototype = {
             needNewCoconut = true;
             if (crabLife === 0){
                 bossMusic.stop();
+                victorySound.play();
                 music.play();
                 // console.log("YOU WIN!")
                 spiral = game.add.sprite(crabbyCrab.position.x, crabbyCrab.position.y, 'spiral')
@@ -952,6 +954,7 @@ Tan.LevelOne.prototype = {
 
         // if (crabDead == true && player.position.x > levelTwoStart){
         if (player.position.x > levelTwoStart){
+            music.stop();
             game.state.start('Loading');
             currentLevel = 2;
         }
@@ -977,8 +980,11 @@ Tan.LevelTwo.prototype = {
         game.load.spritesheet('moleMan-resize', 'assets/sprites/resized-mole.png', 141, 72, 2);
         // game.load.spritesheet('claws', 'assets/sprites/mole-claws.png', 186, 210, 2);
         game.load.spritesheet('claws-resize', 'assets/sprites/Mole-Claws-resized.png', 144, 104, 2);
+        game.load.spritesheet('underground-pigeon','assets/sprites/underground-pigeon.png', 41, 36, 3);
 
         game.load.audio('laugh', 'assets/sound/mole-laugh.wav');
+        game.load.audio('undergroundMusic', 'assets/sound/underground-music.m4a')
+        game.load.audio('victorySound', 'assets/sound/victory.m4a');
         game.load.spritesheet('parallel_glow', 'assets/grams/parallel_glow.png', 64, 64, 8);
 
 
@@ -1032,7 +1038,7 @@ Tan.LevelTwo.prototype = {
             music = game.add.audio('exploring');
             gameOverMusic = game.add.audio('gameover');
             music.loop = true;
-            music.play();
+            // music.play();
             jumpSound = game.add.audio('jumpSound');
             poofSound = game.add.audio('poof');
             splashSound = game.add.audio('splash');
@@ -1059,6 +1065,10 @@ Tan.LevelTwo.prototype = {
     create: function(){
         bossTime = false;
         laughSound = game.add.audio('laugh');
+        undergroundMusic = game.add.audio('undergroundMusic');
+        undergroundMusic.loop = true;
+        undergroundMusic.play();
+        victorySound = game.add.audio('victorySound');
 
         // create map
         xStartPos = 60;
@@ -1067,14 +1077,6 @@ Tan.LevelTwo.prototype = {
         xWorldBounds = 5000;
         yWorldBounds = 1000;
         gamePadding = yWorldBounds - gameHeight;
-
-        enemies = game.add.group();
-        enemies.enableBody = true;
-        enemies.physicsBodyType = Phaser.Physics.ARCADE;
-
-        enemyMovementTriggers = game.add.group();
-        enemyMovementTriggers.enableBody = true;
-        enemyMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
 
         sceneElemBack = game.add.group();
         levelTwoBackground = game.add.tileSprite(-1500, 0, xWorldBounds, gameHeight+gamePadding, 'underground');
@@ -1085,6 +1087,14 @@ Tan.LevelTwo.prototype = {
 
         // Keep this group behind player
         sceneElemBack = game.add.group();
+
+        enemies = game.add.group();
+        enemies.enableBody = true;
+        enemies.physicsBodyType = Phaser.Physics.ARCADE;
+
+        enemyMovementTriggers = game.add.group();
+        enemyMovementTriggers.enableBody = true;
+        enemyMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
 
         grams = game.add.group();
         grams.enableBody = true;
@@ -1207,10 +1217,17 @@ Tan.LevelTwo.prototype = {
         createCoinCluster(2440, 730, 5);
         createCoinCluster(2250, 445, 3);
 
+        createEnemy(1135, 86,'underground-pigeon', 130, 130);
+        createEnemy(1119, 685,'underground-pigeon', 150, 150);
+        createEnemy(3070, 632,'underground-pigeon', 50, 50);
+        createEnemy(2500, 377,'underground-pigeon', 100, 100);
+
     },
 
     update: function(){
         game.physics.arcade.collide(player, platforms);
+        game.physics.arcade.collide(enemies, player, collideEnemy, null, this);
+        game.physics.arcade.collide(enemies, platforms);
         game.physics.arcade.collide(grams, platforms);
         game.physics.arcade.overlap(player, grams, collectGram, null, this);
         game.physics.arcade.collide(coins, platforms);
@@ -1376,16 +1393,52 @@ Tan.LevelTwo.prototype = {
         displayGrams();
 
         // ========================
+        // Enemy Logic
+
+        function collideEnemy(player, enemy){
+            if (enemy.body.touching.up){
+                poofSound.play();
+                var collision = game.add.sprite(enemy.position.x-3,enemy.position.y-5,'collision');
+                collision.animations.add('explode', [0, 1, 2], 20, false);
+                collision.animations.play('explode');
+                var cleanup = function (){
+                    collision.destroy();
+                }
+                enemy.kill();
+                player.body.velocity.y = -200;
+                game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
+            } else {
+                player.destroy();
+                literallyDying(undergroundMusic);
+                game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);
+            }
+        }
+
+        game.physics.arcade.overlap(enemies, enemyMovementTriggers, function(enemy, trigger) {
+            if (enemy.lastTrigger !== trigger) {
+                enemy.scale.x *= -1;
+                enemy.body.velocity.x *= -1;
+                enemy.lastTrigger = trigger;
+            }
+        });
+
+        // ========================
         // Boss Logic
 
         if (player.position.x >= 2890 && player.position.y >= 760 && bossTime == false && moleLife != 0){
             moleFight();
+            bossMusic = game.add.audio('boss');
+            undergroundMusic.stop();
+            bossMusic.loop = true;
+            bossMusic.play();
         }
 
         function moleFight(){
             bossTime = true;
             moleCountdown = true;
-            laughSound.play();
+            if (moleLife > 0){
+                laughSound.play();
+            }
         }
 
         if (moleCountdown === true && bossTime === true){
@@ -1463,10 +1516,14 @@ Tan.LevelTwo.prototype = {
                 moleBoss.animations.play('moleHurt');
                 if (moleLife == 0){
                     console.log("You Win!")
-                    moleBoss.destroy();
                     leftClaw.destroy();
                     rightClaw.destroy();
+                    bossMusic.stop();
+                    victorySound.play();
+                    undergroundMusic.play();
                 }
+            } else if (moleLife === 0){
+                bossTime = false;
             } else {
                 player.destroy();
                 literallyDying(bossMusic);
@@ -1604,11 +1661,14 @@ function createEnemy(xPixFromLeft, yPixFromBottom, enemyKey, leftTrigger, rightT
     var newEnemy = enemies.create(xPixFromLeft, game.world.height - yPixFromBottom, enemyKey, 0, enemies);
     newEnemy.body.velocity.x = 100;
     if (enemyKey == 'pigeon'){
-        newEnemy.animations.add('pigeon-step', [0,1,2], 10, true);
+        newEnemy.animations.add('pigeon-step', [0,1,0,2], 10, true);
         newEnemy.animations.play('pigeon-step');
     } else if (enemyKey == 'badfish'){
         newEnemy.animations.add('badfish-swim',[0,1,2], 10, true);
         newEnemy.animations.play('badfish-swim');
+    } else if (enemyKey == 'underground-pigeon'){
+        newEnemy.animations.add('underground-pigeon-step', [0,1,0,2], 10, true);
+        newEnemy.animations.play('underground-pigeon-step');
     }
     newEnemy.anchor.setTo(.5,0)
     createLeftTrigger(newEnemy, leftTrigger);
@@ -1817,10 +1877,14 @@ function displayToggler(){
     }            
 }
 
+function restartScreen(){
+    game.state.start('GameOver');
+}
+
 // Adds Level States
 game.state.add('LevelOne', Tan.LevelOne);
 game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelOne');
+game.state.start('LevelTwo');
