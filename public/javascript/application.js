@@ -990,6 +990,16 @@ Tan.LevelTwo.prototype = {
         game.load.audio('undergroundMusic', 'assets/sound/underground-music.m4a')
         game.load.audio('victorySound', 'assets/sound/victory.m4a');
         game.load.spritesheet('parallel_glow', 'assets/grams/parallel_glow.png', 64, 64, 8);
+        game.load.image('dirt', 'assets/scene/level2/dirtTile_10x10.png');
+        game.load.image('bgTexture', 'assets/scene/level2/bgtexture.png');
+        game.load.image('rootPlat', 'assets/scene/level2/treerootHoriz.png');
+        game.load.image('rootPlat2', 'assets/scene/level2/treerootHorizflip.png');
+
+        game.load.image('root01', 'assets/scene/level2/treeroot01.png');
+        game.load.image('root02', 'assets/scene/level2/treeroot02.png');
+        game.load.image('root03', 'assets/scene/level2/treeroot03.png');
+        game.load.image('root04', 'assets/scene/level2/treeroot04.png');
+        game.load.image('root05', 'assets/scene/level2/treeroot05.png');
 
 
         function loadLevelOneStuff(){
@@ -1026,8 +1036,6 @@ Tan.LevelTwo.prototype = {
 
             game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt');
 
-            game.load.image('dirt_ground', 'assets/scene/level2/dirtTile.png');
-            game.load.image('dirt', 'assets/scene/level2/dirtTile_10x10.png');
 
 
 
@@ -1061,11 +1069,11 @@ Tan.LevelTwo.prototype = {
             platforms.enableBody = true;
 
             // Keep this group behind player
-            sceneElemBack = game.add.group();
 
             grams = game.add.group();
             grams.enableBody = true;
             grams.physicsBodyType = Phaser.Physics.ARCADE;
+
         }
         loadLevelOneStuff();
     },
@@ -1080,7 +1088,7 @@ Tan.LevelTwo.prototype = {
 
         // create map
         xStartPos = 60;
-        yStartPos = 300;
+        yStartPos = 200;
 
         // setcamera Deadzone
         deadZoneY = 100;
@@ -1090,15 +1098,14 @@ Tan.LevelTwo.prototype = {
         yWorldBounds = 1000;
         gamePadding = yWorldBounds - gameHeight;
 
-        sceneElemBack = game.add.group();
-        levelTwoBackground = game.add.tileSprite(-1500, 0, xWorldBounds, gameHeight+gamePadding, 'underground');
-        levelTwoBackground.scale.x = 15;
+        levelTwoBackground = game.add.tileSprite(0, 0, xWorldBounds, yWorldBounds, 'bgTexture');
+
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
+
+        sceneElemBack = game.add.group();
+
         platforms = game.add.group();
         platforms.enableBody = true;
-
-        // Keep this group behind player
-        sceneElemBack = game.add.group();
 
         enemies = game.add.group();
         enemies.enableBody = true;
@@ -1132,6 +1139,9 @@ Tan.LevelTwo.prototype = {
         player.animations.add('jumpHat', [4]);
         player.animations.add('walkCandle', [12, 13, 14], 10, true);
         player.animations.add('jumpCandle', [13]);
+
+        sceneElem = game.add.group();
+
         
         shade = game.add.sprite(player.position.x, player.position.y,'shade')
         shade.anchor.setTo(0.5,0.5);
@@ -1187,6 +1197,8 @@ Tan.LevelTwo.prototype = {
         createCoinCluster(2440, 730, 5);
         createCoinCluster(2250, 445, 3);
 
+
+
         // Creates Dirt platforms 
         function createDirtPlat(xPixFromLeft, yPixFromBottom, width, height){
             var newDirt = game.add.tileSprite(xPixFromLeft, game.world.height - yPixFromBottom, width, height, 'dirt');
@@ -1217,9 +1229,16 @@ Tan.LevelTwo.prototype = {
         createDirtPlat(1050, 175, 150, 70);
         createDirtPlat(1290, 650, 300, 550);
         createDirtPlat(1790, 650, 300, 600);
-        createMovingPlat(1720, 200, 'plank_short', 'vertical', 110, 100, 50);
-        createMovingPlat(1570, 300, 'plank_short', 'vertical', 100, 100, -50);
-        createMovingPlat(1720, 500, 'plank_short', 'vertical', 100, 100, 80);
+
+        var root01 = createMovingPlat(1695, 210, 'rootPlat2', 'vertical', 100, 100, 50);
+        root01.body.setSize(120, 32, 8, 70);
+
+        var root02 = createMovingPlat(1560, 400, 'rootPlat', 'vertical', 150, 150, -50);
+        root02.body.setSize(120, 32, 0, 70);
+
+        var root03 = createMovingPlat(1675, 500, 'rootPlat2', 'vertical', 90, 100, 80);
+        root03.body.setSize(120, 32, 8, 70);
+
         createDirtPlat(2090, 650, 700, 100);
         createDirtPlat(2090, 760, 250, 50);
         createDirtPlat(2450, 760, 250, 50);
@@ -1232,7 +1251,7 @@ Tan.LevelTwo.prototype = {
         createDirtPlat(2800, 410, 200, 200);
         createDirtPlat(2800, 150, 200, 100);
         createDirtPlat(3000, 300, 100, 50);
-        createDirtPlat(3230, 250, 150, 30);
+        createDirtPlat(3230, 225, 150, 30);
         createDirtPlat(3500, 300, 100, 50);
         createDirtPlat(2750, 330, 50, 50);
         createDirtPlat(2180, 490, 500, 50);
@@ -1241,11 +1260,30 @@ Tan.LevelTwo.prototype = {
         createDirtPlat(2500, 340, 170, 200);
         createDirtPlat(2670, 240, 50, 100);
         createDirtPlat(2180, 200, 320, 100);
-        
+
         createEnemy(1135, 86,'underground-pigeon', 130, 130);
         createEnemy(1119, 685,'underground-pigeon', 150, 150);
         createEnemy(3070, 632,'underground-pigeon', 50, 50);
         createEnemy(2500, 377,'underground-pigeon', 100, 100);
+
+
+
+        createSceneElem(1.4, false, 355, 500, 'root04', true);
+        createSceneElem(1.3, true, 680, 550, 'root02');
+        createSceneElem(1.2, true, 30, 90, 'root01', true);
+        createSceneElem(1.4, true, 490, 150, 'root05', true);
+        createSceneElem(1.2, false, 1000, 100, 'root03');
+        createSceneElem(1.2, false, 1000, 100, 'root03');
+        createSceneElem(1.5, true, 1960, 720, 'root05', true);
+        createSceneElem(1, true, 2450, 685, 'root02');
+        createSceneElem(1.1, true, 2768, 765, 'root01', true);
+        createSceneElem(1, true, 3000, 675, 'root02');
+        createSceneElem(1, false, 3500, 600, 'root03');
+        createSceneElem(1.1, false, 2732, 470, 'root01', true);
+        createSceneElem(1, false, 2250, 525, 'root04', true);
+        createSceneElem(1.3, true, 2430, 240, 'root02');
+
+
 
         function createWall(xPixFromLeft, yPixFromBottom, width, height){
             var newWall = game.add.tileSprite(xPixFromLeft, game.world.height - yPixFromBottom, width, height, 'dirt');
@@ -1941,4 +1979,4 @@ game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelOne');
+game.state.start('LevelTwo');
