@@ -35,10 +35,16 @@ var playerForm = 'brick';
 var enemyMovementTriggers;
 var enemies;
 var createdEnemy;
+
+
+
 var platformMovementTriggers;
 var platformRightTrigger;
 var platformLeftTrigger;
-var movPlat;
+
+
+
+
 var underwater = false;
 var playerSpeed = 150;
 var crabbyCrab;
@@ -198,11 +204,7 @@ Tan.LevelOne = function(game){};
 
 Tan.LevelOne.prototype = {
     preload: function(){
-        // game.load.image('sky', 'assets/sky.png');
-        // game.load.image('sky', 'assets/scene/blue_gradient.png');
         game.load.image('sky', 'assets/scene/beach2.png');
-
-
         game.load.image('platform', 'assets/platform_10x10.png');
         game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
         game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 12);
@@ -339,12 +341,14 @@ Tan.LevelOne.prototype = {
         var plat16 = createPlatform(8, 3, 3000, 200, true);
         var plat17 = createPlatform(8, 3, 1700, 200, true);
 
+
         platformMovementTriggers = game.add.group();
         platformMovementTriggers.enableBody = true;
         platformMovementTriggers.allowGravity = false;
         platformMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
 
-        createMovingPlat(1300, 500, 'plank', 150, 150);
+        createMovingPlat(1300, 500, 'plank', 'horizontal', 100, 200, 60);
+
 
         createGram(200, game.world.height - 110, 'hat_glow', 'hat', true);
 
@@ -514,6 +518,7 @@ Tan.LevelOne.prototype = {
 
         game.add.sprite(4260, 386, 'sign');
 
+
     },
 
     update: function(){
@@ -529,6 +534,18 @@ Tan.LevelOne.prototype = {
         game.physics.arcade.overlap(player, coins, collectCoin, null, this);
         game.physics.arcade.collide(enemies, player, collisionHandler, null, this);
         game.physics.arcade.collide(pincers, player, bossCollisionHandler, null, this);
+
+        game.physics.arcade.overlap(platforms, platformMovementTriggers, function(platform, trigger) {
+            if (platform.lastTrigger !== trigger) {
+                // Reverse the velocity of the platform and remember the last trigger.
+                if (platform.name == 'horizontal'){
+                    platform.body.velocity.x *= -1;
+                } else if (platform.name == 'vertical'){
+                    platform.body.velocity.y *= -1;
+                }
+                platform.lastTrigger = trigger;
+            }
+        });
 
         // Sets up controls
         cursors = game.input.keyboard.createCursorKeys();
@@ -932,13 +949,6 @@ Tan.LevelOne.prototype = {
             }
         });
 
-        game.physics.arcade.overlap(platforms, platformMovementTriggers, function(platform, trigger) {
-            if (platform.lastTrigger !== trigger) {
-                // Reverse the velocity of the platform and remember the last trigger.
-                platform.body.velocity.x *= -1;
-                platform.lastTrigger = trigger;
-            }
-        });
 
         // if (crabDead == true && player.position.x > levelTwoStart){
         if (player.position.x > levelTwoStart){
@@ -1000,6 +1010,10 @@ Tan.LevelTwo.prototype = {
             game.load.audio('coin', 'assets/sound/coin.mp3');
             game.load.audio('gram', 'assets/sound/gram.wav');
             game.load.audio('menu-select', 'assets/sound/form-change.wav');
+
+            game.load.image('plank_short', 'assets/scene/plank_short.png');
+            game.load.image('plank', 'assets/scene/plank2.png');
+
 
             game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt');
 
@@ -1103,6 +1117,11 @@ Tan.LevelTwo.prototype = {
         // Creates head up display
         createHeadsUpDisplay();
 
+        platformMovementTriggers = game.add.group();
+        platformMovementTriggers.enableBody = true;
+        platformMovementTriggers.allowGravity = false;
+        platformMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
+   
         function addProperties(sprite){
             game.physics.arcade.enable(sprite);
             sprite.body.immovable = true;
@@ -1128,6 +1147,7 @@ Tan.LevelTwo.prototype = {
         rightClaw = game.add.sprite(bossZoneX + 150, bossZoneY+10, 'claws-resize', 1)
         addProperties(rightClaw);
         claws.add(rightClaw);
+
 
         if (playerGrams.hat){
             playerGrams.hat.displayed = false;
@@ -1156,9 +1176,9 @@ Tan.LevelTwo.prototype = {
         createPlatform(15, 7, 1050, 175, true);
         createPlatform(30, 55, 1290, 650, true);
         createPlatform(30, 60, 1790, 650, true);
-        createPlatform(7, 5, 1720, 250, true);
-        createPlatform(7, 5, 1590, 375, true);
-        createPlatform(7, 5, 1720, 525, true);
+        createMovingPlat(1720, 200, 'plank_short', 'vertical', 110, 100, 50);
+        createMovingPlat(1570, 300, 'plank_short', 'vertical', 100, 100, -50);
+        createMovingPlat(1720, 500, 'plank_short', 'vertical', 100, 100, 80);
         createPlatform(70, 10, 2090, 650, true);
         createPlatform(25, 5, 2090, 760, true);
         createPlatform(25, 5, 2450, 760, true);
@@ -1187,7 +1207,6 @@ Tan.LevelTwo.prototype = {
         createCoinCluster(2440, 730, 5);
         createCoinCluster(2250, 445, 3);
 
-
     },
 
     update: function(){
@@ -1196,6 +1215,17 @@ Tan.LevelTwo.prototype = {
         game.physics.arcade.overlap(player, grams, collectGram, null, this);
         game.physics.arcade.collide(coins, platforms);
         game.physics.arcade.overlap(player, coins, collectCoin, null, this);
+        game.physics.arcade.overlap(platforms, platformMovementTriggers, function(platform, trigger) {
+            if (platform.lastTrigger !== trigger) {
+                // Reverse the velocity of the platform and remember the last trigger.
+                if (platform.name == 'horizontal'){
+                    platform.body.velocity.x *= -1;
+                } else if (platform.name == 'vertical'){
+                    platform.body.velocity.y *= -1;
+                }
+                platform.lastTrigger = trigger;
+            }
+        });
         game.physics.arcade.collide(player, moleBoss, collideBoss, null, this);
         game.physics.arcade.collide(player, claws, collideClaws, null, this);
 
@@ -1598,19 +1628,6 @@ function createRightTrigger(enemy, rightTrigger){
     return right;
 }
 
-function createMovingPlat(xPixFromLeft, yPixFromBottom, imgKey, leftTrigger, rightTrigger){
-    var newMovePlat = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey, 0, platforms);
-    game.physics.enable(newMovePlat, Phaser.Physics.ARCADE);
-    newMovePlat.allowGravity = false;
-    newMovePlat.body.velocity.x = 60;
-    newMovePlat.body.immovable = true;
-
-    createPlatLeftTrigger(newMovePlat, leftTrigger);
-    createPlatRightTrigger(newMovePlat, rightTrigger);
-
-    return newMovePlat;
-}
-
 function createPlatform(widthScale, heightScale, xPixFromLeft, yPixFromBottom, immovable){
     var newPlatform = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, 'platform');
     newPlatform.scale.setTo(widthScale, heightScale);
@@ -1624,17 +1641,36 @@ function makeImmovable(sprite){
     sprite.body.immovable = true;
 }
 
-function createPlatLeftTrigger(platform, leftTrigger){
-    var left = game.add.sprite(platform.position.x - leftTrigger, platform.position.y, null, 0, platformMovementTriggers);
-    left.body.setSize(40, 500, 0, 0);
-    return left;
+
+
+// Moving platforms
+function createMovingPlat(xPixFromLeft, yPixFromBottom, imgKey, type, triggerOne, triggerTwo, velocity){
+    var newMovePlat = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey, 0, platforms);
+    game.physics.enable(newMovePlat, Phaser.Physics.ARCADE);
+    newMovePlat.allowGravity = false;
+    newMovePlat.body.immovable = true;
+    newMovePlat.name = type;
+
+    if (type == 'horizontal'){
+        newMovePlat.body.velocity.x = velocity;
+        createPlatformTrigger((newMovePlat.position.x - triggerOne), newMovePlat.position.y);
+        createPlatformTrigger((newMovePlat.position.x + triggerTwo), newMovePlat.position.y);
+    } else if (type == 'vertical'){
+        newMovePlat.body.velocity.y = velocity;
+        createPlatformTrigger(newMovePlat.position.x, (newMovePlat.position.y - triggerOne));
+        createPlatformTrigger(newMovePlat.position.x, (newMovePlat.position.y + triggerTwo));
+    }
+
+    return newMovePlat;
 }
 
-function createPlatRightTrigger(platform, rightTrigger){
-    var right = game.add.sprite(platform.position.x + rightTrigger, platform.position.y, null, 0, platformMovementTriggers);
-    right.body.setSize(40, 100, 0, 0);
-    return right;
+function createPlatformTrigger(xPos, yPos){
+    var trigger = game.add.sprite(xPos, yPos, null, 0, platformMovementTriggers);
+    trigger.body.setSize(10, 10, 0, 0);
+    return trigger;
 }
+
+
 
 function createCoins(){
     // Creates 25 coins in random places
