@@ -930,14 +930,6 @@ Tan.LevelOne.prototype = {
         });
 
 
-        // game.physics.arcade.overlap(platforms, platformMovementTriggers, function(platform, trigger) {
-        //     if (platform.lastTrigger !== trigger) {
-        //         // Reverse the velocity of the platform and remember the last trigger.
-        //         platform.body.velocity.x *= -1;
-        //         platform.lastTrigger = trigger;
-        //     }
-        // });
-
         // if (crabDead == true && player.position.x > levelTwoStart){
         if (player.position.x > levelTwoStart){
             game.state.start('Loading');
@@ -992,6 +984,10 @@ Tan.LevelTwo.prototype = {
             game.load.audio('gram', 'assets/sound/gram.wav');
             game.load.audio('menu-select', 'assets/sound/form-change.wav');
 
+            game.load.image('plank_short', 'assets/scene/plank_short.png');
+            game.load.image('plank', 'assets/scene/plank2.png');
+
+
             game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt');
 
             cursors = game.input.keyboard.createCursorKeys();
@@ -1036,8 +1032,8 @@ Tan.LevelTwo.prototype = {
 
     create: function(){
         // create map
-        xStartPos = 60;
-        yStartPos = 200;
+        xStartPos = 1700;
+        yStartPos = 880;
 
         xWorldBounds = 5000;
         yWorldBounds = 1000;
@@ -1081,6 +1077,11 @@ Tan.LevelTwo.prototype = {
 
         // Creates head up display
         createHeadsUpDisplay();
+
+        platformMovementTriggers = game.add.group();
+        platformMovementTriggers.enableBody = true;
+        platformMovementTriggers.allowGravity = false;
+        platformMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
    
 
         var ground = platforms.create(0, game.world.height - 50, 'platform');
@@ -1106,9 +1107,20 @@ Tan.LevelTwo.prototype = {
         createPlatform(15, 7, 1050, 175, true);
         createPlatform(30, 55, 1290, 650, true);
         createPlatform(30, 60, 1790, 650, true);
-        createPlatform(7, 5, 1720, 250, true);
-        createPlatform(7, 5, 1590, 375, true);
-        createPlatform(7, 5, 1720, 525, true);
+// function createMovingPlat(xPixFromLeft, yPixFromBottom, imgKey, type, triggerOne, triggerTwo, velocity)
+        createMovingPlat(1720, 200, 'plank_short', 'vertical', 110, 100, 50);
+        createMovingPlat(1570, 300, 'plank_short', 'vertical', 100, 100, -50);
+        createMovingPlat(1720, 500, 'plank_short', 'vertical', 100, 100, 80);
+
+
+
+        // createPlatform(7, 5, 1720, 250, true);
+        // createPlatform(7, 5, 1590, 375, true);
+        // createPlatform(7, 5, 1720, 525, true);
+
+
+
+
         createPlatform(70, 10, 2090, 650, true);
         createPlatform(25, 5, 2090, 760, true);
         createPlatform(25, 5, 2450, 760, true);
@@ -1155,6 +1167,17 @@ Tan.LevelTwo.prototype = {
         game.physics.arcade.overlap(player, grams, collectGram, null, this);
         game.physics.arcade.collide(coins, platforms);
         game.physics.arcade.overlap(player, coins, collectCoin, null, this);
+        game.physics.arcade.overlap(platforms, platformMovementTriggers, function(platform, trigger) {
+            if (platform.lastTrigger !== trigger) {
+                // Reverse the velocity of the platform and remember the last trigger.
+                if (platform.name == 'horizontal'){
+                    platform.body.velocity.x *= -1;
+                } else if (platform.name == 'vertical'){
+                    platform.body.velocity.y *= -1;
+                }
+                platform.lastTrigger = trigger;
+            }
+        });
 
 
 
@@ -1658,4 +1681,4 @@ game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelOne');
+game.state.start('LevelTwo');
