@@ -978,25 +978,16 @@ Tan.LevelOne.prototype = {
 Tan.LevelTwo = function(game){};
 
 Tan.LevelTwo.prototype = {
-
-    // var random;
-    // var moleBoss;
-    // var leftClaw;
-    // var rightClaw;
-    // var moleLife = 3;
-    // var moleSpeed = 100;
-    // var resetMole;
-
-    // var bossZoneY = 600;
-    // var bossZoneX = 1000;
     
     preload: function(){
         // load level two assets
         game.load.image('underground', 'assets/underground.png');
         game.load.image('rock', 'assets/rock.png');
         game.load.image('sm_shade', 'assets/shade.png');
-        game.load.spritesheet('moleMan', 'assets/sprites/mole.png', 247, 102, 2);
-        game.load.spritesheet('claws', 'assets/sprites/mole-claws.png', 186, 210, 2);
+        // game.load.spritesheet('moleMan', 'assets/sprites/mole.png', 247, 102, 2);
+        game.load.spritesheet('moleMan-resize', 'assets/sprites/resized-mole.png', 141, 72, 2);
+        // game.load.spritesheet('claws', 'assets/sprites/mole-claws.png', 186, 210, 2);
+        game.load.spritesheet('claws-resize', 'assets/sprites/Mole-Claws-resized.png', 144, 104, 2);
 
         game.load.audio('laugh', 'assets/sound/mole-laugh.wav');
     },
@@ -1035,24 +1026,25 @@ Tan.LevelTwo.prototype = {
 
         // Creates head up display
         createHeadsUpDisplay();
-        playerGrams['hat'].displayed=false;
+        playerGrams['hat'].displayed = false;
 
         function addProperties(sprite){
             game.physics.arcade.enable(sprite);
             sprite.body.immovable = true;
+            sprite.anchor.setTo(.5,0);
 
         }
 
-        moleBoss = game.add.sprite(bossZoneX, bossZoneY, 'moleMan')
+        moleBoss = game.add.sprite(bossZoneX, bossZoneY, 'moleMan-resize')
         addProperties(moleBoss);
         moleBoss.animations.add('moleMove', [0], 10, true);
         moleBoss.animations.add('moleHurt', [1], 10, true);
         moleBoss.animations.play('moleMove');
-        leftClaw = game.add.sprite(bossZoneX - holePadding, bossZoneY, 'claws')
+        leftClaw = game.add.sprite(bossZoneX - holePadding, bossZoneY, 'claws-resize')
         addProperties(leftClaw);
         leftClaw.animations.add('leftClaw', [0], 10, true);
         leftClaw.animations.play('leftClaw');
-        rightClaw = game.add.sprite(bossZoneX + holePadding, bossZoneY, 'claws')
+        rightClaw = game.add.sprite(bossZoneX + holePadding, bossZoneY, 'claws-resize')
         addProperties(rightClaw);
         rightClaw.animations.add('rightClaw', [1], 10, true);
         rightClaw.animations.play('rightClaw');
@@ -1186,13 +1178,9 @@ Tan.LevelTwo.prototype = {
         // Stomp on head to hit
         // Stomp three times to defeat
         // Touch claws dies (Same as pincers)
-        
-        // Mole head pops out of one of the three random spots
-        // Claws pop out of the other two
-        // After short time, claws and head disappear into holes(destroy sprites?)
 
         // To figure out:
-        // Consistant appear/disappear times
+        // Consistant appear/disappear times/locations
         // Life
 
         if (player.position.x >= 500 && bossTime == false && moleLife != 0){
@@ -1205,36 +1193,37 @@ Tan.LevelTwo.prototype = {
             laughSound.play();
         }
 
-        if (moleCountdown == true && bossTime == true){
+        if (moleCountdown === true && bossTime === true){
             moleCountdown = false;
             moleSpeed = 100;
-            game.time.events.add(Phaser.Timer.SECOND * (moleLife+1), positionsMole, this);
+            game.time.events.add(Phaser.Timer.SECOND * 4, positionsMole, this);
         }
 
-        // halts mole
-        // if (moleExists === true){
-        //     if (moleBoss.position.y <= (bossZoneY - 200)){
-        //         pauseMole(2);
-        //     } else {
-        //         whackAMole();
-        //         pauseMole(.5);
-        //     }
 
-        //     // destroys mole sprite
-        //     if (resetMole === true && moleBoss.position.y >= (bossZoneY + 250) && leftClawExists === true && rightClawExists === true){
-        //         clearMole();
-        //         resetMole = false;
-        //         moleCountdown = true;
-        //     }
-        //     leftClaw.body.velocity.y = moleBoss.body.velocity.y
-        //     rightClaw.body.velocity.y = moleBoss.body.velocity.y
-        // }
+        function moleSwitch(){
+            // if (moleBoss.position.y <= (bossZoneY - 200)){
+            //     pauseMole(2);
+            // } else if (moleHit === true){
+            //     whackAMole();
+            //     pauseMole(.5);
+            // } else if (moleBoss.position.y >= (bossZoneY + 200)){
+            moleBoss.body.velocity.y = 0;
+            moleCountdown = true
+            // }
+        }
 
-        // function clearMole(){
-        //     moleBoss.destroy();
-        //     leftClaw.destroy();
-        //     rightClaw.destroy();
-        // }
+        leftClaw.body.velocity = moleBoss.body.velocity;
+        rightClaw.body.velocity = moleBoss.body.velocity;
+
+        function clearMole(){
+            moleBoss.destroy();
+            leftClaw.destroy();
+            rightClaw.destroy();
+            // moleExists = false;
+            // leftClawExists = false;
+            // rightClawExists = false;
+            game.time.events.add(Phaser.Timer.SECOND * 2, positionsMole, this);
+        }
 
         function randomHole(){
             return random = Math.floor(Math.random() * (5))+1;
@@ -1260,25 +1249,31 @@ Tan.LevelTwo.prototype = {
         }
 
         function positionsMole(){
-            moleBoss.position.x = (bossZoneX + (randomHole() * holePadding));
-            leftClaw.position.x = (bossZoneX + (leftClawPos() * holePadding));
-            rightClaw.position.x = (bossZoneX + (rightClawPos() * holePadding));
+            moleBoss.body.velocity.x = moleSpeed;
+            game.time.events.add(Phaser.Timer.SECOND * 2, moveMole, this);
+        }
 
-            game.time.events.add(Phaser.Timer.SECOND * .5, moveMole, this);
+        function addProperties(sprite){
+            game.physics.arcade.enable(sprite);
+            sprite.anchor.setTo(.5, 0);
+            sprite.body.immovable = true;
         }
 
         function moveMole(){
+            moleBoss.body.velocity.x = 0;
             moleBoss.body.velocity.y = -(moleSpeed);
+            game.time.events.add(Phaser.Timer.SECOND * 2, pauseMole, this);
+
         }
 
-        function pauseMole(duration){
+        function pauseMole(){
             moleBoss.body.velocity.y = 0;
-            resetMole = true;
-            game.time.events.add(Phaser.Timer.SECOND * duration, hideMole, this);
+            game.time.events.add(Phaser.Timer.SECOND * 2, hideMole, this);
         }
 
         function hideMole(){
-            moleBoss.body.velocity.y = (moleSpeed);
+            moleBoss.body.velocity.y = moleSpeed;
+            game.time.events.add(Phaser.Timer.SECOND * 2, moleSwitch, this);
         }
 
         function whackAMole(){
@@ -1287,16 +1282,7 @@ Tan.LevelTwo.prototype = {
             moleSpeed = 300;
             moleHit = false;
         }
-
-        if (moleBoss.position.y <= (bossZoneY - 400)){
-            pauseMole(2);
-        } else if (moleHit === true){
-            whackAMole();
-            pauseMole(.5);
-        }
-
-        leftClaw.body.velocity.y = moleBoss.body.velocity.y;
-        rightClaw.body.velocity.y = moleBoss.body.velocity.y;
+        
     }
 
 }
