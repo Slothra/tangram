@@ -1120,13 +1120,11 @@ Tan.LevelTwo.prototype = {
         // Creates head up display
         createHeadsUpDisplay();
 
-// <<<<<<< HEAD
         platformMovementTriggers = game.add.group();
         platformMovementTriggers.enableBody = true;
         platformMovementTriggers.allowGravity = false;
         platformMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
    
-// =======
         function addProperties(sprite){
             game.physics.arcade.enable(sprite);
             sprite.body.immovable = true;
@@ -1153,7 +1151,6 @@ Tan.LevelTwo.prototype = {
         addProperties(rightClaw);
         claws.add(rightClaw);
 
-// >>>>>>> 5d472e9c1a89edfc7b3b8454df3023db35eb2fff
 
         var ground = platforms.create(0, game.world.height - 50, 'platform');
         ground.scale.setTo(xWorldBounds/10, 7);
@@ -1217,7 +1214,6 @@ Tan.LevelTwo.prototype = {
         game.physics.arcade.overlap(player, grams, collectGram, null, this);
         game.physics.arcade.collide(coins, platforms);
         game.physics.arcade.overlap(player, coins, collectCoin, null, this);
-// <<<<<<< HEAD
         game.physics.arcade.overlap(platforms, platformMovementTriggers, function(platform, trigger) {
             if (platform.lastTrigger !== trigger) {
                 // Reverse the velocity of the platform and remember the last trigger.
@@ -1229,11 +1225,9 @@ Tan.LevelTwo.prototype = {
                 platform.lastTrigger = trigger;
             }
         });
-// =======
         game.physics.arcade.collide(player, moleBoss, collideBoss, null, this);
         game.physics.arcade.collide(player, claws, collideClaws, null, this);
 
-// >>>>>>> 5d472e9c1a89edfc7b3b8454df3023db35eb2fff
 
 
 
@@ -1697,60 +1691,34 @@ function makeImmovable(sprite){
 }
 
 
+
+// Moving platforms
 function createMovingPlat(xPixFromLeft, yPixFromBottom, imgKey, type, triggerOne, triggerTwo, velocity){
     var newMovePlat = platforms.create(xPixFromLeft, game.world.height - yPixFromBottom, imgKey, 0, platforms);
     game.physics.enable(newMovePlat, Phaser.Physics.ARCADE);
     newMovePlat.allowGravity = false;
     newMovePlat.body.immovable = true;
     newMovePlat.name = type;
+
     if (type == 'horizontal'){
         newMovePlat.body.velocity.x = velocity;
-        createPlatLeftTrigger(newMovePlat, triggerOne);
-        createPlatRightTrigger(newMovePlat, triggerTwo);
+        createPlatformTrigger((newMovePlat.position.x - triggerOne), newMovePlat.position.y);
+        createPlatformTrigger((newMovePlat.position.x + triggerTwo), newMovePlat.position.y);
     } else if (type == 'vertical'){
         newMovePlat.body.velocity.y = velocity;
-        createPlatTopTrigger(newMovePlat, triggerOne);
-        createPlatBottomTrigger(newMovePlat, triggerTwo);
+        createPlatformTrigger(newMovePlat.position.x, (newMovePlat.position.y - triggerOne));
+        createPlatformTrigger(newMovePlat.position.x, (newMovePlat.position.y + triggerTwo));
     }
 
     return newMovePlat;
 }
 
-function createPlatLeftTrigger(platform, leftTrigger){
-    var left = game.add.sprite(platform.position.x - leftTrigger, platform.position.y, null, 0, platformMovementTriggers);
-    setBodyAndReturnPlat(left);
-
-//     left.body.setSize(10, 10, 0, 0);
-//     return left;
+function createPlatformTrigger(xPos, yPos){
+    var trigger = game.add.sprite(xPos, yPos, null, 0, platformMovementTriggers);
+    trigger.body.setSize(10, 10, 0, 0);
+    return trigger;
 }
 
-function createPlatRightTrigger(platform, rightTrigger){
-    var right = game.add.sprite(platform.position.x + rightTrigger, platform.position.y, null, 0, platformMovementTriggers);
-    setBodyAndReturnPlat(right);
-
-    // right.body.setSize(10, 10, 0, 0);
-    // return right;
-}
-
-function createPlatTopTrigger(platform, topTrigger){
-    var top = game.add.sprite(platform.position.x, platform.position.y - topTrigger, null, 0, platformMovementTriggers);
-    setBodyAndReturnPlat(top);
-    
-    // top.body.setSize(10, 10, 0, 0);
-    // return top;
-}
-
-function createPlatBottomTrigger(platform, bottomTrigger){
-    var bottom = game.add.sprite(platform.position.x, platform.position.y + bottomTrigger, null, 0, platformMovementTriggers);
-    setBodyAndReturnPlat(bottom);
-    // bottom.body.setSize(10, 10, 0, 0);
-    // return bottom;
-}
-
-function setBodyAndReturnPlat(platform){
-    platform.body.setSize(10, 10, 0, 0);
-    return platform;
-}
 
 
 function createCoins(){
