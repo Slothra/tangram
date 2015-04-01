@@ -1022,8 +1022,9 @@ Tan.LevelTwo.prototype = {
 
             game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt');
 
-            game.load.image('dirt_ground', 'assets/scene/level2/dirtTile.png');
             game.load.image('dirt', 'assets/scene/level2/dirtTile_10x10.png');
+            game.load.image('bgTexture', 'assets/scene/level2/bgtexture.png');
+
 
 
 
@@ -1083,8 +1084,11 @@ Tan.LevelTwo.prototype = {
         gamePadding = yWorldBounds - gameHeight;
 
         sceneElemBack = game.add.group();
-        levelTwoBackground = game.add.tileSprite(-1500, 0, xWorldBounds, gameHeight+gamePadding, 'underground');
-        levelTwoBackground.scale.x = 15;
+        levelTwoBackground = game.add.tileSprite(0, 0, xWorldBounds, yWorldBounds, 'bgTexture');
+        // levelTwoBackground = game.add.tileSprite(-1500, 0, xWorldBounds, gameHeight+gamePadding, 'underground');
+        // levelTwoBackground.scale.x = 15;
+
+
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
         platforms = game.add.group();
         platforms.enableBody = true;
@@ -1229,7 +1233,7 @@ Tan.LevelTwo.prototype = {
         createDirtPlat(2500, 340, 170, 200);
         createDirtPlat(2670, 240, 50, 100);
         createDirtPlat(2180, 200, 320, 100);
-        
+
         createEnemy(1135, 86,'underground-pigeon', 130, 130);
         createEnemy(1119, 685,'underground-pigeon', 150, 150);
         createEnemy(3070, 632,'underground-pigeon', 50, 50);
