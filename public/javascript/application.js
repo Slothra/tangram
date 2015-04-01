@@ -1064,8 +1064,8 @@ Tan.LevelTwo.prototype = {
         laughSound = game.add.audio('laugh');
 
         // create map
-        xStartPos = 1700;
-        yStartPos = 880;
+        xStartPos = 60;
+        yStartPos = 200;
 
         xWorldBounds = 5000;
         yWorldBounds = 1000;
