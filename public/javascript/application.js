@@ -1065,6 +1065,11 @@ Tan.LevelTwo.prototype = {
 
         createGram(240, 640, 'parallel_glow', 'parallel', true);
 
+        // Creating coins
+        coins = game.add.group();
+        coins.enableBody = true;
+        coins.physicsBodyType = Phaser.Physics.ARCADE;
+
         initializePlayer();
         initializeCamera();
 
@@ -1083,9 +1088,9 @@ Tan.LevelTwo.prototype = {
         // Creates head up display
         createHeadsUpDisplay();
 
-        if (playerGrams.hat){
-            playerGrams.hat.displayed = false;
-        }
+        // if (playerGrams.hat){
+        //     playerGrams.hat.displayed = false;
+        // }
    
 
         var ground = platforms.create(0, game.world.height - 50, 'platform');
@@ -1136,11 +1141,24 @@ Tan.LevelTwo.prototype = {
         createPlatform(5, 10, 2670, 240, true);
         createPlatform(32, 10, 2180, 200, true);
 
+        createCoinCluster(65, 800, 5);
+        createCoinCluster(960, 280, 7);
+        createCoinCluster(2950, 330, 5);
+        createCoinCluster(2440, 730, 5);
+        createCoinCluster(2250, 445, 3);
+
+
+
+
+
     },
+
     update: function(){
         game.physics.arcade.collide(player, platforms);
         game.physics.arcade.collide(grams, platforms);
         game.physics.arcade.overlap(player, grams, collectGram, null, this);
+        game.physics.arcade.collide(coins, platforms);
+        game.physics.arcade.overlap(player, coins, collectCoin, null, this);
 
 
 
@@ -1482,6 +1500,16 @@ function createCoins(){
         // coins rotate at various speeds
         coinAnim.play(game.rnd.integerInRange(5, 10), true);
     }
+}
+
+function createCoinCluster(xPos, yPos, numCoins){
+    for (var i = 0; i < numCoins; i++){
+        var coin = coins.create(game.rnd.integerInRange(xPos-40, xPos+40), yPos, 'coin');
+        coin.body.gravity.y = 1000;
+        var coinAnim = coin.animations.add('rotate');
+        coinAnim.play(game.rnd.integerInRange(5, 10), true);
+    }
+
 }
 
 
