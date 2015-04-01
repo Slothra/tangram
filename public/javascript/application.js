@@ -1488,26 +1488,38 @@ function createMovingPlat(xPixFromLeft, yPixFromBottom, imgKey, type, triggerOne
 
 function createPlatLeftTrigger(platform, leftTrigger){
     var left = game.add.sprite(platform.position.x - leftTrigger, platform.position.y, null, 0, platformMovementTriggers);
-    left.body.setSize(10, 10, 0, 0);
-    return left;
+    setBodyAndReturnPlat(left);
+
+//     left.body.setSize(10, 10, 0, 0);
+//     return left;
 }
 
 function createPlatRightTrigger(platform, rightTrigger){
     var right = game.add.sprite(platform.position.x + rightTrigger, platform.position.y, null, 0, platformMovementTriggers);
-    right.body.setSize(10, 10, 0, 0);
-    return right;
+    setBodyAndReturnPlat(right);
+
+    // right.body.setSize(10, 10, 0, 0);
+    // return right;
 }
 
 function createPlatTopTrigger(platform, topTrigger){
     var top = game.add.sprite(platform.position.x, platform.position.y - topTrigger, null, 0, platformMovementTriggers);
-    top.body.setSize(10, 10, 0, 0);
-    return top;
+    setBodyAndReturnPlat(top);
+    
+    // top.body.setSize(10, 10, 0, 0);
+    // return top;
 }
 
 function createPlatBottomTrigger(platform, bottomTrigger){
     var bottom = game.add.sprite(platform.position.x, platform.position.y + bottomTrigger, null, 0, platformMovementTriggers);
-    bottom.body.setSize(10, 10, 0, 0);
-    return bottom;
+    setBodyAndReturnPlat(bottom);
+    // bottom.body.setSize(10, 10, 0, 0);
+    // return bottom;
+}
+
+function setBodyAndReturnPlat(platform){
+    platform.body.setSize(10, 10, 0, 0);
+    return platform;
 }
 
 
