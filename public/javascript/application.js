@@ -292,8 +292,6 @@ Tan.LevelOne.prototype = {
 
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
 
-
-
         music = game.add.audio('exploring');
         gameOverMusic = game.add.audio('gameover');
         music.loop = true;
@@ -582,24 +580,26 @@ Tan.LevelOne.prototype = {
             pauseMenu();
         }
 
-        function pauseMenu(){
-            menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click to resume', { font: '30px Arial', fill: '#fff' });
-            menuText.anchor.setTo(0.5, 0.5);
-            game.paused = true;
-            game.input.onDown.addOnce(unpause,self);
-        }  
+        // function pauseMenu(){
+        //     var text = "Left Arrow  - Move left\nRight Arrow - Move right\nUp Arrow    - Jump\nF button    - change form\nM button    - Mute game\nP button    - Pause game\n\n     Click to resume"
+        //     menuText = game.add.bitmapText(150, 350, 'font', text, 25);
+        //     // menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click to resume', { font: '30px Arial', fill: '#fff' });
+        //     // menuText.anchor.setTo(0.5, 0.5);
+        //     game.paused = true;
+        //     game.input.onDown.addOnce(unpause,self);
+        // }  
     
-        function unpause(event){
-            // Only act if paused
-            if(game.paused && pauser === true){
-                // menu.destroy();
-                menuText.destroy();
+        // function unpause(event){
+        //     // Only act if paused
+        //     if(game.paused && pauser === true){
+        //         // menu.destroy();
+        //         menuText.destroy();
 
-                // Unpause the game
-                game.paused = false;
-                pauser = false;
-            }
-        };
+        //         // Unpause the game
+        //         game.paused = false;
+        //         pauser = false;
+        //     }
+        // };
 
         // Checks if player is collides with water;
         if (game.physics.arcade.overlap(player, waters) == true){
@@ -1348,24 +1348,24 @@ Tan.LevelTwo.prototype = {
             pauseMenu();
         }
 
-        function pauseMenu(){
-            menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click to resume', { font: '30px Arial', fill: '#fff' });
-            menuText.anchor.setTo(0.5, 0.5);
-            game.paused = true;
-            game.input.onDown.addOnce(unpause,self);
-        }  
+        // function pauseMenu(){
+        //     menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click to resume', { font: '30px Arial', fill: '#fff' });
+        //     menuText.anchor.setTo(0.5, 0.5);
+        //     game.paused = true;
+        //     game.input.onDown.addOnce(unpause,self);
+        // }  
     
-        function unpause(event){
-            // Only act if paused
-            if(game.paused && pauser === true){
-                // menu.destroy();
-                menuText.destroy();
+        // function unpause(event){
+        //     // Only act if paused
+        //     if(game.paused && pauser === true){
+        //         // menu.destroy();
+        //         menuText.destroy();
 
-                // Unpause the game
-                game.paused = false;
-                pauser = false;
-            }
-        };
+        //         // Unpause the game
+        //         game.paused = false;
+        //         pauser = false;
+        //     }
+        // };
 
         if (toggleKey.isDown && toggleOn == false){
             toggleOn = true;
@@ -1904,6 +1904,29 @@ function createSceneElem(scale, horizFlip, xPixFromLeft, yPixFromBottom, imgKey,
 
 // ========================
 // Update functions
+
+// Sets up pause Screen
+function pauseMenu(){
+    var text = "Left Arrow  - Move left\nRight Arrow - Move right\nUp Arrow    - Jump\nF button    - change form\nM button    - Mute game\nP button    - Pause game\n\n     Click to resume"
+    menuText = game.add.bitmapText(150, 350, 'font', text, 25);
+    // menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click to resume', { font: '30px Arial', fill: '#fff' });
+    // menuText.anchor.setTo(0.5, 0.5);
+    game.paused = true;
+    game.input.onDown.addOnce(unpause,self);
+}  
+    
+function unpause(event){
+    // Only act if paused
+    if(game.paused && pauser === true){
+        // menu.destroy();
+        menuText.destroy();
+
+        // Unpause the game
+        game.paused = false;
+        pauser = false;
+    }
+};
+
 function literallyDying (currentMusic){
     currentMusic.stop();
     var suspenseSound = game.add.audio('suspense');
@@ -1979,4 +2002,4 @@ game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelTwo');
+game.state.start('LevelOne');
