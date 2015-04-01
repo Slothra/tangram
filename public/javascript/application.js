@@ -1107,20 +1107,9 @@ Tan.LevelTwo.prototype = {
         createPlatform(15, 7, 1050, 175, true);
         createPlatform(30, 55, 1290, 650, true);
         createPlatform(30, 60, 1790, 650, true);
-// function createMovingPlat(xPixFromLeft, yPixFromBottom, imgKey, type, triggerOne, triggerTwo, velocity)
         createMovingPlat(1720, 200, 'plank_short', 'vertical', 110, 100, 50);
         createMovingPlat(1570, 300, 'plank_short', 'vertical', 100, 100, -50);
         createMovingPlat(1720, 500, 'plank_short', 'vertical', 100, 100, 80);
-
-
-
-        // createPlatform(7, 5, 1720, 250, true);
-        // createPlatform(7, 5, 1590, 375, true);
-        // createPlatform(7, 5, 1720, 525, true);
-
-
-
-
         createPlatform(70, 10, 2090, 650, true);
         createPlatform(25, 5, 2090, 760, true);
         createPlatform(25, 5, 2450, 760, true);
@@ -1129,18 +1118,12 @@ Tan.LevelTwo.prototype = {
         createPlatform(20, 20, 3290, 750, true);
         createPlatform(40, yWorldBounds, 3600, yWorldBounds, true);
         createPlatform(80, 8, 2800, 490, true);
-
         createPlatform(30, 5, 2890, 600, true);
         createPlatform(20, 20, 2800, 410, true);
-
         createPlatform(20, 10, 2800, 150, true);
-
-
         createPlatform(10, 5, 3000, 300, true);
         createPlatform(15, 3, 3230, 250, true);
         createPlatform(10, 5, 3500, 300, true);
-
-
         createPlatform(5, 5, 2750, 330, true);
         createPlatform(50, 5, 2180, 490, true);
         createPlatform(10, 17, 2180, 440, true);
@@ -1154,8 +1137,6 @@ Tan.LevelTwo.prototype = {
         createCoinCluster(2950, 330, 5);
         createCoinCluster(2440, 730, 5);
         createCoinCluster(2250, 445, 3);
-
-
 
 
 
