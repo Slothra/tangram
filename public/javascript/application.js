@@ -1087,8 +1087,8 @@ Tan.LevelTwo.prototype = {
         victorySound = game.add.audio('victorySound');
 
         // create map
-        xStartPos = 2780;
-        yStartPos = 600;
+        xStartPos = 60;
+        yStartPos = 200;
 
         // setcamera Deadzone
         deadZoneY = 100;
@@ -1143,12 +1143,12 @@ Tan.LevelTwo.prototype = {
         sceneElem = game.add.group();
 
         
-        // shade = game.add.sprite(player.position.x, player.position.y,'shade')
-        // shade.anchor.setTo(0.5,0.5);
-        // shade.animations.add('little', [0], 10, true);
-        // shade.animations.add('big', [1], 10, true);
-        // shade.scale.x = 1.5;
-        // shade.scale.y = 1.5;
+        shade = game.add.sprite(player.position.x, player.position.y,'shade')
+        shade.anchor.setTo(0.5,0.5);
+        shade.animations.add('little', [0], 10, true);
+        shade.animations.add('big', [1], 10, true);
+        shade.scale.x = 1.5;
+        shade.scale.y = 1.5;
 
         // Creates head up display
         createHeadsUpDisplay();
@@ -1268,13 +1268,13 @@ Tan.LevelTwo.prototype = {
 
 
 
-        createSceneElem(1.4, false, 350, 490, 'root04', true);
+        createSceneElem(1.4, false, 355, 500, 'root04', true);
         createSceneElem(1.3, true, 680, 550, 'root02');
-        createSceneElem(1.2, true, 20, 90, 'root01', true);
-        createSceneElem(1.4, true, 490, 100, 'root05', true);
+        createSceneElem(1.2, true, 30, 90, 'root01', true);
+        createSceneElem(1.4, true, 490, 150, 'root05', true);
         createSceneElem(1.2, false, 1000, 100, 'root03');
         createSceneElem(1.2, false, 1000, 100, 'root03');
-        createSceneElem(1.5, true, 1950, 725, 'root05', true);
+        createSceneElem(1.5, true, 1960, 720, 'root05', true);
         createSceneElem(1, true, 2450, 685, 'root02');
         createSceneElem(1.1, true, 2768, 765, 'root01', true);
         createSceneElem(1, true, 3000, 675, 'root02');
@@ -1282,16 +1282,6 @@ Tan.LevelTwo.prototype = {
         createSceneElem(1.1, false, 2732, 470, 'root01', true);
         createSceneElem(1, false, 2250, 525, 'root04', true);
         createSceneElem(1.3, true, 2430, 240, 'root02');
-
-
-
-
-
-
-        // function createSceneElem(scale, horizFlip, xPixFromLeft, yPixFromBottom, imgKey, front)
-
-
-
 
 
 
@@ -1335,8 +1325,8 @@ Tan.LevelTwo.prototype = {
 
 
 
-        // shade.position.x = player.position.x
-        // shade.position.y = player.position.y
+        shade.position.x = player.position.x
+        shade.position.y = player.position.y
 
         if (muteKey.isDown && muted === false){
             muted = true;
@@ -1435,11 +1425,11 @@ Tan.LevelTwo.prototype = {
             moveAsBrick();
         }
 
-        // if (playerForm === 'parallel'){
-        //     shade.animations.play('big');
-        // } else {
-        //     shade.animations.play('little');
-        // }
+        if (playerForm === 'parallel'){
+            shade.animations.play('big');
+        } else {
+            shade.animations.play('little');
+        }
 
         function movePlayer(staticFrame, walkAnim, jumpAnim, xVel, yVel){
             if (cursors.left.isDown){
