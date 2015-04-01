@@ -37,7 +37,7 @@ var enemies;
 var createdEnemy;
 
 
-
+var platforms;
 var platformMovementTriggers;
 var platformRightTrigger;
 var platformLeftTrigger;
@@ -1020,8 +1020,12 @@ Tan.LevelTwo.prototype = {
             game.load.image('plank_short', 'assets/scene/plank_short.png');
             game.load.image('plank', 'assets/scene/plank2.png');
 
-
             game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt');
+
+            game.load.image('dirt_ground', 'assets/scene/level2/dirtTile.png');
+            game.load.image('dirt', 'assets/scene/level2/dirtTile_10x10.png');
+
+
 
             cursors = game.input.keyboard.createCursorKeys();
             pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.P);
@@ -1117,12 +1121,12 @@ Tan.LevelTwo.prototype = {
         player.animations.add('walkCandle', [12, 13, 14], 10, true);
         player.animations.add('jumpCandle', [13]);
         
-        shade = game.add.sprite(player.position.x, player.position.y,'shade')
-        shade.anchor.setTo(0.5,0.5);
-        shade.animations.add('little', [0], 10, true);
-        shade.animations.add('big', [1], 10, true);
-        shade.scale.x = 1.5;
-        shade.scale.y = 1.5;
+        // shade = game.add.sprite(player.position.x, player.position.y,'shade')
+        // shade.anchor.setTo(0.5,0.5);
+        // shade.animations.add('little', [0], 10, true);
+        // shade.animations.add('big', [1], 10, true);
+        // shade.scale.x = 1.5;
+        // shade.scale.y = 1.5;
 
         // Creates head up display
         createHeadsUpDisplay();
@@ -1163,53 +1167,7 @@ Tan.LevelTwo.prototype = {
             playerGrams.hat.displayed = false;
         }
 
-        var ground = platforms.create(0, game.world.height - 50, 'platform');
-        ground.scale.setTo(xWorldBounds/10, 7);
-        ground.body.immovable = true;
-
-        createPlatform(3, yWorldBounds, 0, yWorldBounds, true);
-        createPlatform(xWorldBounds/10, 20, 90, yWorldBounds, true);
-
-        createPlatform(28, 7, 30, 300, true);
-        createPlatform(10, 12, 30, 250, true);
-        createPlatform(15, 45, 90, 800, true);
-        createPlatform(20, 30, 240, 800, true);
-        createPlatform(14, 10, 300, 450, true);
-        createPlatform(18, 17, 360, 350, true);
-        createPlatform(35, 5, 190, 180, true);
-        createPlatform(30, 20, 440, 800, true);
-        createPlatform(15, 55, 740, 800, true);
-        createPlatform(7, 5, 670, 500, true);
-        createPlatform(13, 22, 610, 350, true);
-        createPlatform(17, 20, 800, 175, true);
-        createPlatform(40, 40, 890, 650, true);
-        createPlatform(15, 7, 1050, 175, true);
-        createPlatform(30, 55, 1290, 650, true);
-        createPlatform(30, 60, 1790, 650, true);
-        createMovingPlat(1720, 200, 'plank_short', 'vertical', 110, 100, 50);
-        createMovingPlat(1570, 300, 'plank_short', 'vertical', 100, 100, -50);
-        createMovingPlat(1720, 500, 'plank_short', 'vertical', 100, 100, 80);
-        createPlatform(70, 10, 2090, 650, true);
-        createPlatform(25, 5, 2090, 760, true);
-        createPlatform(25, 5, 2450, 760, true);
-        createPlatform(10, 20, 2790, 750, true);
-        createPlatform(40, 5, 2890, 750, true);
-        createPlatform(20, 20, 3290, 750, true);
-        createPlatform(40, yWorldBounds, 3600, yWorldBounds, true);
-        createPlatform(80, 8, 2800, 490, true);
-        createPlatform(30, 5, 2890, 600, true);
-        createPlatform(20, 20, 2800, 410, true);
-        createPlatform(20, 10, 2800, 150, true);
-        createPlatform(10, 5, 3000, 300, true);
-        createPlatform(15, 3, 3230, 250, true);
-        createPlatform(10, 5, 3500, 300, true);
-        createPlatform(5, 5, 2750, 330, true);
-        createPlatform(50, 5, 2180, 490, true);
-        createPlatform(10, 17, 2180, 440, true);
-        createPlatform(16, 5, 2340, 340, true);
-        createPlatform(17, 20, 2500, 340, true);
-        createPlatform(5, 10, 2670, 240, true);
-        createPlatform(32, 10, 2180, 200, true);
+       
 
         createCoinCluster(65, 800, 5);
         createCoinCluster(960, 280, 7);
@@ -1217,6 +1175,61 @@ Tan.LevelTwo.prototype = {
         createCoinCluster(2440, 730, 5);
         createCoinCluster(2250, 445, 3);
 
+        // Creates Dirt platforms 
+        function createDirtPlat(xPixFromLeft, yPixFromBottom, width, height){
+            var newDirt = game.add.tileSprite(xPixFromLeft, game.world.height - yPixFromBottom, width, height, 'dirt');
+            platforms.add(newDirt);
+            newDirt.body.immovable = true;
+            return newDirt;
+        }
+
+        // ground
+        createDirtPlat(0, 50, xWorldBounds, 50);
+
+        createDirtPlat(0, yWorldBounds, 30, yWorldBounds);
+        createDirtPlat(90, yWorldBounds, xWorldBounds, 200);
+        createDirtPlat(30, 300, 280, 70);
+        createDirtPlat(30, 250, 100, 120);
+        createDirtPlat(90, 800, 150, 450);
+        createDirtPlat(240, 800, 200, 300);
+        createDirtPlat(300, 450, 140, 100);
+        createDirtPlat(360, 350, 180, 170);
+        createDirtPlat(190, 180, 350, 50);
+        createDirtPlat(440, 800, 300, 200);
+        createDirtPlat(740, 800, 150, 550);
+        createDirtPlat(670, 500, 70, 50);
+        createDirtPlat(610, 350, 130, 220);
+        createDirtPlat(800, 175, 170, 200);
+        //Big middle block
+        createDirtPlat(890, 650, 400, 400);
+        createDirtPlat(1050, 175, 150, 70);
+        createDirtPlat(1290, 650, 300, 550);
+        createDirtPlat(1790, 650, 300, 600);
+        createMovingPlat(1720, 200, 'plank_short', 'vertical', 110, 100, 50);
+        createMovingPlat(1570, 300, 'plank_short', 'vertical', 100, 100, -50);
+        createMovingPlat(1720, 500, 'plank_short', 'vertical', 100, 100, 80);
+        createDirtPlat(2090, 650, 700, 100);
+        createDirtPlat(2090, 760, 250, 50);
+        createDirtPlat(2450, 760, 250, 50);
+        createDirtPlat(2790, 750, 100, 200);
+        createDirtPlat(2890, 750, 400, 50);
+        createDirtPlat(3290, 750, 200, 200);
+        createDirtPlat(3600, yWorldBounds, 400, yWorldBounds);
+        createDirtPlat(2800, 490, 800, 80);
+        createDirtPlat(2890, 600, 300, 50);
+        createDirtPlat(2800, 410, 200, 200);
+        createDirtPlat(2800, 150, 200, 100);
+        createDirtPlat(3000, 300, 100, 50);
+        createDirtPlat(3230, 250, 150, 30);
+        createDirtPlat(3500, 300, 100, 50);
+        createDirtPlat(2750, 330, 50, 50);
+        createDirtPlat(2180, 490, 500, 50);
+        createDirtPlat(2180, 440, 100, 170);
+        createDirtPlat(2340, 340, 160, 50);
+        createDirtPlat(2500, 340, 170, 200);
+        createDirtPlat(2670, 240, 50, 100);
+        createDirtPlat(2180, 200, 320, 100);
+        
         createEnemy(1135, 86,'underground-pigeon', 130, 130);
         createEnemy(1119, 685,'underground-pigeon', 150, 150);
         createEnemy(3070, 632,'underground-pigeon', 50, 50);
@@ -1249,8 +1262,8 @@ Tan.LevelTwo.prototype = {
 
 
 
-        shade.position.x = player.position.x
-        shade.position.y = player.position.y
+        // shade.position.x = player.position.x
+        // shade.position.y = player.position.y
 
         if (muteKey.isDown && muted === false){
             muted = true;
@@ -1349,11 +1362,11 @@ Tan.LevelTwo.prototype = {
             moveAsBrick();
         }
 
-        if (playerForm === 'parallel'){
-            shade.animations.play('big');
-        } else {
-            shade.animations.play('little');
-        }
+        // if (playerForm === 'parallel'){
+        //     shade.animations.play('big');
+        // } else {
+        //     shade.animations.play('little');
+        // }
 
         function movePlayer(staticFrame, walkAnim, jumpAnim, xVel, yVel){
             if (cursors.left.isDown){
