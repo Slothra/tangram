@@ -75,6 +75,9 @@ var grams;
 var sceneElemBack;
 var sceneElem;
 
+var deadZoneY = 0;
+var deadZoneHeight = 100;
+
 var grassGroup;
 
 var shade;
@@ -126,6 +129,7 @@ var claws;
 var bossZoneY = 950;
 var bossZoneX = 3250;
 var holePadding = 100;
+var breakableWalls;
 
 var undergroundMusic;
 
@@ -1081,7 +1085,11 @@ Tan.LevelTwo.prototype = {
 
         // create map
         xStartPos = 60;
-        yStartPos = 200;
+        yStartPos = 300;
+
+        // setcamera Deadzone
+        deadZoneY = 100;
+        deadZoneHeight = 200;
 
         xWorldBounds = 5000;
         yWorldBounds = 1000;
@@ -1108,6 +1116,10 @@ Tan.LevelTwo.prototype = {
         grams = game.add.group();
         grams.enableBody = true;
         grams.physicsBodyType = Phaser.Physics.ARCADE;
+
+        breakableWalls = game.add.group();
+        breakableWalls.enableBody = true;
+        breakableWalls.physicsBodyType = Phaser.Physics.ARCADE;
 
         createGram(240, 640, 'parallel_glow', 'parallel', true);
 
@@ -1247,10 +1259,23 @@ Tan.LevelTwo.prototype = {
         createEnemy(3070, 632,'underground-pigeon', 50, 50);
         createEnemy(2500, 377,'underground-pigeon', 100, 100);
 
+        function createWall(xPixFromLeft, yPixFromBottom, width, height){
+            var newWall = game.add.tileSprite(xPixFromLeft, game.world.height - yPixFromBottom, width, height, 'dirt');
+            breakableWalls.add(newWall);
+            newWall.body.immovable = true;
+            return newWall;
+        }
+
+        createWall(1400, 800, 30, 200);
+
+
+
+
     },
 
     update: function(){
         game.physics.arcade.collide(player, platforms);
+        game.physics.arcade.collide(player, breakableWalls, collideBreakable, null, this);
         game.physics.arcade.collide(enemies, player, collideEnemy, null, this);
         game.physics.arcade.collide(enemies, platforms);
         game.physics.arcade.collide(grams, platforms);
@@ -1490,9 +1515,11 @@ Tan.LevelTwo.prototype = {
         }
 
         function positionsMole(){
-            moleBoss.body.velocity.x = moleVelX;
-            random = Math.floor(Math.random() * (5))+1;
-            game.time.events.add(Phaser.Timer.SECOND * random, moveMole, this);
+            if (moleLife > 0){
+                moleBoss.body.velocity.x = moleVelX;
+                random = Math.floor(Math.random() * (5))+1;
+                game.time.events.add(Phaser.Timer.SECOND * random, moveMole, this);
+            }
         }
 
         function addProperties(sprite){
@@ -1553,6 +1580,20 @@ Tan.LevelTwo.prototype = {
                 player.destroy();
                 literallyDying(bossMusic);
                 game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);  
+            }
+        }
+
+        function collideBreakable(player, wall){
+            if (playerForm == 'hat'){
+                poofSound.play();
+                wall.destroy()
+                var collision = game.add.sprite(wall.position.x+5,wall.position.y+50,'collision');
+                collision.animations.add('explode', [0, 1, 2], 20, false);
+                collision.animations.play('explode');
+                var cleanup = function (){
+                    collision.destroy();
+                }
+                game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
             }
         }
         
@@ -1665,7 +1706,7 @@ function initializePlayer(){
 
 function initializeCamera(){
     game.camera.follow(player);
-    game.camera.deadzone = new Phaser.Rectangle(200, 0, 300, 100);
+    game.camera.deadzone = new Phaser.Rectangle(200, deadZoneY, 300, deadZoneHeight);
 }
 
 // Create a gram
@@ -1912,4 +1953,4 @@ game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelTwo');
+game.state.start('LevelOne');
