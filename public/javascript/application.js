@@ -24,7 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 0;
+var xStartPos = 30;
 
 var cursors;
 
@@ -117,9 +117,10 @@ var moleExists = false;
 var leftClawExists = false;
 var rightClawExists = false;
 var moleHit = false;
+var moleVelX = 100;
 
-var bossZoneY = gameHeight - 70;
-var bossZoneX = 1000;
+var bossZoneY = 950;
+var bossZoneX = 3250;
 var holePadding = 100;
 
 
@@ -162,7 +163,7 @@ Tan.MainMenu.prototype = {
     update: function(){
         // if clicked starts game
         game.input.onDown.add(loading,self);   
-        selectSound.volume = .1; 
+        selectSound.volume = .1;
         var clickMenu = false;
 
         function clicked(){
@@ -721,29 +722,29 @@ Tan.LevelOne.prototype = {
             movePlayer(6, 'swim', 'jumpFish', playerSpeed*1.25, -300);
         }
 
-        function displayToggler(){
-            if (toggler.displayed == false){
-                toggler.visible = false;
-            }
-            else{
-                toggler.visible = true;
-            }            
-        }
+        // function displayToggler(){
+        //     if (toggler.displayed == false){
+        //         toggler.visible = false;
+        //     }
+        //     else{
+        //         toggler.visible = true;
+        //     }            
+        // }
 
-        function collectGram(player, gram){
-            gram.displayIndex = gramCount;
-            gramSound.play();
-            gramCount++;
-            playerGrams[gram.name] = gram;
-            gram.kill();
-        }
+        // function collectGram(player, gram){
+        //     gram.displayIndex = gramCount;
+        //     gramSound.play();
+        //     gramCount++;
+        //     playerGrams[gram.name] = gram;
+        //     gram.kill();
+        // }
 
-        function collectCoin(player, coin){
-            coinSound.play();
-            coinCount++;
-            coinText.text = coinCount;
-            coin.kill();
-        }
+        // function collectCoin(player, coin){
+        //     coinSound.play();
+        //     coinCount++;
+        //     coinText.text = coinCount;
+        //     coin.kill();
+        // }
 
         // Moves toggle position
         if (toggleKey.isDown && toggleOn == false){
@@ -975,6 +976,11 @@ Tan.LevelOne.prototype = {
 
 };
 
+
+
+
+
+
 Tan.LevelTwo = function(game){};
 
 Tan.LevelTwo.prototype = {
@@ -983,22 +989,108 @@ Tan.LevelTwo.prototype = {
         // load level two assets
         game.load.image('underground', 'assets/underground.png');
         game.load.image('rock', 'assets/rock.png');
-        game.load.image('sm_shade', 'assets/shade.png');
+        game.load.spritesheet('shade', 'assets/sprites/shade.png', 1200, 900, 2);
         // game.load.spritesheet('moleMan', 'assets/sprites/mole.png', 247, 102, 2);
         game.load.spritesheet('moleMan-resize', 'assets/sprites/resized-mole.png', 141, 72, 2);
         // game.load.spritesheet('claws', 'assets/sprites/mole-claws.png', 186, 210, 2);
         game.load.spritesheet('claws-resize', 'assets/sprites/Mole-Claws-resized.png', 144, 104, 2);
 
         game.load.audio('laugh', 'assets/sound/mole-laugh.wav');
+        game.load.spritesheet('parallel_glow', 'assets/grams/parallel_glow.png', 64, 64, 8);
+
+
+        function loadLevelOneStuff(){
+            game.load.image('platform', 'assets/platform_10x10.png');
+            game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
+            game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 15);
+            game.load.spritesheet('heart', 'assets/sprites/heart.png', 38,30,4)
+            game.load.image('sm_triangle', 'assets/grams/sm_triangle2.png');
+            game.load.image('sm_square', 'assets/grams/tan-square.png');
+            game.load.spritesheet('death-tint', 'assets/sprites/deathtint.png', 800,600,3)
+
+            game.load.spritesheet('spiral', 'assets/sprites/spiral.png', 38.5, 38, 4);
+            game.load.spritesheet('coin','assets/sprites/coin_spritesheet1.png', 32, 22, 8);
+            game.load.image('displayCoin', 'assets/sprites/coin.png');
+            game.load.spritesheet('collision', 'assets/sprites/colision.png', 30, 33, 3)
+            game.load.image('toggler', 'assets/sprites/gram_toggler2.png');
+            game.load.spritesheet('hints', 'assets/sprites/LevelOneHints.png', 118,77,2);
+
+            game.load.audio('exploring', 'assets/sound/exploring.m4a');
+            game.load.audio('boss', 'assets/sound/boss.m4a');
+            game.load.audio('suspense', 'assets/sound/suspense.m4a');
+            game.load.audio('gameover', 'assets/sound/gameover.m4a');
+            game.load.audio('restart', 'assets/sound/restart.m4a');
+            game.load.audio('jumpSound', 'assets/sound/jump.wav');
+            game.load.audio('poof', 'assets/sound/poof.wav');
+            game.load.audio('splash', 'assets/sound/splash.wav');
+            game.load.audio('crack', 'assets/sound/crack.mp3');
+            game.load.audio('coin', 'assets/sound/coin.mp3');
+            game.load.audio('gram', 'assets/sound/gram.wav');
+            game.load.audio('menu-select', 'assets/sound/form-change.wav');
+
+            game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt');
+
+            cursors = game.input.keyboard.createCursorKeys();
+            pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.P);
+            toggleKey = game.input.keyboard.addKey(Phaser.Keyboard.F);
+            muteKey = game.input.keyboard.addKey(Phaser.Keyboard.M);
+
+            game.physics.startSystem(Phaser.Physics.ARCADE);
+
+            background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
+            var clouds = game.add.group();
+
+            game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
+
+            music = game.add.audio('exploring');
+            gameOverMusic = game.add.audio('gameover');
+            music.loop = true;
+            music.play();
+            jumpSound = game.add.audio('jumpSound');
+            poofSound = game.add.audio('poof');
+            splashSound = game.add.audio('splash');
+            crackSound = game.add.audio('crack');
+            coinSound = game.add.audio('coin');
+            gramSound = game.add.audio('gram');
+            selectSound = game.add.audio('menu-select');
+            selectSound.volume = .1;
+
+
+            platforms = game.add.group();
+            platforms.enableBody = true;
+
+            // Keep this group behind player
+            sceneElemBack = game.add.group();
+
+            grams = game.add.group();
+            grams.enableBody = true;
+            grams.physicsBodyType = Phaser.Physics.ARCADE;
+        }
+        loadLevelOneStuff();
     },
+
     create: function(){
         bossTime = false;
         laughSound = game.add.audio('laugh');
 
         // create map
-        xStartPos = 0;
+        xStartPos = 60;
+        yStartPos = 200;
+
+        xWorldBounds = 5000;
+        yWorldBounds = 1000;
+        gamePadding = yWorldBounds - gameHeight;
+
+        enemies = game.add.group();
+        enemies.enableBody = true;
+        enemies.physicsBodyType = Phaser.Physics.ARCADE;
+
+        enemyMovementTriggers = game.add.group();
+        enemyMovementTriggers.enableBody = true;
+        enemyMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
+
         sceneElemBack = game.add.group();
-        levelTwoBackground = game.add.tileSprite(-1500, 0, xWorldBounds, gameHeight+200, 'underground');
+        levelTwoBackground = game.add.tileSprite(-1500, 0, xWorldBounds, gameHeight+gamePadding, 'underground');
         levelTwoBackground.scale.x = 15;
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
         platforms = game.add.group();
@@ -1011,6 +1103,13 @@ Tan.LevelTwo.prototype = {
         grams.enableBody = true;
         grams.physicsBodyType = Phaser.Physics.ARCADE;
 
+        createGram(240, 640, 'parallel_glow', 'parallel', true);
+
+        // Creating coins
+        coins = game.add.group();
+        coins.enableBody = true;
+        coins.physicsBodyType = Phaser.Physics.ARCADE;
+
         initializePlayer();
         initializeCamera();
 
@@ -1018,15 +1117,18 @@ Tan.LevelTwo.prototype = {
         player.animations.add('jump', [1]);
         player.animations.add('walkHat', [3, 4, 5], 10, true);
         player.animations.add('jumpHat', [4]);
+        player.animations.add('walkCandle', [12, 13, 14], 10, true);
+        player.animations.add('jumpCandle', [13]);
 
-        shade = game.add.sprite(player.position.x,player.position.y,'sm_shade')
-        shade.anchor.setTo(0.5,0.5)
+        shade = game.add.sprite(player.position.x,player.position.y,'shade')
+        shade.anchor.setTo(0.5,0.5);
+        shade.animations.add('little', [0], 10, true);
+        shade.animations.add('big', [1], 10, true);
         shade.scale.x = 1.5;
         shade.scale.y = 1.5;
 
         // Creates head up display
         createHeadsUpDisplay();
-        playerGrams['hat'].displayed = false;
 
         function addProperties(sprite){
             game.physics.arcade.enable(sprite);
@@ -1035,29 +1137,97 @@ Tan.LevelTwo.prototype = {
 
         }
 
-        moleBoss = game.add.sprite(bossZoneX, bossZoneY, 'moleMan-resize')
+        moleBoss = game.add.sprite(bossZoneX, bossZoneY+10, 'moleMan-resize')
         addProperties(moleBoss);
         moleBoss.animations.add('moleMove', [0], 10, true);
         moleBoss.animations.add('moleHurt', [1], 10, true);
         moleBoss.animations.play('moleMove');
-        leftClaw = game.add.sprite(bossZoneX - holePadding, bossZoneY, 'claws-resize')
+        createLeftTrigger(moleBoss, 300);
+        createRightTrigger(moleBoss, 300);
+
+        claws = game.add.group();
+        claws.enableBody = true;
+        claws.physicsBodyType = Phaser.Physics.ARCADE;
+
+        leftClaw = game.add.sprite(bossZoneX - 150, bossZoneY+10, 'claws-resize', 0)
         addProperties(leftClaw);
-        leftClaw.animations.add('leftClaw', [0], 10, true);
-        leftClaw.animations.play('leftClaw');
-        rightClaw = game.add.sprite(bossZoneX + holePadding, bossZoneY, 'claws-resize')
+        claws.add(leftClaw);
+        rightClaw = game.add.sprite(bossZoneX + 150, bossZoneY+10, 'claws-resize', 1)
         addProperties(rightClaw);
-        rightClaw.animations.add('rightClaw', [1], 10, true);
-        rightClaw.animations.play('rightClaw');
+        claws.add(rightClaw);
+
+        // if (playerGrams.hat){
+        //     playerGrams.hat.displayed = false;
+        // }
 
         var ground = platforms.create(0, game.world.height - 50, 'platform');
         ground.scale.setTo(xWorldBounds/10, 7);
         ground.body.immovable = true;
 
+        createPlatform(3, yWorldBounds, 0, yWorldBounds, true);
+        createPlatform(xWorldBounds/10, 20, 90, yWorldBounds, true);
+
+        createPlatform(28, 7, 30, 300, true);
+        createPlatform(10, 12, 30, 250, true);
+        createPlatform(15, 45, 90, 800, true);
+        createPlatform(20, 30, 240, 800, true);
+        createPlatform(14, 10, 300, 450, true);
+        createPlatform(18, 17, 360, 350, true);
+        createPlatform(35, 5, 190, 180, true);
+        createPlatform(30, 20, 440, 800, true);
+        createPlatform(15, 55, 740, 800, true);
+        createPlatform(7, 5, 670, 500, true);
+        createPlatform(13, 22, 610, 350, true);
+        createPlatform(17, 20, 800, 175, true);
+        createPlatform(40, 40, 890, 650, true);
+        createPlatform(15, 7, 1050, 175, true);
+        createPlatform(30, 55, 1290, 650, true);
+        createPlatform(30, 60, 1790, 650, true);
+        createPlatform(7, 5, 1720, 250, true);
+        createPlatform(7, 5, 1590, 375, true);
+        createPlatform(7, 5, 1720, 525, true);
+        createPlatform(70, 10, 2090, 650, true);
+        createPlatform(25, 5, 2090, 760, true);
+        createPlatform(25, 5, 2450, 760, true);
+        createPlatform(10, 20, 2790, 750, true);
+        createPlatform(40, 5, 2890, 750, true);
+        createPlatform(20, 20, 3290, 750, true);
+        createPlatform(40, yWorldBounds, 3600, yWorldBounds, true);
+        createPlatform(80, 8, 2800, 490, true);
+        createPlatform(30, 5, 2890, 600, true);
+        createPlatform(20, 20, 2800, 410, true);
+        createPlatform(20, 10, 2800, 150, true);
+        createPlatform(10, 5, 3000, 300, true);
+        createPlatform(15, 3, 3230, 250, true);
+        createPlatform(10, 5, 3500, 300, true);
+        createPlatform(5, 5, 2750, 330, true);
+        createPlatform(50, 5, 2180, 490, true);
+        createPlatform(10, 17, 2180, 440, true);
+        createPlatform(16, 5, 2340, 340, true);
+        createPlatform(17, 20, 2500, 340, true);
+        createPlatform(5, 10, 2670, 240, true);
+        createPlatform(32, 10, 2180, 200, true);
+
+        createCoinCluster(65, 800, 5);
+        createCoinCluster(960, 280, 7);
+        createCoinCluster(2950, 330, 5);
+        createCoinCluster(2440, 730, 5);
+        createCoinCluster(2250, 445, 3);
 
 
     },
+
     update: function(){
         game.physics.arcade.collide(player, platforms);
+        game.physics.arcade.collide(grams, platforms);
+        game.physics.arcade.overlap(player, grams, collectGram, null, this);
+        game.physics.arcade.collide(coins, platforms);
+        game.physics.arcade.overlap(player, coins, collectCoin, null, this);
+        game.physics.arcade.collide(player, moleBoss, collideBoss, null, this);
+        game.physics.arcade.collide(player, claws, collideClaws, null, this);
+
+
+
 
         shade.position.x = player.position.x
         shade.position.y = player.position.y
@@ -1101,6 +1271,24 @@ Tan.LevelTwo.prototype = {
             }
         };
 
+        if (toggleKey.isDown && toggleOn == false){
+            toggleOn = true;
+            selectSound.play();
+            if (togglePosition < gramCount-1){
+                togglerPaddingLeft += 50;
+                togglePosition++;
+            } else {
+                togglerPaddingLeft = togglerDefaultPadding;
+                togglePosition = 0;
+            }
+            toggler.position.y = togglerPaddingTop;
+            toggler.position.x = togglerPaddingLeft;
+            toggler.fixedToCamera = true;
+        } else if (toggleKey.isUp){
+            toggleOn = false;
+        }
+
+
         //  Reset the players velocity (movement)
         player.body.velocity.x = 0;
 
@@ -1121,6 +1309,10 @@ Tan.LevelTwo.prototype = {
             movePlayer(3, 'walkHat', 'jumpHat', playerSpeed, -400);
         }
 
+        function moveAsCandle(){
+            movePlayer(12, 'walkCandle', 'jumpCandle', playerSpeed, -400);
+        }
+
         // Player Movement
 
         switch (playerForm){
@@ -1130,8 +1322,17 @@ Tan.LevelTwo.prototype = {
           case 'hat':
             moveAsBrickHat();
             break;
+          case 'parallel':
+            moveAsCandle();
+            break;
           default:
             moveAsBrick();
+        }
+
+        if (playerForm === 'parallel'){
+            shade.animations.play('big');
+        } else {
+            shade.animations.play('little');
         }
 
         function movePlayer(staticFrame, walkAnim, jumpAnim, xVel, yVel){
@@ -1159,12 +1360,13 @@ Tan.LevelTwo.prototype = {
 
             if (cursors.up.isDown && player.body.touching.down){
                 player.body.velocity.y = yVel;
+                jumpSound.play();
             }
 
             if (!player.body.touching.down){
                 player.animations.play(jumpAnim);
                 
-            }            
+            }     
 
         }
 
@@ -1183,7 +1385,7 @@ Tan.LevelTwo.prototype = {
         // Consistant appear/disappear times/locations
         // Life
 
-        if (player.position.x >= 500 && bossTime == false && moleLife != 0){
+        if (player.position.x >= 2890 && player.position.y >= 760 && bossTime == false && moleLife != 0){
             moleFight();
         }
 
@@ -1207,6 +1409,7 @@ Tan.LevelTwo.prototype = {
             //     whackAMole();
             //     pauseMole(.5);
             // } else if (moleBoss.position.y >= (bossZoneY + 200)){
+            moleBoss.animations.play('moleMove');
             moleBoss.body.velocity.y = 0;
             moleCountdown = true
             // }
@@ -1249,8 +1452,9 @@ Tan.LevelTwo.prototype = {
         }
 
         function positionsMole(){
-            moleBoss.body.velocity.x = moleSpeed;
-            game.time.events.add(Phaser.Timer.SECOND * 2, moveMole, this);
+            moleBoss.body.velocity.x = moleVelX;
+            random = Math.floor(Math.random() * (5))+1;
+            game.time.events.add(Phaser.Timer.SECOND * random, moveMole, this);
         }
 
         function addProperties(sprite){
@@ -1260,20 +1464,21 @@ Tan.LevelTwo.prototype = {
         }
 
         function moveMole(){
+            moleVelX = moleBoss.body.velocity.x;
             moleBoss.body.velocity.x = 0;
             moleBoss.body.velocity.y = -(moleSpeed);
-            game.time.events.add(Phaser.Timer.SECOND * 2, pauseMole, this);
+            game.time.events.add(Phaser.Timer.SECOND * .5, pauseMole, this);
 
         }
 
         function pauseMole(){
             moleBoss.body.velocity.y = 0;
-            game.time.events.add(Phaser.Timer.SECOND * 2, hideMole, this);
+            game.time.events.add(Phaser.Timer.SECOND * 1, hideMole, this);
         }
 
         function hideMole(){
             moleBoss.body.velocity.y = moleSpeed;
-            game.time.events.add(Phaser.Timer.SECOND * 2, moleSwitch, this);
+            game.time.events.add(Phaser.Timer.SECOND * .5, moleSwitch, this);
         }
 
         function whackAMole(){
@@ -1281,6 +1486,39 @@ Tan.LevelTwo.prototype = {
             moleLife--;
             moleSpeed = 300;
             moleHit = false;
+        }
+
+        game.physics.arcade.overlap(moleBoss, enemyMovementTriggers, function(moleBoss, trigger) {
+            if (moleBoss.lastTrigger !== trigger) {
+                // Reverse the velocity of the enemy and remember the last trigger.
+                moleBoss.scale.x *= -1;
+                moleBoss.body.velocity.x *= -1;
+                moleBoss.lastTrigger = trigger;
+            }
+        });
+
+        function collideClaws (player, claw){
+            player.destroy();
+            literallyDying(bossMusic);
+            game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);  
+        }
+
+        function collideBoss (player, enemy){
+            if (moleLife > 0 && enemy.body.touching.up){
+                player.body.velocity.y = -250;
+                moleLife--;
+                moleBoss.animations.play('moleHurt');
+                if (moleLife == 0){
+                    console.log("You Win!")
+                    moleBoss.destroy();
+                    leftClaw.destroy();
+                    rightClaw.destroy();
+                }
+            } else {
+                player.destroy();
+                literallyDying(bossMusic);
+                game.time.events.add(Phaser.Timer.SECOND * 8, restartScreen, this);  
+            }
         }
         
     }
@@ -1317,6 +1555,12 @@ Tan.Loading.prototype = {
         }
     }
 }
+
+
+
+
+
+
 
 Tan.GameOver = function(game){};
 
@@ -1480,6 +1724,16 @@ function createCoins(){
     }
 }
 
+function createCoinCluster(xPos, yPos, numCoins){
+    for (var i = 0; i < numCoins; i++){
+        var coin = coins.create(game.rnd.integerInRange(xPos-40, xPos+40), yPos, 'coin');
+        coin.body.gravity.y = 1000;
+        var coinAnim = coin.animations.add('rotate');
+        coinAnim.play(game.rnd.integerInRange(5, 10), true);
+    }
+
+}
+
 
 function anchorAndFixToCam(obj){
     obj.fixedToCamera = true;
@@ -1580,6 +1834,29 @@ function displayGrams(){
     }
 }
 
+function collectGram(player, gram){
+    gram.displayIndex = gramCount;
+    gramSound.play();
+    gramCount++;
+    playerGrams[gram.name] = gram;
+    gram.kill();
+}
+
+function collectCoin(player, coin){
+    coinSound.play();
+    coinCount++;
+    coinText.text = coinCount;
+    coin.kill();
+}
+
+function displayToggler(){
+    if (toggler.displayed == false){
+        toggler.visible = false;
+    }
+    else{
+        toggler.visible = true;
+    }            
+}
 
 // Adds Level States
 game.state.add('LevelOne', Tan.LevelOne);
@@ -1587,4 +1864,4 @@ game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelOne');
+game.state.start('LevelTwo');
