@@ -993,10 +993,13 @@ Tan.LevelTwo.prototype = {
         game.load.image('dirt', 'assets/scene/level2/dirtTile_10x10.png');
         game.load.image('bgTexture', 'assets/scene/level2/bgtexture.png');
         game.load.image('rootPlat', 'assets/scene/level2/treerootHoriz.png');
-        game.load.image('root01', 'assets/scene/level2/root01.png');
-        game.load.image('root02', 'assets/scene/level2/root02.png');
-        game.load.image('root03', 'assets/scene/level2/root03.png');
+        game.load.image('rootPlat2', 'assets/scene/level2/treerootHorizflip.png');
 
+        game.load.image('root01', 'assets/scene/level2/treeroot01.png');
+        game.load.image('root02', 'assets/scene/level2/treeroot02.png');
+        game.load.image('root03', 'assets/scene/level2/treeroot03.png');
+        game.load.image('root04', 'assets/scene/level2/treeroot04.png');
+        game.load.image('root05', 'assets/scene/level2/treeroot05.png');
 
 
         function loadLevelOneStuff(){
@@ -1066,11 +1069,11 @@ Tan.LevelTwo.prototype = {
             platforms.enableBody = true;
 
             // Keep this group behind player
-            sceneElemBack = game.add.group();
 
             grams = game.add.group();
             grams.enableBody = true;
             grams.physicsBodyType = Phaser.Physics.ARCADE;
+
         }
         loadLevelOneStuff();
     },
@@ -1084,8 +1087,8 @@ Tan.LevelTwo.prototype = {
         victorySound = game.add.audio('victorySound');
 
         // create map
-        xStartPos = 60;
-        yStartPos = 300;
+        xStartPos = 2800;
+        yStartPos = 280;
 
         // setcamera Deadzone
         deadZoneY = 100;
@@ -1095,15 +1098,14 @@ Tan.LevelTwo.prototype = {
         yWorldBounds = 1000;
         gamePadding = yWorldBounds - gameHeight;
 
-        sceneElemBack = game.add.group();
         levelTwoBackground = game.add.tileSprite(0, 0, xWorldBounds, yWorldBounds, 'bgTexture');
 
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
+
+        sceneElemBack = game.add.group();
+
         platforms = game.add.group();
         platforms.enableBody = true;
-
-        // Keep this group behind player
-        sceneElemBack = game.add.group();
 
         enemies = game.add.group();
         enemies.enableBody = true;
@@ -1137,13 +1139,16 @@ Tan.LevelTwo.prototype = {
         player.animations.add('jumpHat', [4]);
         player.animations.add('walkCandle', [12, 13, 14], 10, true);
         player.animations.add('jumpCandle', [13]);
+
+        sceneElem = game.add.group();
+
         
-        shade = game.add.sprite(player.position.x, player.position.y,'shade')
-        shade.anchor.setTo(0.5,0.5);
-        shade.animations.add('little', [0], 10, true);
-        shade.animations.add('big', [1], 10, true);
-        shade.scale.x = 1.5;
-        shade.scale.y = 1.5;
+        // shade = game.add.sprite(player.position.x, player.position.y,'shade')
+        // shade.anchor.setTo(0.5,0.5);
+        // shade.animations.add('little', [0], 10, true);
+        // shade.animations.add('big', [1], 10, true);
+        // shade.scale.x = 1.5;
+        // shade.scale.y = 1.5;
 
         // Creates head up display
         createHeadsUpDisplay();
@@ -1191,6 +1196,8 @@ Tan.LevelTwo.prototype = {
         createCoinCluster(2950, 330, 5);
         createCoinCluster(2440, 730, 5);
         createCoinCluster(2250, 445, 3);
+
+
 
         // Creates Dirt platforms 
         function createDirtPlat(xPixFromLeft, yPixFromBottom, width, height){
@@ -1259,6 +1266,30 @@ Tan.LevelTwo.prototype = {
         createEnemy(3070, 632,'underground-pigeon', 50, 50);
         createEnemy(2500, 377,'underground-pigeon', 100, 100);
 
+
+
+        createSceneElem(1.4, false, 350, 490, 'root04', true);
+        createSceneElem(1.3, true, 680, 550, 'root02');
+        createSceneElem(1.2, true, 20, 90, 'root01', true);
+        createSceneElem(1.4, true, 490, 100, 'root05', true);
+        createSceneElem(1.2, false, 1000, 100, 'root03');
+        createSceneElem(1.2, false, 1000, 100, 'root03');
+        createSceneElem(1.5, true, 1950, 725, 'root05', true);
+        createSceneElem(1, true, 2450, 685, 'root02');
+        createSceneElem(1.1, true, 2768, 765, 'root01', true);
+        createSceneElem(1, true, 3000, 675, 'root02');
+        createSceneElem(1, false, 3500, 600, 'root03');
+
+
+
+
+        // function createSceneElem(scale, horizFlip, xPixFromLeft, yPixFromBottom, imgKey, front)
+
+
+
+
+
+
         function createWall(xPixFromLeft, yPixFromBottom, width, height){
             var newWall = game.add.tileSprite(xPixFromLeft, game.world.height - yPixFromBottom, width, height, 'dirt');
             breakableWalls.add(newWall);
@@ -1299,8 +1330,8 @@ Tan.LevelTwo.prototype = {
 
 
 
-        shade.position.x = player.position.x
-        shade.position.y = player.position.y
+        // shade.position.x = player.position.x
+        // shade.position.y = player.position.y
 
         if (muteKey.isDown && muted === false){
             muted = true;
@@ -1399,11 +1430,11 @@ Tan.LevelTwo.prototype = {
             moveAsBrick();
         }
 
-        if (playerForm === 'parallel'){
-            shade.animations.play('big');
-        } else {
-            shade.animations.play('little');
-        }
+        // if (playerForm === 'parallel'){
+        //     shade.animations.play('big');
+        // } else {
+        //     shade.animations.play('little');
+        // }
 
         function movePlayer(staticFrame, walkAnim, jumpAnim, xVel, yVel){
             if (cursors.left.isDown){
@@ -1953,4 +1984,4 @@ game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelOne');
+game.state.start('LevelTwo');
