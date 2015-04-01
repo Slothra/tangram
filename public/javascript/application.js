@@ -1478,9 +1478,11 @@ Tan.LevelTwo.prototype = {
         }
 
         function positionsMole(){
-            moleBoss.body.velocity.x = moleVelX;
-            random = Math.floor(Math.random() * (5))+1;
-            game.time.events.add(Phaser.Timer.SECOND * random, moveMole, this);
+            if (moleLife > 0){
+                moleBoss.body.velocity.x = moleVelX;
+                random = Math.floor(Math.random() * (5))+1;
+                game.time.events.add(Phaser.Timer.SECOND * random, moveMole, this);
+            }
         }
 
         function addProperties(sprite){
