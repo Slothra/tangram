@@ -1087,8 +1087,8 @@ Tan.LevelTwo.prototype = {
         victorySound = game.add.audio('victorySound');
 
         // create map
-        xStartPos = 2800;
-        yStartPos = 280;
+        xStartPos = 2780;
+        yStartPos = 600;
 
         // setcamera Deadzone
         deadZoneY = 100;
@@ -1251,7 +1251,7 @@ Tan.LevelTwo.prototype = {
         createDirtPlat(2800, 410, 200, 200);
         createDirtPlat(2800, 150, 200, 100);
         createDirtPlat(3000, 300, 100, 50);
-        createDirtPlat(3230, 250, 150, 30);
+        createDirtPlat(3230, 225, 150, 30);
         createDirtPlat(3500, 300, 100, 50);
         createDirtPlat(2750, 330, 50, 50);
         createDirtPlat(2180, 490, 500, 50);
@@ -1279,6 +1279,11 @@ Tan.LevelTwo.prototype = {
         createSceneElem(1.1, true, 2768, 765, 'root01', true);
         createSceneElem(1, true, 3000, 675, 'root02');
         createSceneElem(1, false, 3500, 600, 'root03');
+        createSceneElem(1.1, false, 2732, 470, 'root01', true);
+        createSceneElem(1, false, 2250, 525, 'root04', true);
+        createSceneElem(1.3, true, 2430, 240, 'root02');
+
+
 
 
 
