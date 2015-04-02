@@ -1072,6 +1072,8 @@ Tan.LevelTwo.prototype = {
         undergroundMusic.play();
         victorySound = game.add.audio('victorySound');
 
+        playerForm = 'brick'
+
         // create map
         xStartPos = 60;
         yStartPos = 200;
@@ -1623,16 +1625,21 @@ Tan.LevelTwo.prototype = {
         }
 
         function collideBreakable(player, wall){
-            if (playerForm == 'hat'){
-                poofSound.play();
-                wall.destroy()
-                var collision = game.add.sprite(wall.position.x+5,wall.position.y+50,'collision');
-                collision.animations.add('explode', [0, 1, 2], 20, false);
-                collision.animations.play('explode');
-                var cleanup = function (){
-                    collision.destroy();
-                } 
-                game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
+            if (playerForm == 'superhat'){
+                player.animations.play('drill')
+                game.time.events.add(Phaser.Timer.SECOND * .75, wallBreak, this);
+                function wallBreak(){
+                    poofSound.play();
+                    wall.destroy()
+                    var collision = game.add.sprite(wall.position.x+5,wall.position.y+50,'collision');
+                    collision.animations.add('explode', [0, 1, 2], 20, false);
+                    collision.animations.play('explode');
+                    var cleanup = function (){
+                        collision.destroy();
+                    } 
+                    game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
+                }
+                
             } else {
                 if (hint){
                     hint.destroy();
@@ -1750,6 +1757,11 @@ Tan.GameOver.prototype = {
                 countdown = false;
             } else if (currentLevel === 2){
                 game.state.start('LevelTwo');
+                gramCount = 2;
+                playerForm = 'brick';
+                bossTime = false;
+                moleLife = 3;
+                countdown = false;
             }
         }
         if (endKey.isDown){
