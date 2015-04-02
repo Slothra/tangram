@@ -43,7 +43,8 @@ var platformRightTrigger;
 var platformLeftTrigger;
 
 
-
+var storyText;
+var introText = "Pigeons are evil and I, \nTan, am the only thing standing \nin the way of their wicked plot. \n\n\nOr… I was until I was knocked into \nthe river that carried me far, \nfar from home. \n\n\nI must get back, \nI must save TeenyTown, \nI must stop the evil pigeons!"
 
 var underwater = false;
 var playerSpeed = 150;
@@ -195,12 +196,13 @@ Tan.MainMenu.prototype = {
             mainMenu.animations.play('start');
             game.time.events.add(Phaser.Timer.SECOND * 3, helpMenu, this);
         }
+
         function helpMenu(){
             clickMenu = false;
             mainMenu.destroy();
 
-            var mainMenuText = "Left Arrow  - Move left\nRight Arrow - Move right\nUp Arrow    - Jump\nF button    - change form\nM button    - Mute game\nP button    - Pause game"
-            var text = game.add.bitmapText(150, 200, 'font', mainMenuText, 25);
+            mainMenuText = "Left Arrow  - Move left\nRight Arrow - Move right\nUp Arrow    - Jump\nF button    - change form\nM button    - Mute game\nP button    - Pause game"
+            titleText = game.add.bitmapText(150, 200, 'font', mainMenuText, 25);
             game.input.onDown.add(startGame,self);
         }
 
@@ -217,6 +219,7 @@ Tan.LevelOne = function(game){};
 
 Tan.LevelOne.prototype = {
     preload: function(){
+
         game.load.image('sky', 'assets/scene/beach2.png');
         game.load.image('platform', 'assets/platform_10x10.png');
         game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
@@ -1957,7 +1960,7 @@ function createSceneElem(scale, horizFlip, xPixFromLeft, yPixFromBottom, imgKey,
     } else {
         newElement.scale.setTo(scale);
     }
-        return newElement;
+    return newElement;
 }
 
 // ========================
