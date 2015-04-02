@@ -1663,7 +1663,7 @@ Tan.LevelTwo.prototype = {
         }
 
         function collideBreakable(player, wall){
-            if (playerForm == 'superhat'){
+            if (playerForm == 'superHat'){
                 player.animations.play('drill')
                 game.time.events.add(Phaser.Timer.SECOND * .75, wallBreak, this);
                 function wallBreak(){
