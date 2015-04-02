@@ -136,6 +136,9 @@ var breakableWalls;
 
 var undergroundMusic;
 
+var thanks;
+var credits;
+
 
 
 Tan.MainMenu = function(game){};
@@ -583,27 +586,6 @@ Tan.LevelOne.prototype = {
             pauseMenu();
         }
 
-        // function pauseMenu(){
-        //     var text = "Left Arrow  - Move left\nRight Arrow - Move right\nUp Arrow    - Jump\nF button    - change form\nM button    - Mute game\nP button    - Pause game\n\n     Click to resume"
-        //     menuText = game.add.bitmapText(150, 350, 'font', text, 25);
-        //     // menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click to resume', { font: '30px Arial', fill: '#fff' });
-        //     // menuText.anchor.setTo(0.5, 0.5);
-        //     game.paused = true;
-        //     game.input.onDown.addOnce(unpause,self);
-        // }  
-    
-        // function unpause(event){
-        //     // Only act if paused
-        //     if(game.paused && pauser === true){
-        //         // menu.destroy();
-        //         menuText.destroy();
-
-        //         // Unpause the game
-        //         game.paused = false;
-        //         pauser = false;
-        //     }
-        // };
-
         // Checks if player is collides with water;
         if (game.physics.arcade.overlap(player, waters) == true){
             if (underwater === false){
@@ -997,6 +979,7 @@ Tan.LevelTwo.prototype = {
         game.load.image('bgTexture', 'assets/scene/level2/bgtexture.png');
         game.load.image('rootPlat', 'assets/scene/level2/treerootHoriz.png');
         game.load.image('rootPlat2', 'assets/scene/level2/treerootHorizflip.png');
+        game.load.spritesheet('hintsLevelTwo', 'assets/sprites/hintsTwo.png', 119,77,3);
 
         game.load.image('root01', 'assets/scene/level2/treeroot01.png');
         game.load.image('root02', 'assets/scene/level2/treeroot02.png');
@@ -1345,6 +1328,27 @@ Tan.LevelTwo.prototype = {
         shade.position.x = player.position.x
         shade.position.y = player.position.y
 
+        if ((playerForm == 'brick' || playerForm == 'hat') && (player.position.x > 70 && player.position.x < 100)){
+            showHint('dark-hint');
+        }
+
+        function showHint(hintType){
+            if (hint){
+                hint.destroy();
+            }
+            if (hintType == 'dark-hint'){
+                hint = game.add.sprite(player.position.x - 20, player.position.y - 50, 'hintsLevelTwo')
+                hint.animations.add('dark-hint', [2], 10, true);
+                hint.animations.play('dark-hint');
+            } else if (hintType == 'mole-hint'){
+                hint = game.add.sprite(player.position.x - 20, player.position.y - 50, 'hintsLevelTwo')
+                hint.animations.add('mole-hint', [1], 10, true);
+                hint.animations.play('mole-hint');
+            }
+            game.time.events.add(Phaser.Timer.SECOND * 3, hideHint, this);
+        }
+        
+
         if (muteKey.isDown && muted === false){
             muted = true;
             game.time.events.add(Phaser.Timer.SECOND * .5, mute, this);
@@ -1504,6 +1508,7 @@ Tan.LevelTwo.prototype = {
             undergroundMusic.stop();
             bossMusic.loop = true;
             bossMusic.play();
+            showHint('mole-hint');
             moleFight();
         }
 
@@ -1568,7 +1573,7 @@ Tan.LevelTwo.prototype = {
 
         function pauseMole(){
             moleBoss.body.velocity.y = 0;
-            game.time.events.add(Phaser.Timer.SECOND * 1, hideMole, this);
+            game.time.events.add(Phaser.Timer.SECOND * 1.4, hideMole, this);
         }
 
         function hideMole(){
@@ -1606,6 +1611,7 @@ Tan.LevelTwo.prototype = {
                     bossMusic.stop();
                     victorySound.play();
                     undergroundMusic.play();
+                    game.time.events.add(Phaser.Timer.SECOND * 3, startCredits, this);
                 }
             } else if (moleLife === 0){
                 bossTime = false;
@@ -1625,9 +1631,26 @@ Tan.LevelTwo.prototype = {
                 collision.animations.play('explode');
                 var cleanup = function (){
                     collision.destroy();
-                }
+                } 
                 game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
+            } else {
+                if (hint){
+                    hint.destroy();
+                }
+                hint = game.add.sprite(player.position.x - 20, player.position.y - 50, 'hintsLevelTwo')
+                hint.animations.add('wall-hint', [0], 10, true);
+                hint.animations.play('wall-hint');
+                game.time.events.add(Phaser.Timer.SECOND * 3, hideHint, this);
+            
             }
+        }
+
+        function hideHint(){
+            hint.destroy()
+        }
+
+        function startCredits(){
+            game.state.start('Credits')
         }
         
     }
@@ -1667,7 +1690,23 @@ Tan.Loading.prototype = {
 
 
 
+Tan.Credits = function(game){};
 
+Tan.Credits.prototype = {
+    preload: function(){
+        game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
+
+    },
+    create: function(){
+        var text = "    Congratulations!    \n\n\n ...but Tan's adventure \n    is far from over    \n\n\n\n       Created By       \n\n      Heather Jang      \n     Keith Reynolds     \n\n\n   Powered by Phaser   \n\n Thanks to the team at \n    Lighthouse Labs  \n\nMore levels coming soon,\n\n Thank you for playing!"
+        thanks = game.add.bitmapText(120, 600, 'font', text, 25)
+        credits = "Congratulations!\n...but Tan's adventure is far from over\n\n\n\n  Created By \nHeather Jang   Keith Reynolds \n Powered by Phaser \n Thanks to the team at Lighthouse Labs"
+    },
+    update: function(){
+        thanks.y--
+
+    }
+}
 
 
 
@@ -1915,7 +1954,7 @@ function createSceneElem(scale, horizFlip, xPixFromLeft, yPixFromBottom, imgKey,
 // Sets up pause Screen
 function pauseMenu(){
     var text = "Left Arrow  - Move left\nRight Arrow - Move right\nUp Arrow    - Jump\nF button    - change form\nM button    - Mute game\nP button    - Pause game\n\n     Click to resume"
-    menuText = game.add.bitmapText(150, 350, 'font', text, 25);
+    menuText = game.add.bitmapText(game.camera.view.x + 150, gameHeight/2 + game.camera.view.y, 'font', text, 25);
     // menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click to resume', { font: '30px Arial', fill: '#fff' });
     // menuText.anchor.setTo(0.5, 0.5);
     game.paused = true;
@@ -2009,4 +2048,5 @@ game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelTwo');
+game.state.add('Credits', Tan.Credits);
+game.state.start('Credits');
