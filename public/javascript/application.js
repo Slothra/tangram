@@ -47,7 +47,7 @@ var hasEnoughCoins;
 
 var cursors;
 
-var xStartPos = 30;
+var xStartPos = 3000;
 
 var yStartPos = gameHeight;
 var player;
@@ -435,6 +435,8 @@ Tan.LevelOne.prototype = {
         crabbyCrab.animations.add('hurt',[2], 10, true);
         crabbyCrab.anchor.setTo(.5, 0);
         crabbyCrab.body.velocity.x = crabVel;
+        crabbyCrab.body.setSize(250, 100, 25, 40);
+
 
         leftTriggerCrabby = game.add.sprite(3200, yWorldBounds - 200, null, 0, enemyMovementTriggers);
         leftTriggerCrabby.body.setSize(4, 32, 0, 0);
