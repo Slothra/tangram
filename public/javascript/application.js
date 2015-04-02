@@ -47,7 +47,7 @@ var hasEnoughCoins;
 
 var cursors;
 
-var xStartPos = 3000;
+var xStartPos = 30;
 
 var yStartPos = gameHeight;
 var player;
@@ -439,9 +439,9 @@ Tan.LevelOne.prototype = {
 
 
         leftTriggerCrabby = game.add.sprite(3200, yWorldBounds - 200, null, 0, enemyMovementTriggers);
-        leftTriggerCrabby.body.setSize(4, 32, 0, 0);
+        leftTriggerCrabby.body.setSize(4, 100, 0, 0);
         rightTriggerCrabby = game.add.sprite(3885, yWorldBounds - 200, null, 0, enemyMovementTriggers);
-        rightTriggerCrabby.body.setSize(4, 32, 0, 0);
+        rightTriggerCrabby.body.setSize(4, 100, 0, 0);
 
         leftPincer = game.add.sprite(crabbyCrab.position.x - 150, 510, 'left-claw', 0, pincers);
         leftPincer.animations.add('leftPincerMove', [1], 10, true);
@@ -2311,3 +2311,16 @@ game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
 game.state.add('Credits', Tan.Credits);
 game.state.start('LevelOne');
+
+
+$(function(){
+
+    $('.about').on('click',function(){
+        $('.info').toggleClass('isVisible');
+    })
+
+    $('.info').on('click',function(){
+        $('.info').removeClass('isVisible');
+    })
+
+});
