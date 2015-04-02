@@ -33,6 +33,9 @@ var keyPressed;
 var cost;
 var msgText;
 var martSignText;
+var chalkboard;
+var chalkboardText;
+var chalkboardWriting;
 var mart;
 var martSign;
 var costText;
@@ -40,6 +43,7 @@ var coin;
 var martGram;
 var msgText;
 var playerCoinsText;
+var hasEnoughCoins;
 
 var cursors;
 
@@ -1072,11 +1076,11 @@ Tan.LevelTwo.prototype = {
             platforms = game.add.group();
             platforms.enableBody = true;
 
-            // Keep this group behind player
+            // // Keep this group behind player
 
-            grams = game.add.group();
-            grams.enableBody = true;
-            grams.physicsBodyType = Phaser.Physics.ARCADE;
+            // grams = game.add.group();
+            // grams.enableBody = true;
+            // grams.physicsBodyType = Phaser.Physics.ARCADE;
 
         }
         loadLevelOneStuff();
@@ -1121,15 +1125,16 @@ Tan.LevelTwo.prototype = {
         enemyMovementTriggers.enableBody = true;
         enemyMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
 
-        grams = game.add.group();
-        grams.enableBody = true;
-        grams.physicsBodyType = Phaser.Physics.ARCADE;
+        // grams = game.add.group();
+        // grams.enableBody = true;
+        // grams.physicsBodyType = Phaser.Physics.ARCADE;
+        // createGram(680, 435, 'parallel_glow', 'parallel', true);
+
 
         breakableWalls = game.add.group();
         breakableWalls.enableBody = true;
         breakableWalls.physicsBodyType = Phaser.Physics.ARCADE;
 
-        createGram(240, 640, 'parallel_glow', 'parallel', true);
 
         // Creating coins
         coins = game.add.group();
@@ -1187,6 +1192,11 @@ Tan.LevelTwo.prototype = {
         shade.animations.add('big', [1], 10, true);
         shade.scale.x = 1.5;
         shade.scale.y = 1.5;
+
+        grams = game.add.group();
+        grams.enableBody = true;
+        grams.physicsBodyType = Phaser.Physics.ARCADE;
+        createGram(680, 435, 'parallel_glow', 'parallel', true);
 
         // Creates head up display
         createHeadsUpDisplay();
@@ -1437,11 +1447,11 @@ Tan.LevelTwo.prototype = {
         }
 
         function moveAsSuperHat(){
-            movePlayer(15, 'walkSuperHat', 'jumpSuperHat', playerSpeed, -400);
-        }
-
-        function moveAsDrill(){
-            movePlayer(18, 'drill', 'jumpDrill', playerSpeed, -400);
+            if (player.drilling){
+                movePlayer(18, 'drill', 'jumpDrill', playerSpeed, -400);
+            } else {
+                movePlayer(15, 'walkSuperHat', 'jumpSuperHat', playerSpeed, -400);
+            }
         }
 
         // Player Movement
@@ -1458,9 +1468,6 @@ Tan.LevelTwo.prototype = {
             break;
           case 'parallel':
             moveAsCandle();
-            break;
-          case 'drill':
-            moveAsDrill();
             break;
           default:
             moveAsBrick();
@@ -1663,7 +1670,7 @@ Tan.LevelTwo.prototype = {
 
         function collideBreakable(player, wall){
             if (playerForm == 'superHat'){
-                player.animations.play('drill')
+                drillAnimation();
                 game.time.events.add(Phaser.Timer.SECOND * .75, wallBreak, this);
                 function wallBreak(){
                     poofSound.play();
@@ -1687,6 +1694,15 @@ Tan.LevelTwo.prototype = {
                 game.time.events.add(Phaser.Timer.SECOND * 3, hideHint, this);
             
             }
+        }
+
+        function drillAnimation(){
+            player.drilling = true;
+            game.time.events.add(Phaser.Timer.SECOND * 1.5, switchToSuperHat, this);
+        }
+
+        function switchToSuperHat(){
+            player.drilling = false;
         }
 
         function hideHint(){
@@ -1713,12 +1729,11 @@ Tan.Loading.prototype = {
         game.load.audio('falling', 'assets/sound/falling.mp3');
         game.load.image('mart', 'assets/mart.png');
         game.load.bitmapFont('crayonFont', 'assets/fonts/crayon_bitmap/crayon.png', 'assets/fonts/crayon_bitmap/crayon.fnt');
-        // game.load.spritesheet('hat_glow', 'assets/grams/grams_anim3.png', 64,64,8);
         game.load.spritesheet('superHat', 'assets/grams/superhat_glow.png', 64,64,8);
-
-
+        game.load.image('chalkboard', 'assets/chalkboard.png');
 
     },
+
     create: function(){
         yesKey = game.input.keyboard.addKey(Phaser.Keyboard.Y);
         noKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
@@ -1732,17 +1747,24 @@ Tan.Loading.prototype = {
 
         if (currentLevel === 1) {
             var levelOneText = "Level One"
-            // var text = game.add.bitmapText(120, 300, 'font', levelOneText, 25);
             var text = game.add.bitmapText(60, 100, 'font', introText, 25);
 
         } else if (currentLevel === 2){
+            cost = 15;
+
             fallingSound = game.add.audio('falling');
             fallingSound.play();
+            chalkboardText = 'Make gram\nstronger for\n...reasons.';
 
-            cost = 15
-            msgText = 'Welcome to the mart!\n\nUpgrade your gram for '+ cost.toString() + ' coins? (Y/N)'
+            if (coinCount >= cost){
+                hasEnoughCoins = true;
+                msgText = 'Welcome to the mart!\n\nUpgrade your gram for '+ cost.toString() + ' coins? (Y/N)';
+            } else {
+                hasEnoughCoins = false;
+                msgText = "Welcome to the mart!\n\nYou need more coins to upgrade your gram...\nPress 'Y' to continue.";
+            }
 
-            var levelTwoText = "I've fallen... \nand I can't get up."
+            var levelTwoText = "I've fallen... \nand I can't get up.";
             text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
 
             game.time.events.add(Phaser.Timer.SECOND * 4, destroyText, this);
@@ -1762,17 +1784,18 @@ Tan.Loading.prototype = {
         }
 
         function fadeInTween(object){
-            object.alpha = 0
+            object.alpha = 0;
             game.add.tween(object)
-            .to({alpha: 1}, 1000, Phaser.Easing.Linear.In, true, 0, -1)
+            .to({alpha: 1}, 1000, Phaser.Easing.Linear.In, true, 0, -1);
         } 
 
         function displayMsgText(){
-            msgText = game.add.bitmapText(40, 30, 'font', msgText, 20);
+            msgText = game.add.bitmapText(40, 30, 'font', msgText, 18);
         }
 
+
         function displayPlayerCoins(){
-            playerCoinsText = game.add.bitmapText(40, 100, 'font', ('(You have '+ coinCount.toString()+ ' coins)'), 15);
+            playerCoinsText = game.add.bitmapText(40, 125, 'font', ('(You have '+ coinCount.toString()+ ' coins)'), 15);
         }
 
         function displayMart(){
@@ -1788,6 +1811,14 @@ Tan.Loading.prototype = {
 
             coin = game.add.sprite(390, 215, 'displayCoin');
             fadeInTween(coin);
+
+            chalkboard = game.add.sprite(300, 405, 'chalkboard');
+            chalkboard.scale.setTo(.6);
+            fadeInTween(chalkboard);
+
+            chalkboardWriting = game.add.bitmapText(315, 420, 'crayonFont', chalkboardText, 26);
+            fadeInTween(chalkboardWriting);
+
         }
 
         function displayUpGram(xPos, yPos, imgKey, gramName, scale){
@@ -1808,38 +1839,54 @@ Tan.Loading.prototype = {
 
     update: function(){
 
-        if (yesKey.isDown && keyPressed == false){
-            keyPressed = true;
-            purchase = true;
-            selectionMade = true;
-        } else if (noKey.isDown && keyPressed == false) {
-            keyPressed = true;
-            purchase = false;
-            selectionMade = true;
-        } else if (yesKey.isUp && noKey.isUp){
-            keyPressed = false;
+        if (hasEnoughCoins){
+
+            if (yesKey.isDown && keyPressed == false){
+                keyPressed = true;
+                purchase = true;
+                selectionMade = true;
+            } else if (noKey.isDown && keyPressed == false) {
+                keyPressed = true;
+                purchase = false;
+                selectionMade = true;
+            } else if (yesKey.isUp && noKey.isUp){
+                keyPressed = false;
+            }
+
+            if (purchase == true && selectionMade == true){
+                //FOR TESTING DELETE THIS LINE BEFORE DEPLOYMENT
+                // playerGrams.hat = {name: 'hat', displayIndex: 1}
+                selectionMade = false;
+                destroyMart();
+                upgradeGram('hat', martGram);
+                displayNextLevelName();
+                game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
+            } else if (purchase == false && selectionMade == true){
+                selectionMade = false;
+                destroyMart();
+                martGram.destroy();
+                displayNextLevelName();
+                game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
+            }
+
+        } else {
+            if (yesKey.isDown && keyPressed == false){
+                keyPressed = true;
+                selectionMade = true;
+                purchased = false;
+            } else if (yesKey.isUp){
+                keyPressed = false;
+            }
+
+            if (purchase == false && selectionMade == true){
+                selectionMade = false;
+                destroyMart();
+                martGram.destroy();
+                displayNextLevelName();
+                game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
+
+            }
         }
-
-
-        if (purchase == true && selectionMade == true){
-
-            //FOR TESTING DELETE THIS LINE BEFORE DEPLOYMENT
-            // playerGrams.hat = {name: 'hat', displayIndex: 1}
-
-            selectionMade = false;
-            destroyMart();
-            upgradeGram('hat', martGram);
-            displayNextLevelName();
-            game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
-        } else if (purchase == false && selectionMade == true){
-            selectionMade = false;
-            destroyMart();
-            martGram.destroy();
-            displayNextLevelName();
-            game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
-        }
-
-
 
         function destroyMart(){
             mart.destroy();
@@ -1848,18 +1895,18 @@ Tan.Loading.prototype = {
             coin.destroy();
             msgText.destroy();
             playerCoinsText.destroy();
+            chalkboard.destroy();
+            chalkboardWriting.destroy();
         }
 
         function displayNextLevelName(){
             if (currentLevel === 1) {
                 var levelOneText = "Level One"
                 var text = game.add.bitmapText(120, 300, 'font', levelOneText, 25);
-
             } else if (currentLevel === 2){
                 var levelTwoText = "Level Two"
                 var text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
             }
-
         }
 
         function upgradeGram(oldGramName, newGram){
@@ -1875,15 +1922,14 @@ Tan.Loading.prototype = {
             coinCount -= cost;
         }
 
-
         function nextLevel(){
             if (currentLevel === 1){
-                game.state.start('LevelOne')
+                game.state.start('LevelOne');
             } else if (currentLevel === 2){
                 playerForm = 'brick';
                 togglerPaddingLeft = togglerDefaultPadding;
                 togglePosition = 0;
-                game.state.start('LevelTwo')
+                game.state.start('LevelTwo');
             }
         }
     }
