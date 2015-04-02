@@ -904,7 +904,6 @@ Tan.LevelOne.prototype = {
                 bossMusic.stop();
                 victorySound.play();
                 music.play();
-                // console.log("YOU WIN!")
                 spiral = game.add.sprite(crabbyCrab.position.x, crabbyCrab.position.y, 'spiral')
                 spiral.animations.add('spiral-move', [0,1,2,3], 5, true);
                 crabDead = true;
@@ -963,9 +962,7 @@ Tan.LevelOne.prototype = {
             }
         });
 
-
         if (crabDead == true && player.position.x > levelTwoStart){
-        // if (player.position.x > levelTwoStart){
             music.stop();
             game.state.start('Loading');
             currentLevel = 2;
@@ -975,22 +972,14 @@ Tan.LevelOne.prototype = {
 };
 
 
-
-
-
-
 Tan.LevelTwo = function(game){};
 
 Tan.LevelTwo.prototype = {
     
     preload: function(){
         // load level two assets
-        game.load.image('underground', 'assets/underground.png');
-        game.load.image('rock', 'assets/rock.png');
         game.load.spritesheet('shade', 'assets/sprites/shade.png', 1200, 900, 2);
-        // game.load.spritesheet('moleMan', 'assets/sprites/mole.png', 247, 102, 2);
         game.load.spritesheet('moleMan-resize', 'assets/sprites/resized-mole.png', 141, 72, 2);
-        // game.load.spritesheet('claws', 'assets/sprites/mole-claws.png', 186, 210, 2);
         game.load.spritesheet('claws-resize', 'assets/sprites/Mole-Claws-resized.png', 144, 104, 2);
         game.load.spritesheet('underground-pigeon','assets/sprites/underground-pigeon.png', 41, 36, 3);
 
@@ -1055,9 +1044,6 @@ Tan.LevelTwo.prototype = {
 
             game.physics.startSystem(Phaser.Physics.ARCADE);
 
-            // background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
-            // var clouds = game.add.group();
-
             game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
 
             music = game.add.audio('exploring');
@@ -1073,15 +1059,8 @@ Tan.LevelTwo.prototype = {
             selectSound = game.add.audio('menu-select');
             selectSound.volume = .1;
 
-
             platforms = game.add.group();
             platforms.enableBody = true;
-
-            // // Keep this group behind player
-
-            // grams = game.add.group();
-            // grams.enableBody = true;
-            // grams.physicsBodyType = Phaser.Physics.ARCADE;
 
         }
         loadLevelOneStuff();
@@ -1125,12 +1104,6 @@ Tan.LevelTwo.prototype = {
         enemyMovementTriggers = game.add.group();
         enemyMovementTriggers.enableBody = true;
         enemyMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
-
-        // grams = game.add.group();
-        // grams.enableBody = true;
-        // grams.physicsBodyType = Phaser.Physics.ARCADE;
-        // createGram(680, 435, 'parallel_glow', 'parallel', true);
-
 
         breakableWalls = game.add.group();
         breakableWalls.enableBody = true;
@@ -1211,23 +1184,17 @@ Tan.LevelTwo.prototype = {
             game.physics.arcade.enable(sprite);
             sprite.body.immovable = true;
             sprite.anchor.setTo(.5,0);
-
         }
-
 
         if (playerGrams.hat){
             playerGrams.hat.displayed = false;
         }
-
-       
 
         createCoinCluster(65, 800, 5);
         createCoinCluster(960, 280, 7);
         createCoinCluster(2950, 330, 5);
         createCoinCluster(2440, 730, 5);
         createCoinCluster(2250, 445, 3);
-
-
 
         // Creates Dirt platforms 
         function createDirtPlat(xPixFromLeft, yPixFromBottom, width, height){
@@ -1254,7 +1221,6 @@ Tan.LevelTwo.prototype = {
         createDirtPlat(670, 500, 70, 50);
         createDirtPlat(610, 350, 130, 220);
         createDirtPlat(800, 175, 170, 200);
-        //Big middle block
         createDirtPlat(890, 650, 400, 400);
         createDirtPlat(1050, 175, 150, 70);
         createDirtPlat(1290, 650, 300, 550);
@@ -1327,12 +1293,6 @@ Tan.LevelTwo.prototype = {
         playerForm = 'brick';
         toggler
 
-
-        
-
-
-
-
     },
 
     update: function(){
@@ -1358,9 +1318,7 @@ Tan.LevelTwo.prototype = {
         game.physics.arcade.collide(player, moleBoss, collideBoss, null, this);
         game.physics.arcade.collide(player, claws, collideClaws, null, this);
 
-
-
-
+        // Shade follows player
         shade.position.x = player.position.x
         shade.position.y = player.position.y
 
@@ -1384,7 +1342,6 @@ Tan.LevelTwo.prototype = {
             game.time.events.add(Phaser.Timer.SECOND * 3, hideHint, this);
         }
         
-
         if (muteKey.isDown && muted === false){
             muted = true;
             game.time.events.add(Phaser.Timer.SECOND * .5, mute, this);
@@ -1720,8 +1677,6 @@ Tan.LevelTwo.prototype = {
 
 
 
-
-
 Tan.Loading = function(game){};
 
 Tan.Loading.prototype = {
@@ -1825,7 +1780,6 @@ Tan.Loading.prototype = {
         }
 
         function displayUpGram(xPos, yPos, imgKey, gramName, scale){
-
             martGram = grams.create(xPos, yPos, imgKey);
             martGram.scale.setTo(scale);
             martGram.name = gramName;
