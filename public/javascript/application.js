@@ -1744,8 +1744,8 @@ Tan.Loading.prototype = {
             var text = game.add.bitmapText(60, 100, 'font', introText, 25);
 
         } else if (currentLevel === 2){
-            cost = 15
-            
+            cost = 15;
+
             fallingSound = game.add.audio('falling');
             fallingSound.play();
             chalkboardText = 'Make gram\nstronger for\n...reasons.';
@@ -1755,10 +1755,10 @@ Tan.Loading.prototype = {
                 msgText = 'Welcome to the mart!\n\nUpgrade your gram for '+ cost.toString() + ' coins? (Y/N)';
             } else {
                 hasEnoughCoins = false;
-                msgText = "Welcome to the mart!\nYou need more coins to upgrade your gram...\nPress 'Y' to continue."
+                msgText = "Welcome to the mart!\n\nYou need more coins to upgrade your gram...\nPress 'Y' to continue.";
             }
 
-            var levelTwoText = "I've fallen... \nand I can't get up."
+            var levelTwoText = "I've fallen... \nand I can't get up.";
             text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
 
             game.time.events.add(Phaser.Timer.SECOND * 4, destroyText, this);
@@ -1778,9 +1778,9 @@ Tan.Loading.prototype = {
         }
 
         function fadeInTween(object){
-            object.alpha = 0
-            game.add.tween(object)
-            .to({alpha: 1}, 1000, Phaser.Easing.Linear.In, true, 0, -1)
+            object.alpha = 0;
+            game.add.tween(object);
+            .to({alpha: 1}, 1000, Phaser.Easing.Linear.In, true, 0, -1);
         } 
 
         function displayMsgText(){
@@ -1918,12 +1918,12 @@ Tan.Loading.prototype = {
 
         function nextLevel(){
             if (currentLevel === 1){
-                game.state.start('LevelOne')
+                game.state.start('LevelOne');
             } else if (currentLevel === 2){
                 playerForm = 'brick';
                 togglerPaddingLeft = togglerDefaultPadding;
                 togglePosition = 0;
-                game.state.start('LevelTwo')
+                game.state.start('LevelTwo');
             }
         }
     }
