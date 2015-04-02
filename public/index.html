@@ -4,21 +4,32 @@
   <link rel='stylesheet' href='/stylesheets/normalize.css'>
   <link rel='stylesheet' href='/stylesheets/application.css'>
   <script src='//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js'></script>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
   <script src='/javascript/phaser.min.js'></script>
   <script src='/javascript/application.js'></script>
-  <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-36924286-3', 'auto');
-  ga('send', 'pageview');
-
-</script>
-  <title></title>
+  <title>TanGram</title>
 </head>
 <body>
-  <div id='game-space'>Welcome to TanGram!</div>
+  <div id='background'>
+    <div class='container'>
+      <h1>TanGram</h1>
+      <div id='game-space'></div>
+    </div>
+    <div class='tab'>
+      <div class='buttons'>
+        <a href="https://tan-gram.herokuapp.com/"><i class="fa fa-power-off fa-2x" ></i></a>
+      </div>
+      <div class='buttons social'><i class="fa fa-twitter fa-2x"></i></div>
+      <div class='buttons about'> <i class="fa fa-info fa-2x"></i></div>
+    </div>
+  </div>
+  <div class='info'>
+    <h2>About TanGram</h2>
+    <div id='card'>
+      <p>TanGram tells the story of Tan, a statue from TeenyTown, who has been swept away by the evil pigeons. Now Tan must power up, change form, get home, and stop the pigeons.</p>
+      <p>Inspired by classical 2D platformers, TanGram includes unique elements requiring Tan to constantly reinvent themselves and the player to use their imagination.</p>
+      <p>TanGram was developped by <a href="ca.linkedin.com/in/heatherjang/en">Heather Jang</a> and <a href="ca.linkedin.com/in/keithlenglereynolds/en">Keith Reynolds</a>. It was built using the Phaser library.</p>
+    </div>
+  </div>
 </body>
 </html>
