@@ -1,11 +1,16 @@
+@font-face {
+      font-family: Joystix;
+      src: url('../fonts/joystix_monospace.ttf');
+}
+
 h1 {
-	font-size: 2em;
-  padding: 20px;
+  font-family: Joystix;
+	font-size: 3em;
+  padding: 10px;
   text-align: center;
   width: 250px;
   margin: 20px auto;
   border-radius: 5px;
-  padding-top: 23px;
   color: white;
 }
 

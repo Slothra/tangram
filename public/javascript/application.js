@@ -184,11 +184,7 @@ Tan.MainMenu.prototype = {
         mainMenu.anchor.setTo(.5,.5);
         mainMenu.animations.add('start', [0,1,2,3,4,5,6,7,6,5,4,3,2,1], 20, true)
 
-        // var button = game.add.sprite(400, 500, 'button');
-        // button.anchor.setTo(.5,.5);
-
         var text = "Click to begin"
-        titleText = game.add.bitmapText(270,mainMenu.position.y-250, 'font', "TanGram", 40);
         mainMenuText = game.add.bitmapText(250, mainMenu.position.y+230, 'font', text, 25);
         x1 = gameWidth/2 - 270/2; 
         x2 = gameWidth/2 + 270/2;
@@ -1906,9 +1902,8 @@ Tan.Credits.prototype = {
 
     },
     create: function(){
-        var text = "    Congratulations!    \n\n\n ...but Tan's adventure \n    is far from over    \n\n\n\n       Created By       \n\n      Heather Jang      \n     Keith Reynolds     \n\n\n   Powered by Phaser   \n\n Thanks to the team at \n    Lighthouse Labs  \n\nMore levels coming soon,\n\n Thank you for playing!"
+        var text = "     Congratulations!    \n\n\n ...but Tan's adventure \n    is far from over    \n\n\n\n       Created By       \n\n      Heather Jang      \n     Keith Reynolds     \n\n\n   Powered by Phaser   \n\n Thanks to the team at \n    Lighthouse Labs  \n\nMore levels coming soon,\n\n Thank you for playing!"
         thanks = game.add.bitmapText(120, 600, 'font', text, 25)
-        credits = "Congratulations!\n...but Tan's adventure is far from over\n\n\n\n  Created By \nHeather Jang   Keith Reynolds \n Powered by Phaser \n Thanks to the team at Lighthouse Labs"
     },
     update: function(){
         thanks.y--
