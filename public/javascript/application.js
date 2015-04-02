@@ -1090,11 +1090,7 @@ Tan.LevelTwo.prototype = {
         undergroundMusic.play();
         victorySound = game.add.audio('victorySound');
 
-// <<<<<<< HEAD
-
-// =======
         playerForm = 'brick'
-// >>>>>>> 1cfaca7b03aa353ba08220f9e087c686451e8c42
 
         // create map
         xStartPos = 60;
@@ -1316,6 +1312,9 @@ Tan.LevelTwo.prototype = {
         createWall(1400, 800, 30, 150);
         createWall(3130, 700, 30, 100);
         createWall(2600, 440, 30, 100);
+
+        playerForm = 'brick';
+        toggler
 
 
         
@@ -1881,6 +1880,9 @@ Tan.Loading.prototype = {
             if (currentLevel === 1){
                 game.state.start('LevelOne')
             } else if (currentLevel === 2){
+                playerForm = 'brick';
+                togglerPaddingLeft = togglerDefaultPadding;
+                togglePosition = 0;
                 game.state.start('LevelTwo')
             }
         }
@@ -1906,19 +1908,6 @@ Tan.Credits.prototype = {
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -2191,6 +2180,9 @@ function unpause(event){
 };
 
 function literallyDying (currentMusic){
+    playerForm = 'brick';
+    togglerPaddingLeft = togglerDefaultPadding;
+    togglePosition = 0;
     currentMusic.stop();
     var suspenseSound = game.add.audio('suspense');
     suspenseSound.play();
