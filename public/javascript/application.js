@@ -24,9 +24,26 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 4500;
+// Loading screen and Mart
+var yesKey;
+var noKey;
+var purchase;
+var selectionMade;
+var keyPressed;
+var cost;
+var msgText;
+var martSignText;
+var mart;
+var martSign;
+var costText;
+var coin;
+var martGram;
+var msgText;
+var playerCoinsText;
 
 var cursors;
+
+var xStartPos = 4500;
 
 var yStartPos = gameHeight;
 var player;
@@ -1641,50 +1658,59 @@ Tan.Loading.prototype = {
 
     },
     create: function(){
-        var cost = 15
-        var msgText = 'Do you want to upgrade your gram for'
-        var martSignText = 'upgrades';
-        // var costText = '15x'
+        yesKey = game.input.keyboard.addKey(Phaser.Keyboard.Y);
+        noKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
+
+        purchase = false;
+        selectionMade = false;
+
+        cost = 15
+        msgText = 'Upgrade your gram for '+ cost.toString() + ' coins? (Y/N)'
+        martSignText = 'upgrades';
 
         function fadeInTween(object){
+            object.alpha = 0
             game.add.tween(object)
             .to({alpha: 1}, 1000, Phaser.Easing.Linear.In, true, 0, -1)
         } 
 
         function displayMsgText(){
+            msgText = game.add.bitmapText(30, 30, 'font', msgText, 20);
+        }
 
+        function displayPlayerCoins(){
+            playerCoinsText = game.add.bitmapText(30, 60, 'font', ('You have '+ coinCount.toString()+ ' coins.'), 20);
         }
 
         function displayMart(){
-            var mart = game.add.sprite(200, 100, 'mart');
+            mart = game.add.sprite(200, 100, 'mart');
             mart.scale.setTo(.9);
-            mart.alpha = 0;
             fadeInTween(mart);
 
-            var martSign = game.add.bitmapText(300, 100, 'crayonFont', martSignText, 50);
-            martSign.alpha = 0;
+            martSign = game.add.bitmapText(300, 100, 'crayonFont', martSignText, 50);
             fadeInTween(martSign);
 
-            var costText = game.add.bitmapText(352, 162, 'crayonFont', (cost.toString() + 'x'), 30);
-            costText.alpha = 0;
+            costText = game.add.bitmapText(352, 162, 'crayonFont', (cost.toString() + 'x'), 30);
             fadeInTween(costText);
 
-            var coin = game.add.sprite(390, 165, 'displayCoin');
-            coin.alpha = 0;
+            coin = game.add.sprite(390, 165, 'displayCoin');
             fadeInTween(coin);
         }
 
         function displayUpGram(xPos, yPos, imgKey, scale){
-            var gram = game.add.sprite(xPos, yPos, imgKey);
-            gram.alpha = 0;
-            gram.scale.setTo(scale);
-            var anim = gram.animations.add('glow');
+            var martGram = game.add.sprite(xPos, yPos, imgKey);
+            martGram.scale.setTo(scale);
+            var anim = martGram.animations.add('glow');
             anim.play(7, true);
-            fadeInTween(gram);
+            fadeInTween(martGram);
         }
 
+
+
+        displayMsgText();
         displayMart();
         displayUpGram(310, 240, 'hat_glow', 2);
+        displayPlayerCoins();
 
 
 
@@ -1703,10 +1729,39 @@ Tan.Loading.prototype = {
     },
     update: function(){
 
+        if (yesKey.isDown && keyPressed == false){
+            keyPressed = true;
+            purchase = true;
+            selectionMade = true;
+        } else if (noKey.isDown && keyPressed == false) {
+            keyPressed = true;
+            purchase = false;
+            selectionMade = true;
+        } else if (yesKey.isUp && noKey.isUp){
+            keyPressed = false;
+        }
 
 
+        if (purchase == true && selectionMade == true){
+            selectionMade = false;
+            console.log('you chose yes');
+            destroyMart();
+        } else if (purchase == false && selectionMade == true){
+            selectionMade = false;
+            console.log('you chose no');
+        }
 
+        function upgradeGram(){
+        }
 
+        function destroyMart(){
+            mart.destroy();
+            martSign.destroy();
+            costText.destroy();
+            coin.destroy();
+            msgText.destroy();
+            playerCoinsText.destroy();
+        }
 
 
 
@@ -1760,11 +1815,11 @@ Tan.GameOver.prototype = {
         
     },
     update: function(){
-        var restartKey = game.input.keyboard.addKey(Phaser.Keyboard.Y);
-        var endKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
+        var yesKey = game.input.keyboard.addKey(Phaser.Keyboard.Y);
+        var noKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
 
         // restart from last checkpoint (start of level, boss)
-        if (restartKey.isDown){
+        if (yesKey.isDown){
             restartMusic.stop();
             reloadCurrentLevel();
         }
@@ -1783,7 +1838,7 @@ Tan.GameOver.prototype = {
                 game.state.start('LevelTwo');
             }
         }
-        if (endKey.isDown){
+        if (noKey.isDown){
             restartMusic.stop();
             console.Log("Bye!");
         }
