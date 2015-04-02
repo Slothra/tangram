@@ -47,7 +47,7 @@ var hasEnoughCoins;
 
 var cursors;
 
-var xStartPos = 4500;
+var xStartPos = 30;
 
 var yStartPos = gameHeight;
 var player;
@@ -1779,7 +1779,7 @@ Tan.Loading.prototype = {
 
         function fadeInTween(object){
             object.alpha = 0;
-            game.add.tween(object);
+            game.add.tween(object)
             .to({alpha: 1}, 1000, Phaser.Easing.Linear.In, true, 0, -1);
         } 
 
