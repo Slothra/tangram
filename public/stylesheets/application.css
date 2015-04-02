@@ -23,7 +23,7 @@ a {
 .container {
   height: 800px;
   max-width: 900px;
-  background: #551A8B;
+  background: #0c1e42;
   margin: auto;
   padding-top: 10px;
 }
@@ -37,7 +37,7 @@ a {
   position: fixed;
   top: 10px;
   right: 0px;
-  background: #551A8B;
+  background: #0c1e42;
   padding: 20px;
   margin-right: 0px;
   color: white;
@@ -71,7 +71,7 @@ a {
 	left: 50%;
 	margin-left: -200px;
 	transition: 1s ease-in-out;
-	background: #551A8B;
+	background: #0c1e42;
 	padding: 10px;
 	height: initial;
 
