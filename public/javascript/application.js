@@ -24,7 +24,7 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 30;
+var xStartPos = 4500;
 
 var cursors;
 
@@ -1266,8 +1266,6 @@ Tan.LevelTwo.prototype = {
         createEnemy(3070, 632,'underground-pigeon', 50, 50);
         createEnemy(2500, 377,'underground-pigeon', 100, 100);
 
-
-
         createSceneElem(1.4, false, 355, 500, 'root04', true);
         createSceneElem(1.3, true, 680, 550, 'root02');
         createSceneElem(1.2, true, 30, 90, 'root01', true);
@@ -1282,7 +1280,6 @@ Tan.LevelTwo.prototype = {
         createSceneElem(1.1, false, 2732, 470, 'root01', true);
         createSceneElem(1, false, 2250, 525, 'root04', true);
         createSceneElem(1.3, true, 2430, 240, 'root02');
-
 
 
         function createWall(xPixFromLeft, yPixFromBottom, width, height){
@@ -1627,26 +1624,93 @@ Tan.LevelTwo.prototype = {
 
 }
 
+
+
+
+
 Tan.Loading = function(game){};
 
 Tan.Loading.prototype = {
+
     preload: function(){
         game.load.audio('falling', 'assets/sound/falling.mp3');
+        game.load.image('mart', 'assets/mart.png');
+        game.load.bitmapFont('crayonFont', 'assets/fonts/crayon_bitmap/crayon.png', 'assets/fonts/crayon_bitmap/crayon.fnt');
+        game.load.spritesheet('hat_glow', 'assets/grams/grams_anim3.png', 64,64,8);
+
+
     },
     create: function(){
-        if (currentLevel === 1) {
-            var levelOneText = "Level One"
-            var text = game.add.bitmapText(120, 300, 'font', levelOneText, 25);
+        var cost = 15
+        var msgText = 'Do you want to upgrade your gram for'
+        var martSignText = 'upgrades';
+        // var costText = '15x'
 
-        } else if (currentLevel === 2){
-            var levelTwoText = "Level Two"
-            var text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
-            fallingSound = game.add.audio('falling');
-            fallingSound.play();
+        function fadeInTween(object){
+            game.add.tween(object)
+            .to({alpha: 1}, 1000, Phaser.Easing.Linear.In, true, 0, -1)
+        } 
+
+        function displayMsgText(){
+
         }
+
+        function displayMart(){
+            var mart = game.add.sprite(200, 100, 'mart');
+            mart.scale.setTo(.9);
+            mart.alpha = 0;
+            fadeInTween(mart);
+
+            var martSign = game.add.bitmapText(300, 100, 'crayonFont', martSignText, 50);
+            martSign.alpha = 0;
+            fadeInTween(martSign);
+
+            var costText = game.add.bitmapText(352, 162, 'crayonFont', (cost.toString() + 'x'), 30);
+            costText.alpha = 0;
+            fadeInTween(costText);
+
+            var coin = game.add.sprite(390, 165, 'displayCoin');
+            coin.alpha = 0;
+            fadeInTween(coin);
+        }
+
+        function displayUpGram(xPos, yPos, imgKey, scale){
+            var gram = game.add.sprite(xPos, yPos, imgKey);
+            gram.alpha = 0;
+            gram.scale.setTo(scale);
+            var anim = gram.animations.add('glow');
+            anim.play(7, true);
+            fadeInTween(gram);
+        }
+
+        displayMart();
+        displayUpGram(310, 240, 'hat_glow', 2);
+
+
+
+
+
+        // if (currentLevel === 1) {
+        //     var levelOneText = "Level One"
+        //     var text = game.add.bitmapText(120, 300, 'font', levelOneText, 25);
+
+        // } else if (currentLevel === 2){
+        //     var levelTwoText = "Level Two"
+        //     var text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
+        //     fallingSound = game.add.audio('falling');
+        //     fallingSound.play();
+        // }
     },
     update: function(){
-        game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
+
+
+
+
+
+
+
+
+        // game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
 
         function nextLevel(){
             if (currentLevel === 1){
@@ -1657,6 +1721,19 @@ Tan.Loading.prototype = {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1979,4 +2056,4 @@ game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelTwo');
+game.state.start('LevelOne');
