@@ -125,6 +125,9 @@ var moleCountdown;
 var moleHit = false;
 var moleVelX = 100;
 var claws;
+var fakeMoleBoss;
+var fakeLeftClaw;
+var fakeRightClaw;
 
 var bossZoneY = 950;
 var bossZoneX = 3250;
@@ -1046,8 +1049,8 @@ Tan.LevelTwo.prototype = {
 
             game.physics.startSystem(Phaser.Physics.ARCADE);
 
-            background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
-            var clouds = game.add.group();
+            // background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
+            // var clouds = game.add.group();
 
             game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
 
@@ -1142,6 +1145,33 @@ Tan.LevelTwo.prototype = {
 
         sceneElem = game.add.group();
 
+        moleBoss = game.add.sprite(bossZoneX, bossZoneY+10, 'moleMan-resize')
+        addProperties(moleBoss);
+        moleBoss.animations.add('moleMove', [0], 10, true);
+        moleBoss.animations.add('moleHurt', [1], 10, true);
+        moleBoss.animations.play('moleMove');
+        createLeftTrigger(moleBoss, 300);
+        createRightTrigger(moleBoss, 300);
+
+        claws = game.add.group();
+        claws.enableBody = true;
+        claws.physicsBodyType = Phaser.Physics.ARCADE;
+
+        leftClaw = game.add.sprite(bossZoneX - 150, bossZoneY+10, 'claws-resize', 0)
+        addProperties(leftClaw);
+        claws.add(leftClaw);
+        rightClaw = game.add.sprite(bossZoneX + 150, bossZoneY+10, 'claws-resize', 1)
+        addProperties(rightClaw);
+        claws.add(rightClaw);
+
+        fakeMoleBoss = game.add.sprite(bossZoneX, bossZoneY-30, 'moleMan-resize')
+        addProperties(fakeMoleBoss);
+        fakeLeftClaw = game.add.sprite(bossZoneX - 150, bossZoneY-30, 'claws-resize', 0)
+        addProperties(fakeLeftClaw);
+        fakeRightClaw = game.add.sprite(bossZoneX + 150, bossZoneY-30, 'claws-resize', 1)
+        addProperties(fakeRightClaw);
+
+        var bossOverlay = game.add.tileSprite(2500, game.world.height - 50, 1600, 50, 'dirt');
         
         shade = game.add.sprite(player.position.x, player.position.y,'shade')
         shade.anchor.setTo(0.5,0.5);
@@ -1164,25 +1194,6 @@ Tan.LevelTwo.prototype = {
             sprite.anchor.setTo(.5,0);
 
         }
-
-        moleBoss = game.add.sprite(bossZoneX, bossZoneY+10, 'moleMan-resize')
-        addProperties(moleBoss);
-        moleBoss.animations.add('moleMove', [0], 10, true);
-        moleBoss.animations.add('moleHurt', [1], 10, true);
-        moleBoss.animations.play('moleMove');
-        createLeftTrigger(moleBoss, 300);
-        createRightTrigger(moleBoss, 300);
-
-        claws = game.add.group();
-        claws.enableBody = true;
-        claws.physicsBodyType = Phaser.Physics.ARCADE;
-
-        leftClaw = game.add.sprite(bossZoneX - 150, bossZoneY+10, 'claws-resize', 0)
-        addProperties(leftClaw);
-        claws.add(leftClaw);
-        rightClaw = game.add.sprite(bossZoneX + 150, bossZoneY+10, 'claws-resize', 1)
-        addProperties(rightClaw);
-        claws.add(rightClaw);
 
 
         if (playerGrams.hat){
@@ -1294,6 +1305,8 @@ Tan.LevelTwo.prototype = {
 
         createWall(1400, 800, 30, 200);
 
+        
+
 
 
 
@@ -1347,25 +1360,6 @@ Tan.LevelTwo.prototype = {
             pauser = true;
             pauseMenu();
         }
-
-        // function pauseMenu(){
-        //     menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click to resume', { font: '30px Arial', fill: '#fff' });
-        //     menuText.anchor.setTo(0.5, 0.5);
-        //     game.paused = true;
-        //     game.input.onDown.addOnce(unpause,self);
-        // }  
-    
-        // function unpause(event){
-        //     // Only act if paused
-        //     if(game.paused && pauser === true){
-        //         // menu.destroy();
-        //         menuText.destroy();
-
-        //         // Unpause the game
-        //         game.paused = false;
-        //         pauser = false;
-        //     }
-        // };
 
         if (toggleKey.isDown && toggleOn == false){
             toggleOn = true;
@@ -1502,18 +1496,23 @@ Tan.LevelTwo.prototype = {
         // Boss Logic
 
         if (player.position.x >= 2890 && player.position.y >= 760 && bossTime == false && moleLife != 0){
-            moleFight();
             bossMusic = game.add.audio('boss');
             undergroundMusic.stop();
             bossMusic.loop = true;
             bossMusic.play();
+            moleFight();
         }
+
+        fakeMoleBoss.body.velocity.y = moleSpeed;
 
         function moleFight(){
             bossTime = true;
             moleCountdown = true;
             if (moleLife > 0){
                 laughSound.play();
+                fakeMoleBoss.body.velocity.y = moleSpeed;
+                fakeLeftClaw.body.velocity.y = moleSpeed;
+                fakeRightClaw.body.velocity.y = moleSpeed;
             }
         }
 
@@ -2002,4 +2001,4 @@ game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
-game.state.start('LevelOne');
+game.state.start('LevelTwo');
