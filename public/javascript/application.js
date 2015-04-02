@@ -43,7 +43,7 @@ var playerCoinsText;
 
 var cursors;
 
-var xStartPos = 30;
+var xStartPos = 4500;
 
 var yStartPos = gameHeight;
 var player;
@@ -1022,7 +1022,7 @@ Tan.LevelTwo.prototype = {
         function loadLevelOneStuff(){
             game.load.image('platform', 'assets/platform_10x10.png');
             game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
-            game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 15);
+            game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 21);
             game.load.spritesheet('heart', 'assets/sprites/heart.png', 38,30,4)
             game.load.image('sm_triangle', 'assets/grams/sm_triangle2.png');
             game.load.image('sm_square', 'assets/grams/tan-square.png');
@@ -1103,6 +1103,8 @@ Tan.LevelTwo.prototype = {
         undergroundMusic.play();
         victorySound = game.add.audio('victorySound');
 
+
+
         // create map
         xStartPos = 60;
         yStartPos = 200;
@@ -1156,6 +1158,11 @@ Tan.LevelTwo.prototype = {
         player.animations.add('jumpHat', [4]);
         player.animations.add('walkCandle', [12, 13, 14], 10, true);
         player.animations.add('jumpCandle', [13]);
+        player.animations.add('walkSuperHat', [15, 16, 17], 10, true);
+        player.animations.add('jumpSuperHat', [16]);
+        player.animations.add('drill', [18, 19, 20], 10, true);
+        player.animations.add('jumpDrill', [19]);
+
 
         sceneElem = game.add.group();
 
@@ -1423,6 +1430,14 @@ Tan.LevelTwo.prototype = {
             movePlayer(12, 'walkCandle', 'jumpCandle', playerSpeed, -400);
         }
 
+        function moveAsSuperHat(){
+            movePlayer(15, 'walkSuperHat', 'jumpSuperHat', playerSpeed, -400);
+        }
+
+        function moveAsDrill(){
+            movePlayer(18, 'drill', 'jumpDrill', playerSpeed, -400);
+        }
+
         // Player Movement
 
         switch (playerForm){
@@ -1432,8 +1447,14 @@ Tan.LevelTwo.prototype = {
           case 'hat':
             moveAsBrickHat();
             break;
+          case 'superHat':
+            moveAsSuperHat();
+            break;
           case 'parallel':
             moveAsCandle();
+            break;
+          case 'drill':
+            moveAsDrill();
             break;
           default:
             moveAsBrick();
@@ -1653,7 +1674,9 @@ Tan.Loading.prototype = {
         game.load.audio('falling', 'assets/sound/falling.mp3');
         game.load.image('mart', 'assets/mart.png');
         game.load.bitmapFont('crayonFont', 'assets/fonts/crayon_bitmap/crayon.png', 'assets/fonts/crayon_bitmap/crayon.fnt');
-        game.load.spritesheet('hat_glow', 'assets/grams/grams_anim3.png', 64,64,8);
+        // game.load.spritesheet('hat_glow', 'assets/grams/grams_anim3.png', 64,64,8);
+        game.load.spritesheet('superHat', 'assets/grams/superhat_glow.png', 64,64,8);
+
 
 
     },
@@ -1676,7 +1699,7 @@ Tan.Loading.prototype = {
             fallingSound.play();
             displayMsgText();
             displayMart();
-            displayUpGram(310, 240, 'hat_glow', 'superHat', 2);
+            displayUpGram(310, 240, 'superHat', 'superHat', 2);
             displayPlayerCoins();
         }
 
@@ -1715,6 +1738,7 @@ Tan.Loading.prototype = {
             martGram.scale.setTo(scale);
             martGram.name = gramName;
             martGram.displayed = false;
+            martGram.animated = true;
             var anim = martGram.animations.add('glow');
             anim.play(7, true);
             fadeInTween(martGram);
@@ -1741,6 +1765,10 @@ Tan.Loading.prototype = {
 
 
         if (purchase == true && selectionMade == true){
+
+            //FOR TESTING DELETE THIS LINE BEFORE DEPLOYMENT
+            playerGrams.hat = {name: 'hat', displayIndex: 1}
+
             selectionMade = false;
             destroyMart();
             upgradeGram('hat', martGram);
