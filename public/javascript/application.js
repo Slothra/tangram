@@ -59,8 +59,7 @@ var platformMovementTriggers;
 var platformRightTrigger;
 var platformLeftTrigger;
 
-
-
+var introText = "Pigeons are evil and I, \nTan, am the only thing standing \nin the way of their wicked plot. \n\n\nOr… I was until I was knocked into \nthe river that carried me far, \nfar from home. \n\n\nI must get back, \nI must save TeenyTown, \nI must stop the evil pigeons!"
 
 var underwater = false;
 var playerSpeed = 150;
@@ -142,6 +141,9 @@ var moleCountdown;
 var moleHit = false;
 var moleVelX = 100;
 var claws;
+var fakeMoleBoss;
+var fakeLeftClaw;
+var fakeRightClaw;
 
 var bossZoneY = 950;
 var bossZoneX = 3250;
@@ -149,6 +151,9 @@ var holePadding = 100;
 var breakableWalls;
 
 var undergroundMusic;
+
+var thanks;
+var credits;
 
 
 
@@ -206,12 +211,13 @@ Tan.MainMenu.prototype = {
             mainMenu.animations.play('start');
             game.time.events.add(Phaser.Timer.SECOND * 3, helpMenu, this);
         }
+
         function helpMenu(){
             clickMenu = false;
             mainMenu.destroy();
 
-            var mainMenuText = "Left Arrow  - Move left\nRight Arrow - Move right\nUp Arrow    - Jump\nF button    - change form\nM button    - Mute game\nP button    - Pause game"
-            var text = game.add.bitmapText(150, 200, 'font', mainMenuText, 25);
+            mainMenuText = "Left Arrow  - Move left\nRight Arrow - Move right\nUp Arrow    - Jump\nF button    - change form\nM button    - Mute game\nP button    - Pause game"
+            titleText = game.add.bitmapText(150, 200, 'font', mainMenuText, 25);
             game.input.onDown.add(startGame,self);
         }
 
@@ -228,6 +234,7 @@ Tan.LevelOne = function(game){};
 
 Tan.LevelOne.prototype = {
     preload: function(){
+
         game.load.image('sky', 'assets/scene/beach2.png');
         game.load.image('platform', 'assets/platform_10x10.png');
         game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
@@ -308,8 +315,6 @@ Tan.LevelOne.prototype = {
         var clouds = game.add.group();
 
         game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
-
-
 
         music = game.add.audio('exploring');
         gameOverMusic = game.add.audio('gameover');
@@ -598,25 +603,6 @@ Tan.LevelOne.prototype = {
             pauser = true;
             pauseMenu();
         }
-
-        function pauseMenu(){
-            menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click to resume', { font: '30px Arial', fill: '#fff' });
-            menuText.anchor.setTo(0.5, 0.5);
-            game.paused = true;
-            game.input.onDown.addOnce(unpause,self);
-        }  
-    
-        function unpause(event){
-            // Only act if paused
-            if(game.paused && pauser === true){
-                // menu.destroy();
-                menuText.destroy();
-
-                // Unpause the game
-                game.paused = false;
-                pauser = false;
-            }
-        };
 
         // Checks if player is collides with water;
         if (game.physics.arcade.overlap(player, waters) == true){
@@ -1011,6 +997,7 @@ Tan.LevelTwo.prototype = {
         game.load.image('bgTexture', 'assets/scene/level2/bgtexture.png');
         game.load.image('rootPlat', 'assets/scene/level2/treerootHoriz.png');
         game.load.image('rootPlat2', 'assets/scene/level2/treerootHorizflip.png');
+        game.load.spritesheet('hintsLevelTwo', 'assets/sprites/hintsTwo.png', 119,77,3);
 
         game.load.image('root01', 'assets/scene/level2/treeroot01.png');
         game.load.image('root02', 'assets/scene/level2/treeroot02.png');
@@ -1063,8 +1050,8 @@ Tan.LevelTwo.prototype = {
 
             game.physics.startSystem(Phaser.Physics.ARCADE);
 
-            background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
-            var clouds = game.add.group();
+            // background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
+            // var clouds = game.add.group();
 
             game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
 
@@ -1103,7 +1090,11 @@ Tan.LevelTwo.prototype = {
         undergroundMusic.play();
         victorySound = game.add.audio('victorySound');
 
+// <<<<<<< HEAD
 
+// =======
+        playerForm = 'brick'
+// >>>>>>> 1cfaca7b03aa353ba08220f9e087c686451e8c42
 
         // create map
         xStartPos = 60;
@@ -1166,6 +1157,33 @@ Tan.LevelTwo.prototype = {
 
         sceneElem = game.add.group();
 
+        moleBoss = game.add.sprite(bossZoneX, bossZoneY+10, 'moleMan-resize')
+        addProperties(moleBoss);
+        moleBoss.animations.add('moleMove', [0], 10, true);
+        moleBoss.animations.add('moleHurt', [1], 10, true);
+        moleBoss.animations.play('moleMove');
+        createLeftTrigger(moleBoss, 300);
+        createRightTrigger(moleBoss, 300);
+
+        claws = game.add.group();
+        claws.enableBody = true;
+        claws.physicsBodyType = Phaser.Physics.ARCADE;
+
+        leftClaw = game.add.sprite(bossZoneX - 150, bossZoneY+10, 'claws-resize', 0)
+        addProperties(leftClaw);
+        claws.add(leftClaw);
+        rightClaw = game.add.sprite(bossZoneX + 150, bossZoneY+10, 'claws-resize', 1)
+        addProperties(rightClaw);
+        claws.add(rightClaw);
+
+        fakeMoleBoss = game.add.sprite(bossZoneX, bossZoneY-30, 'moleMan-resize')
+        addProperties(fakeMoleBoss);
+        fakeLeftClaw = game.add.sprite(bossZoneX - 150, bossZoneY-30, 'claws-resize', 0)
+        addProperties(fakeLeftClaw);
+        fakeRightClaw = game.add.sprite(bossZoneX + 150, bossZoneY-30, 'claws-resize', 1)
+        addProperties(fakeRightClaw);
+
+        var bossOverlay = game.add.tileSprite(2500, game.world.height - 50, 1600, 50, 'dirt');
         
         shade = game.add.sprite(player.position.x, player.position.y,'shade')
         shade.anchor.setTo(0.5,0.5);
@@ -1188,25 +1206,6 @@ Tan.LevelTwo.prototype = {
             sprite.anchor.setTo(.5,0);
 
         }
-
-        moleBoss = game.add.sprite(bossZoneX, bossZoneY+10, 'moleMan-resize')
-        addProperties(moleBoss);
-        moleBoss.animations.add('moleMove', [0], 10, true);
-        moleBoss.animations.add('moleHurt', [1], 10, true);
-        moleBoss.animations.play('moleMove');
-        createLeftTrigger(moleBoss, 300);
-        createRightTrigger(moleBoss, 300);
-
-        claws = game.add.group();
-        claws.enableBody = true;
-        claws.physicsBodyType = Phaser.Physics.ARCADE;
-
-        leftClaw = game.add.sprite(bossZoneX - 150, bossZoneY+10, 'claws-resize', 0)
-        addProperties(leftClaw);
-        claws.add(leftClaw);
-        rightClaw = game.add.sprite(bossZoneX + 150, bossZoneY+10, 'claws-resize', 1)
-        addProperties(rightClaw);
-        claws.add(rightClaw);
 
 
         if (playerGrams.hat){
@@ -1310,10 +1309,16 @@ Tan.LevelTwo.prototype = {
             var newWall = game.add.tileSprite(xPixFromLeft, game.world.height - yPixFromBottom, width, height, 'dirt');
             breakableWalls.add(newWall);
             newWall.body.immovable = true;
+            newWall.tint = 0xa3845e;
             return newWall;
         }
 
-        createWall(1400, 800, 30, 200);
+        createWall(1400, 800, 30, 150);
+        createWall(3130, 700, 30, 100);
+        createWall(2600, 440, 30, 100);
+
+
+        
 
 
 
@@ -1349,6 +1354,27 @@ Tan.LevelTwo.prototype = {
         shade.position.x = player.position.x
         shade.position.y = player.position.y
 
+        if ((playerForm == 'brick' || playerForm == 'hat') && (player.position.x > 70 && player.position.x < 100)){
+            showHint('dark-hint');
+        }
+
+        function showHint(hintType){
+            if (hint){
+                hint.destroy();
+            }
+            if (hintType == 'dark-hint'){
+                hint = game.add.sprite(player.position.x - 20, player.position.y - 50, 'hintsLevelTwo')
+                hint.animations.add('dark-hint', [2], 10, true);
+                hint.animations.play('dark-hint');
+            } else if (hintType == 'mole-hint'){
+                hint = game.add.sprite(player.position.x - 20, player.position.y - 50, 'hintsLevelTwo')
+                hint.animations.add('mole-hint', [1], 10, true);
+                hint.animations.play('mole-hint');
+            }
+            game.time.events.add(Phaser.Timer.SECOND * 3, hideHint, this);
+        }
+        
+
         if (muteKey.isDown && muted === false){
             muted = true;
             game.time.events.add(Phaser.Timer.SECOND * .5, mute, this);
@@ -1368,25 +1394,6 @@ Tan.LevelTwo.prototype = {
             pauser = true;
             pauseMenu();
         }
-
-        function pauseMenu(){
-            menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click to resume', { font: '30px Arial', fill: '#fff' });
-            menuText.anchor.setTo(0.5, 0.5);
-            game.paused = true;
-            game.input.onDown.addOnce(unpause,self);
-        }  
-    
-        function unpause(event){
-            // Only act if paused
-            if(game.paused && pauser === true){
-                // menu.destroy();
-                menuText.destroy();
-
-                // Unpause the game
-                game.paused = false;
-                pauser = false;
-            }
-        };
 
         if (toggleKey.isDown && toggleOn == false){
             toggleOn = true;
@@ -1537,18 +1544,24 @@ Tan.LevelTwo.prototype = {
         // Boss Logic
 
         if (player.position.x >= 2890 && player.position.y >= 760 && bossTime == false && moleLife != 0){
-            moleFight();
             bossMusic = game.add.audio('boss');
             undergroundMusic.stop();
             bossMusic.loop = true;
             bossMusic.play();
+            showHint('mole-hint');
+            moleFight();
         }
+
+        fakeMoleBoss.body.velocity.y = moleSpeed;
 
         function moleFight(){
             bossTime = true;
             moleCountdown = true;
             if (moleLife > 0){
                 laughSound.play();
+                fakeMoleBoss.body.velocity.y = moleSpeed;
+                fakeLeftClaw.body.velocity.y = moleSpeed;
+                fakeRightClaw.body.velocity.y = moleSpeed;
             }
         }
 
@@ -1600,7 +1613,7 @@ Tan.LevelTwo.prototype = {
 
         function pauseMole(){
             moleBoss.body.velocity.y = 0;
-            game.time.events.add(Phaser.Timer.SECOND * 1, hideMole, this);
+            game.time.events.add(Phaser.Timer.SECOND * 1.4, hideMole, this);
         }
 
         function hideMole(){
@@ -1627,13 +1640,18 @@ Tan.LevelTwo.prototype = {
                 player.body.velocity.y = -250;
                 moleLife--;
                 moleBoss.animations.play('moleHurt');
+                poofSound.play();
                 if (moleLife == 0){
                     console.log("You Win!")
                     leftClaw.destroy();
                     rightClaw.destroy();
+                    fakeMoleBoss.destroy();
+                    fakeRightClaw.destroy();
+                    fakeLeftClaw.destroy();
                     bossMusic.stop();
                     victorySound.play();
                     undergroundMusic.play();
+                    game.time.events.add(Phaser.Timer.SECOND * 3, startCredits, this);
                 }
             } else if (moleLife === 0){
                 bossTime = false;
@@ -1645,17 +1663,39 @@ Tan.LevelTwo.prototype = {
         }
 
         function collideBreakable(player, wall){
-            if (playerForm == 'hat'){
-                poofSound.play();
-                wall.destroy()
-                var collision = game.add.sprite(wall.position.x+5,wall.position.y+50,'collision');
-                collision.animations.add('explode', [0, 1, 2], 20, false);
-                collision.animations.play('explode');
-                var cleanup = function (){
-                    collision.destroy();
+            if (playerForm == 'superhat'){
+                player.animations.play('drill')
+                game.time.events.add(Phaser.Timer.SECOND * .75, wallBreak, this);
+                function wallBreak(){
+                    poofSound.play();
+                    wall.destroy()
+                    var collision = game.add.sprite(wall.position.x+5,wall.position.y+50,'collision');
+                    collision.animations.add('explode', [0, 1, 2], 20, false);
+                    collision.animations.play('explode');
+                    var cleanup = function (){
+                        collision.destroy();
+                    } 
+                    game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
                 }
-                game.time.events.add(Phaser.Timer.SECOND * .5, cleanup, this);
+                
+            } else {
+                if (hint){
+                    hint.destroy();
+                }
+                hint = game.add.sprite(player.position.x - 20, player.position.y - 50, 'hintsLevelTwo')
+                hint.animations.add('wall-hint', [0], 10, true);
+                hint.animations.play('wall-hint');
+                game.time.events.add(Phaser.Timer.SECOND * 3, hideHint, this);
+            
             }
+        }
+
+        function hideHint(){
+            hint.destroy()
+        }
+
+        function startCredits(){
+            game.state.start('Credits')
         }
         
     }
@@ -1685,22 +1725,41 @@ Tan.Loading.prototype = {
         noKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
         grams = game.add.group();
 
+        var text;
+
         purchase = false;
         selectionMade = false;
         martSignText = 'upgrades';
 
         if (currentLevel === 1) {
             var levelOneText = "Level One"
-            var text = game.add.bitmapText(120, 300, 'font', levelOneText, 25);
+            // var text = game.add.bitmapText(120, 300, 'font', levelOneText, 25);
+            var text = game.add.bitmapText(60, 100, 'font', introText, 25);
+
         } else if (currentLevel === 2){
-            cost = 15
-            msgText = 'Upgrade your gram for '+ cost.toString() + ' coins? (Y/N)'
             fallingSound = game.add.audio('falling');
             fallingSound.play();
+
+            cost = 15
+            msgText = 'Welcome to the mart!\n\nUpgrade your gram for '+ cost.toString() + ' coins? (Y/N)'
+
+            var levelTwoText = "I've fallen... \nand I can't get up."
+            text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
+
+            game.time.events.add(Phaser.Timer.SECOND * 4, destroyText, this);
+            game.time.events.add(Phaser.Timer.SECOND * 4.5, runMart, this);
+
+        }
+
+        function destroyText(){
+            text.destroy();
+        }
+        
+        function runMart(){
             displayMsgText();
             displayMart();
-            displayUpGram(310, 240, 'superHat', 'superHat', 2);
-            displayPlayerCoins();
+            displayUpGram(310, 280, 'superHat', 'superHat', 2);
+            displayPlayerCoins(); 
         }
 
         function fadeInTween(object){
@@ -1710,25 +1769,25 @@ Tan.Loading.prototype = {
         } 
 
         function displayMsgText(){
-            msgText = game.add.bitmapText(30, 30, 'font', msgText, 20);
+            msgText = game.add.bitmapText(40, 30, 'font', msgText, 20);
         }
 
         function displayPlayerCoins(){
-            playerCoinsText = game.add.bitmapText(30, 60, 'font', ('You have '+ coinCount.toString()+ ' coins.'), 20);
+            playerCoinsText = game.add.bitmapText(40, 100, 'font', ('(You have '+ coinCount.toString()+ ' coins)'), 15);
         }
 
         function displayMart(){
-            mart = game.add.sprite(200, 100, 'mart');
+            mart = game.add.sprite(200, 150, 'mart');
             mart.scale.setTo(.9);
             fadeInTween(mart);
 
-            martSign = game.add.bitmapText(300, 100, 'crayonFont', martSignText, 50);
+            martSign = game.add.bitmapText(300, 150, 'crayonFont', martSignText, 50);
             fadeInTween(martSign);
 
-            costText = game.add.bitmapText(352, 162, 'crayonFont', (cost.toString() + 'x'), 30);
+            costText = game.add.bitmapText(352, 212, 'crayonFont', (cost.toString() + 'x'), 30);
             fadeInTween(costText);
 
-            coin = game.add.sprite(390, 165, 'displayCoin');
+            coin = game.add.sprite(390, 215, 'displayCoin');
             fadeInTween(coin);
         }
 
@@ -1749,7 +1808,6 @@ Tan.Loading.prototype = {
     },
 
     update: function(){
-
 
         if (yesKey.isDown && keyPressed == false){
             keyPressed = true;
@@ -1819,7 +1877,6 @@ Tan.Loading.prototype = {
         }
 
 
-
         function nextLevel(){
             if (currentLevel === 1){
                 game.state.start('LevelOne')
@@ -1832,7 +1889,23 @@ Tan.Loading.prototype = {
 
 
 
+Tan.Credits = function(game){};
 
+Tan.Credits.prototype = {
+    preload: function(){
+        game.load.bitmapFont('font', 'assets/fonts/joystix_bitmap/joystix.png', 'assets/fonts/joystix_bitmap/joystix.fnt'); 
+
+    },
+    create: function(){
+        var text = "    Congratulations!    \n\n\n ...but Tan's adventure \n    is far from over    \n\n\n\n       Created By       \n\n      Heather Jang      \n     Keith Reynolds     \n\n\n   Powered by Phaser   \n\n Thanks to the team at \n    Lighthouse Labs  \n\nMore levels coming soon,\n\n Thank you for playing!"
+        thanks = game.add.bitmapText(120, 600, 'font', text, 25)
+        credits = "Congratulations!\n...but Tan's adventure is far from over\n\n\n\n  Created By \nHeather Jang   Keith Reynolds \n Powered by Phaser \n Thanks to the team at Lighthouse Labs"
+    },
+    update: function(){
+        thanks.y--
+
+    }
+}
 
 
 
@@ -1889,6 +1962,11 @@ Tan.GameOver.prototype = {
                 countdown = false;
             } else if (currentLevel === 2){
                 game.state.start('LevelTwo');
+                gramCount = 2;
+                playerForm = 'brick';
+                bossTime = false;
+                moleLife = 3;
+                countdown = false;
             }
         }
         if (noKey.isDown){
@@ -2084,11 +2162,34 @@ function createSceneElem(scale, horizFlip, xPixFromLeft, yPixFromBottom, imgKey,
     } else {
         newElement.scale.setTo(scale);
     }
-        return newElement;
+    return newElement;
 }
 
 // ========================
 // Update functions
+
+// Sets up pause Screen
+function pauseMenu(){
+    var text = "Left Arrow  - Move left\nRight Arrow - Move right\nUp Arrow    - Jump\nF button    - change form\nM button    - Mute game\nP button    - Pause game\n\n     Click to resume"
+    menuText = game.add.bitmapText(game.camera.view.x + 150, gameHeight/2 + game.camera.view.y, 'font', text, 25);
+    // menuText = game.add.text(game.camera.view.x + 400, gameHeight/2 + game.camera.view.y, 'Click to resume', { font: '30px Arial', fill: '#fff' });
+    // menuText.anchor.setTo(0.5, 0.5);
+    game.paused = true;
+    game.input.onDown.addOnce(unpause,self);
+}  
+    
+function unpause(event){
+    // Only act if paused
+    if(game.paused && pauser === true){
+        // menu.destroy();
+        menuText.destroy();
+
+        // Unpause the game
+        game.paused = false;
+        pauser = false;
+    }
+};
+
 function literallyDying (currentMusic){
     currentMusic.stop();
     var suspenseSound = game.add.audio('suspense');
@@ -2164,4 +2265,5 @@ game.state.add('LevelTwo', Tan.LevelTwo);
 game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
+game.state.add('Credits', Tan.Credits);
 game.state.start('LevelOne');
