@@ -2053,12 +2053,16 @@ function createEnemy(xPixFromLeft, yPixFromBottom, enemyKey, leftTrigger, rightT
     if (enemyKey == 'pigeon'){
         newEnemy.animations.add('pigeon-step', [0,1,0,2], 10, true);
         newEnemy.animations.play('pigeon-step');
+        newEnemy.body.setSize(29, 29, 1, 1);
     } else if (enemyKey == 'badfish'){
         newEnemy.animations.add('badfish-swim',[0,1,2], 10, true);
         newEnemy.animations.play('badfish-swim');
+        newEnemy.body.setSize(66, 48, 33, 12);
+
     } else if (enemyKey == 'underground-pigeon'){
         newEnemy.animations.add('underground-pigeon-step', [0,1,0,2], 10, true);
         newEnemy.animations.play('underground-pigeon-step');
+        newEnemy.body.setSize(30, 30, 0, 0);
     }
     newEnemy.anchor.setTo(.5,0)
     createLeftTrigger(newEnemy, leftTrigger);
@@ -2304,4 +2308,4 @@ game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
 game.state.add('Credits', Tan.Credits);
-game.state.start('LevelTwo');
+game.state.start('LevelOne');
