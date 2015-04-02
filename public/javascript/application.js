@@ -1300,10 +1300,14 @@ Tan.LevelTwo.prototype = {
             var newWall = game.add.tileSprite(xPixFromLeft, game.world.height - yPixFromBottom, width, height, 'dirt');
             breakableWalls.add(newWall);
             newWall.body.immovable = true;
+            newWall.tint = 0xa3845e;
             return newWall;
         }
 
-        createWall(1400, 800, 30, 200);
+        createWall(1400, 800, 30, 150);
+        createWall(3130, 700, 30, 100);
+        createWall(2600, 440, 30, 100);
+
 
         
 
@@ -1591,10 +1595,14 @@ Tan.LevelTwo.prototype = {
                 player.body.velocity.y = -250;
                 moleLife--;
                 moleBoss.animations.play('moleHurt');
+                poofSound.play();
                 if (moleLife == 0){
                     console.log("You Win!")
                     leftClaw.destroy();
                     rightClaw.destroy();
+                    fakeMoleBoss.destroy();
+                    fakeRightClaw.destroy();
+                    fakeLeftClaw.destroy();
                     bossMusic.stop();
                     victorySound.play();
                     undergroundMusic.play();
