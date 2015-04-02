@@ -43,7 +43,7 @@ var playerCoinsText;
 
 var cursors;
 
-var xStartPos = 4500;
+var xStartPos = 30;
 
 var yStartPos = gameHeight;
 var player;
@@ -1767,7 +1767,7 @@ Tan.Loading.prototype = {
         if (purchase == true && selectionMade == true){
 
             //FOR TESTING DELETE THIS LINE BEFORE DEPLOYMENT
-            playerGrams.hat = {name: 'hat', displayIndex: 1}
+            // playerGrams.hat = {name: 'hat', displayIndex: 1}
 
             selectionMade = false;
             destroyMart();
