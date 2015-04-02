@@ -1076,11 +1076,11 @@ Tan.LevelTwo.prototype = {
             platforms = game.add.group();
             platforms.enableBody = true;
 
-            // Keep this group behind player
+            // // Keep this group behind player
 
-            grams = game.add.group();
-            grams.enableBody = true;
-            grams.physicsBodyType = Phaser.Physics.ARCADE;
+            // grams = game.add.group();
+            // grams.enableBody = true;
+            // grams.physicsBodyType = Phaser.Physics.ARCADE;
 
         }
         loadLevelOneStuff();
@@ -1125,15 +1125,16 @@ Tan.LevelTwo.prototype = {
         enemyMovementTriggers.enableBody = true;
         enemyMovementTriggers.physicsBodyType = Phaser.Physics.ARCADE;
 
-        grams = game.add.group();
-        grams.enableBody = true;
-        grams.physicsBodyType = Phaser.Physics.ARCADE;
+        // grams = game.add.group();
+        // grams.enableBody = true;
+        // grams.physicsBodyType = Phaser.Physics.ARCADE;
+        // createGram(680, 435, 'parallel_glow', 'parallel', true);
+
 
         breakableWalls = game.add.group();
         breakableWalls.enableBody = true;
         breakableWalls.physicsBodyType = Phaser.Physics.ARCADE;
 
-        createGram(240, 640, 'parallel_glow', 'parallel', true);
 
         // Creating coins
         coins = game.add.group();
@@ -1191,6 +1192,11 @@ Tan.LevelTwo.prototype = {
         shade.animations.add('big', [1], 10, true);
         shade.scale.x = 1.5;
         shade.scale.y = 1.5;
+
+        grams = game.add.group();
+        grams.enableBody = true;
+        grams.physicsBodyType = Phaser.Physics.ARCADE;
+        createGram(680, 435, 'parallel_glow', 'parallel', true);
 
         // Creates head up display
         createHeadsUpDisplay();
@@ -2298,4 +2304,4 @@ game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
 game.state.add('Credits', Tan.Credits);
-game.state.start('LevelOne');
+game.state.start('LevelTwo');
