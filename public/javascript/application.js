@@ -964,8 +964,8 @@ Tan.LevelOne.prototype = {
         });
 
 
-        // if (crabDead == true && player.position.x > levelTwoStart){
-        if (player.position.x > levelTwoStart){
+        if (crabDead == true && player.position.x > levelTwoStart){
+        // if (player.position.x > levelTwoStart){
             music.stop();
             game.state.start('Loading');
             currentLevel = 2;
@@ -1614,7 +1614,7 @@ Tan.LevelTwo.prototype = {
             moleVelX = moleBoss.body.velocity.x;
             moleBoss.body.velocity.x = 0;
             moleBoss.body.velocity.y = -(moleSpeed);
-            game.time.events.add(Phaser.Timer.SECOND * .5, pauseMole, this);
+            game.time.events.add(Phaser.Timer.SECOND * .8, pauseMole, this);
 
         }
 
@@ -1625,7 +1625,7 @@ Tan.LevelTwo.prototype = {
 
         function hideMole(){
             moleBoss.body.velocity.y = moleSpeed;
-            game.time.events.add(Phaser.Timer.SECOND * .5, moleSwitch, this);
+            game.time.events.add(Phaser.Timer.SECOND * .8, moleSwitch, this);
         }
 
         game.physics.arcade.overlap(moleBoss, enemyMovementTriggers, function(moleBoss, trigger) {
