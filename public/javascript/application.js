@@ -24,9 +24,26 @@ var xWorldBounds = 5000;
 var yWorldBounds = 800;
 var gamePadding = yWorldBounds - gameHeight;
 
-var xStartPos = 30;
+// Loading screen and Mart
+var yesKey;
+var noKey;
+var purchase;
+var selectionMade;
+var keyPressed;
+var cost;
+var msgText;
+var martSignText;
+var mart;
+var martSign;
+var costText;
+var coin;
+var martGram;
+var msgText;
+var playerCoinsText;
 
 var cursors;
+
+var xStartPos = 30;
 
 var yStartPos = gameHeight;
 var player;
@@ -992,7 +1009,7 @@ Tan.LevelTwo.prototype = {
         function loadLevelOneStuff(){
             game.load.image('platform', 'assets/platform_10x10.png');
             game.load.spritesheet('pigeon', 'assets/sprites/pigeon.png', 41.5, 32, 3)
-            game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 15);
+            game.load.spritesheet('brick', 'assets/sprites/player_spritesheet3.png', 64, 64, 21);
             game.load.spritesheet('heart', 'assets/sprites/heart.png', 38,30,4)
             game.load.image('sm_triangle', 'assets/grams/sm_triangle2.png');
             game.load.image('sm_square', 'assets/grams/tan-square.png');
@@ -1073,6 +1090,8 @@ Tan.LevelTwo.prototype = {
         undergroundMusic.play();
         victorySound = game.add.audio('victorySound');
 
+        playerForm = 'brick'
+
         // create map
         xStartPos = 60;
         yStartPos = 200;
@@ -1126,6 +1145,11 @@ Tan.LevelTwo.prototype = {
         player.animations.add('jumpHat', [4]);
         player.animations.add('walkCandle', [12, 13, 14], 10, true);
         player.animations.add('jumpCandle', [13]);
+        player.animations.add('walkSuperHat', [15, 16, 17], 10, true);
+        player.animations.add('jumpSuperHat', [16]);
+        player.animations.add('drill', [18, 19, 20], 10, true);
+        player.animations.add('jumpDrill', [19]);
+
 
         sceneElem = game.add.group();
 
@@ -1261,8 +1285,6 @@ Tan.LevelTwo.prototype = {
         createEnemy(3070, 632,'underground-pigeon', 50, 50);
         createEnemy(2500, 377,'underground-pigeon', 100, 100);
 
-
-
         createSceneElem(1.4, false, 355, 500, 'root04', true);
         createSceneElem(1.3, true, 680, 550, 'root02');
         createSceneElem(1.2, true, 30, 90, 'root01', true);
@@ -1277,7 +1299,6 @@ Tan.LevelTwo.prototype = {
         createSceneElem(1.1, false, 2732, 470, 'root01', true);
         createSceneElem(1, false, 2250, 525, 'root04', true);
         createSceneElem(1.3, true, 2430, 240, 'root02');
-
 
 
         function createWall(xPixFromLeft, yPixFromBottom, width, height){
@@ -1415,6 +1436,14 @@ Tan.LevelTwo.prototype = {
             movePlayer(12, 'walkCandle', 'jumpCandle', playerSpeed, -400);
         }
 
+        function moveAsSuperHat(){
+            movePlayer(15, 'walkSuperHat', 'jumpSuperHat', playerSpeed, -400);
+        }
+
+        function moveAsDrill(){
+            movePlayer(18, 'drill', 'jumpDrill', playerSpeed, -400);
+        }
+
         // Player Movement
 
         switch (playerForm){
@@ -1424,8 +1453,14 @@ Tan.LevelTwo.prototype = {
           case 'hat':
             moveAsBrickHat();
             break;
+          case 'superHat':
+            moveAsSuperHat();
+            break;
           case 'parallel':
             moveAsCandle();
+            break;
+          case 'drill':
+            moveAsDrill();
             break;
           default:
             moveAsBrick();
@@ -1627,7 +1662,7 @@ Tan.LevelTwo.prototype = {
         }
 
         function collideBreakable(player, wall){
-            if (playerForm == 'superhat'){
+            if (playerForm == 'superHat'){
                 player.animations.play('drill')
                 game.time.events.add(Phaser.Timer.SECOND * .75, wallBreak, this);
                 function wallBreak(){
@@ -1666,26 +1701,180 @@ Tan.LevelTwo.prototype = {
 
 }
 
+
+
+
+
 Tan.Loading = function(game){};
 
 Tan.Loading.prototype = {
+
     preload: function(){
         game.load.audio('falling', 'assets/sound/falling.mp3');
+        game.load.image('mart', 'assets/mart.png');
+        game.load.bitmapFont('crayonFont', 'assets/fonts/crayon_bitmap/crayon.png', 'assets/fonts/crayon_bitmap/crayon.fnt');
+        // game.load.spritesheet('hat_glow', 'assets/grams/grams_anim3.png', 64,64,8);
+        game.load.spritesheet('superHat', 'assets/grams/superhat_glow.png', 64,64,8);
+
+
+
     },
     create: function(){
+        yesKey = game.input.keyboard.addKey(Phaser.Keyboard.Y);
+        noKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
+        grams = game.add.group();
+
+        var text;
+
+        purchase = false;
+        selectionMade = false;
+        martSignText = 'upgrades';
+
         if (currentLevel === 1) {
             var levelOneText = "Level One"
+            // var text = game.add.bitmapText(120, 300, 'font', levelOneText, 25);
             var text = game.add.bitmapText(60, 100, 'font', introText, 25);
 
         } else if (currentLevel === 2){
-            var levelTwoText = "I've fallen... \nand I can't get up."
-            var text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
             fallingSound = game.add.audio('falling');
             fallingSound.play();
+
+            cost = 15
+            msgText = 'Welcome to the mart!\n\nUpgrade your gram for '+ cost.toString() + ' coins? (Y/N)'
+
+            var levelTwoText = "I've fallen... \nand I can't get up."
+            text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
+
+            game.time.events.add(Phaser.Timer.SECOND * 4, destroyText, this);
+            game.time.events.add(Phaser.Timer.SECOND * 4.5, runMart, this);
+
         }
+
+        function destroyText(){
+            text.destroy();
+        }
+        
+        function runMart(){
+            displayMsgText();
+            displayMart();
+            displayUpGram(310, 280, 'superHat', 'superHat', 2);
+            displayPlayerCoins(); 
+        }
+
+        function fadeInTween(object){
+            object.alpha = 0
+            game.add.tween(object)
+            .to({alpha: 1}, 1000, Phaser.Easing.Linear.In, true, 0, -1)
+        } 
+
+        function displayMsgText(){
+            msgText = game.add.bitmapText(40, 30, 'font', msgText, 20);
+        }
+
+        function displayPlayerCoins(){
+            playerCoinsText = game.add.bitmapText(40, 100, 'font', ('(You have '+ coinCount.toString()+ ' coins)'), 15);
+        }
+
+        function displayMart(){
+            mart = game.add.sprite(200, 150, 'mart');
+            mart.scale.setTo(.9);
+            fadeInTween(mart);
+
+            martSign = game.add.bitmapText(300, 150, 'crayonFont', martSignText, 50);
+            fadeInTween(martSign);
+
+            costText = game.add.bitmapText(352, 212, 'crayonFont', (cost.toString() + 'x'), 30);
+            fadeInTween(costText);
+
+            coin = game.add.sprite(390, 215, 'displayCoin');
+            fadeInTween(coin);
+        }
+
+        function displayUpGram(xPos, yPos, imgKey, gramName, scale){
+
+            martGram = grams.create(xPos, yPos, imgKey);
+            martGram.scale.setTo(scale);
+            martGram.name = gramName;
+            martGram.displayed = false;
+            martGram.animated = true;
+            var anim = martGram.animations.add('glow');
+            anim.play(7, true);
+            fadeInTween(martGram);
+            return martGram;
+
+        }
+
     },
+
     update: function(){
-        game.time.events.add(Phaser.Timer.SECOND * 5, nextLevel, this);
+
+        if (yesKey.isDown && keyPressed == false){
+            keyPressed = true;
+            purchase = true;
+            selectionMade = true;
+        } else if (noKey.isDown && keyPressed == false) {
+            keyPressed = true;
+            purchase = false;
+            selectionMade = true;
+        } else if (yesKey.isUp && noKey.isUp){
+            keyPressed = false;
+        }
+
+
+        if (purchase == true && selectionMade == true){
+
+            //FOR TESTING DELETE THIS LINE BEFORE DEPLOYMENT
+            // playerGrams.hat = {name: 'hat', displayIndex: 1}
+
+            selectionMade = false;
+            destroyMart();
+            upgradeGram('hat', martGram);
+            displayNextLevelName();
+            game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
+        } else if (purchase == false && selectionMade == true){
+            selectionMade = false;
+            destroyMart();
+            martGram.destroy();
+            displayNextLevelName();
+            game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
+        }
+
+
+
+        function destroyMart(){
+            mart.destroy();
+            martSign.destroy();
+            costText.destroy();
+            coin.destroy();
+            msgText.destroy();
+            playerCoinsText.destroy();
+        }
+
+        function displayNextLevelName(){
+            if (currentLevel === 1) {
+                var levelOneText = "Level One"
+                var text = game.add.bitmapText(120, 300, 'font', levelOneText, 25);
+
+            } else if (currentLevel === 2){
+                var levelTwoText = "Level Two"
+                var text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
+            }
+
+        }
+
+        function upgradeGram(oldGramName, newGram){
+            var oldGram = playerGrams[oldGramName];
+            var gramIndex = oldGram.displayIndex;
+            newGram.displayIndex = gramIndex;
+            playerGrams[oldGramName] = newGram;
+
+            gramSound.play();
+            coinSound.play();
+
+            martGram.destroy();
+            coinCount -= cost;
+        }
+
 
         function nextLevel(){
             if (currentLevel === 1){
@@ -1741,11 +1930,11 @@ Tan.GameOver.prototype = {
         
     },
     update: function(){
-        var restartKey = game.input.keyboard.addKey(Phaser.Keyboard.Y);
-        var endKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
+        var yesKey = game.input.keyboard.addKey(Phaser.Keyboard.Y);
+        var noKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
 
         // restart from last checkpoint (start of level, boss)
-        if (restartKey.isDown){
+        if (yesKey.isDown){
             restartMusic.stop();
             reloadCurrentLevel();
         }
@@ -1769,7 +1958,7 @@ Tan.GameOver.prototype = {
                 countdown = false;
             }
         }
-        if (endKey.isDown){
+        if (noKey.isDown){
             restartMusic.stop();
             console.Log("Bye!");
         }
@@ -2069,4 +2258,4 @@ game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
 game.state.add('Credits', Tan.Credits);
-game.state.start('MainMenu');
+game.state.start('LevelOne');
