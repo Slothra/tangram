@@ -33,6 +33,9 @@ var keyPressed;
 var cost;
 var msgText;
 var martSignText;
+var chalkboard;
+var chalkboardText;
+var chalkboardWriting;
 var mart;
 var martSign;
 var costText;
@@ -40,10 +43,11 @@ var coin;
 var martGram;
 var msgText;
 var playerCoinsText;
+var hasEnoughCoins;
 
 var cursors;
 
-var xStartPos = 30;
+var xStartPos = 4500;
 
 var yStartPos = gameHeight;
 var player;
@@ -1719,12 +1723,11 @@ Tan.Loading.prototype = {
         game.load.audio('falling', 'assets/sound/falling.mp3');
         game.load.image('mart', 'assets/mart.png');
         game.load.bitmapFont('crayonFont', 'assets/fonts/crayon_bitmap/crayon.png', 'assets/fonts/crayon_bitmap/crayon.fnt');
-        // game.load.spritesheet('hat_glow', 'assets/grams/grams_anim3.png', 64,64,8);
         game.load.spritesheet('superHat', 'assets/grams/superhat_glow.png', 64,64,8);
-
-
+        game.load.image('chalkboard', 'assets/chalkboard.png');
 
     },
+
     create: function(){
         yesKey = game.input.keyboard.addKey(Phaser.Keyboard.Y);
         noKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
@@ -1738,15 +1741,22 @@ Tan.Loading.prototype = {
 
         if (currentLevel === 1) {
             var levelOneText = "Level One"
-            // var text = game.add.bitmapText(120, 300, 'font', levelOneText, 25);
             var text = game.add.bitmapText(60, 100, 'font', introText, 25);
 
         } else if (currentLevel === 2){
+            cost = 15
+            
             fallingSound = game.add.audio('falling');
             fallingSound.play();
+            chalkboardText = 'Make gram\nstronger for\n...reasons.';
 
-            cost = 15
-            msgText = 'Welcome to the mart!\n\nUpgrade your gram for '+ cost.toString() + ' coins? (Y/N)'
+            if (coinCount >= cost){
+                hasEnoughCoins = true;
+                msgText = 'Welcome to the mart!\n\nUpgrade your gram for '+ cost.toString() + ' coins? (Y/N)';
+            } else {
+                hasEnoughCoins = false;
+                msgText = "Welcome to the mart!\nYou need more coins to upgrade your gram...\nPress 'Y' to continue."
+            }
 
             var levelTwoText = "I've fallen... \nand I can't get up."
             text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
@@ -1774,11 +1784,12 @@ Tan.Loading.prototype = {
         } 
 
         function displayMsgText(){
-            msgText = game.add.bitmapText(40, 30, 'font', msgText, 20);
+            msgText = game.add.bitmapText(40, 30, 'font', msgText, 18);
         }
 
+
         function displayPlayerCoins(){
-            playerCoinsText = game.add.bitmapText(40, 100, 'font', ('(You have '+ coinCount.toString()+ ' coins)'), 15);
+            playerCoinsText = game.add.bitmapText(40, 125, 'font', ('(You have '+ coinCount.toString()+ ' coins)'), 15);
         }
 
         function displayMart(){
@@ -1794,6 +1805,14 @@ Tan.Loading.prototype = {
 
             coin = game.add.sprite(390, 215, 'displayCoin');
             fadeInTween(coin);
+
+            chalkboard = game.add.sprite(300, 405, 'chalkboard');
+            chalkboard.scale.setTo(.6);
+            fadeInTween(chalkboard);
+
+            chalkboardWriting = game.add.bitmapText(315, 420, 'crayonFont', chalkboardText, 26);
+            fadeInTween(chalkboardWriting);
+
         }
 
         function displayUpGram(xPos, yPos, imgKey, gramName, scale){
@@ -1814,38 +1833,54 @@ Tan.Loading.prototype = {
 
     update: function(){
 
-        if (yesKey.isDown && keyPressed == false){
-            keyPressed = true;
-            purchase = true;
-            selectionMade = true;
-        } else if (noKey.isDown && keyPressed == false) {
-            keyPressed = true;
-            purchase = false;
-            selectionMade = true;
-        } else if (yesKey.isUp && noKey.isUp){
-            keyPressed = false;
+        if (hasEnoughCoins){
+
+            if (yesKey.isDown && keyPressed == false){
+                keyPressed = true;
+                purchase = true;
+                selectionMade = true;
+            } else if (noKey.isDown && keyPressed == false) {
+                keyPressed = true;
+                purchase = false;
+                selectionMade = true;
+            } else if (yesKey.isUp && noKey.isUp){
+                keyPressed = false;
+            }
+
+            if (purchase == true && selectionMade == true){
+                //FOR TESTING DELETE THIS LINE BEFORE DEPLOYMENT
+                // playerGrams.hat = {name: 'hat', displayIndex: 1}
+                selectionMade = false;
+                destroyMart();
+                upgradeGram('hat', martGram);
+                displayNextLevelName();
+                game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
+            } else if (purchase == false && selectionMade == true){
+                selectionMade = false;
+                destroyMart();
+                martGram.destroy();
+                displayNextLevelName();
+                game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
+            }
+
+        } else {
+            if (yesKey.isDown && keyPressed == false){
+                keyPressed = true;
+                selectionMade = true;
+                purchased = false;
+            } else if (yesKey.isUp){
+                keyPressed = false;
+            }
+
+            if (purchase == false && selectionMade == true){
+                selectionMade = false;
+                destroyMart();
+                martGram.destroy();
+                displayNextLevelName();
+                game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
+
+            }
         }
-
-
-        if (purchase == true && selectionMade == true){
-
-            //FOR TESTING DELETE THIS LINE BEFORE DEPLOYMENT
-            // playerGrams.hat = {name: 'hat', displayIndex: 1}
-
-            selectionMade = false;
-            destroyMart();
-            upgradeGram('hat', martGram);
-            displayNextLevelName();
-            game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
-        } else if (purchase == false && selectionMade == true){
-            selectionMade = false;
-            destroyMart();
-            martGram.destroy();
-            displayNextLevelName();
-            game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
-        }
-
-
 
         function destroyMart(){
             mart.destroy();
@@ -1854,18 +1889,18 @@ Tan.Loading.prototype = {
             coin.destroy();
             msgText.destroy();
             playerCoinsText.destroy();
+            chalkboard.destroy();
+            chalkboardWriting.destroy();
         }
 
         function displayNextLevelName(){
             if (currentLevel === 1) {
                 var levelOneText = "Level One"
                 var text = game.add.bitmapText(120, 300, 'font', levelOneText, 25);
-
             } else if (currentLevel === 2){
                 var levelTwoText = "Level Two"
                 var text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
             }
-
         }
 
         function upgradeGram(oldGramName, newGram){
@@ -1880,7 +1915,6 @@ Tan.Loading.prototype = {
             martGram.destroy();
             coinCount -= cost;
         }
-
 
         function nextLevel(){
             if (currentLevel === 1){
