@@ -42,8 +42,6 @@ var platformMovementTriggers;
 var platformRightTrigger;
 var platformLeftTrigger;
 
-
-var storyText;
 var introText = "Pigeons are evil and I, \nTan, am the only thing standing \nin the way of their wicked plot. \n\n\nOr… I was until I was knocked into \nthe river that carried me far, \nfar from home. \n\n\nI must get back, \nI must save TeenyTown, \nI must stop the evil pigeons!"
 
 var underwater = false;
@@ -1676,17 +1674,17 @@ Tan.Loading.prototype = {
     create: function(){
         if (currentLevel === 1) {
             var levelOneText = "Level One"
-            var text = game.add.bitmapText(120, 300, 'font', levelOneText, 25);
+            var text = game.add.bitmapText(60, 100, 'font', introText, 25);
 
         } else if (currentLevel === 2){
-            var levelTwoText = "Level Two"
+            var levelTwoText = "I've fallen... \nand I can't get up."
             var text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
             fallingSound = game.add.audio('falling');
             fallingSound.play();
         }
     },
     update: function(){
-        game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
+        game.time.events.add(Phaser.Timer.SECOND * 5, nextLevel, this);
 
         function nextLevel(){
             if (currentLevel === 1){
