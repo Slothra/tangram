@@ -435,11 +435,13 @@ Tan.LevelOne.prototype = {
         crabbyCrab.animations.add('hurt',[2], 10, true);
         crabbyCrab.anchor.setTo(.5, 0);
         crabbyCrab.body.velocity.x = crabVel;
+        crabbyCrab.body.setSize(250, 100, 25, 40);
+
 
         leftTriggerCrabby = game.add.sprite(3200, yWorldBounds - 200, null, 0, enemyMovementTriggers);
-        leftTriggerCrabby.body.setSize(4, 32, 0, 0);
+        leftTriggerCrabby.body.setSize(4, 100, 0, 0);
         rightTriggerCrabby = game.add.sprite(3885, yWorldBounds - 200, null, 0, enemyMovementTriggers);
-        rightTriggerCrabby.body.setSize(4, 32, 0, 0);
+        rightTriggerCrabby.body.setSize(4, 100, 0, 0);
 
         leftPincer = game.add.sprite(crabbyCrab.position.x - 150, 510, 'left-claw', 0, pincers);
         leftPincer.animations.add('leftPincerMove', [1], 10, true);
@@ -2053,12 +2055,16 @@ function createEnemy(xPixFromLeft, yPixFromBottom, enemyKey, leftTrigger, rightT
     if (enemyKey == 'pigeon'){
         newEnemy.animations.add('pigeon-step', [0,1,0,2], 10, true);
         newEnemy.animations.play('pigeon-step');
+        newEnemy.body.setSize(29, 29, 1, 1);
     } else if (enemyKey == 'badfish'){
         newEnemy.animations.add('badfish-swim',[0,1,2], 10, true);
         newEnemy.animations.play('badfish-swim');
+        newEnemy.body.setSize(66, 48, 33, 12);
+
     } else if (enemyKey == 'underground-pigeon'){
         newEnemy.animations.add('underground-pigeon-step', [0,1,0,2], 10, true);
         newEnemy.animations.play('underground-pigeon-step');
+        newEnemy.body.setSize(30, 30, 0, 0);
     }
     newEnemy.anchor.setTo(.5,0)
     createLeftTrigger(newEnemy, leftTrigger);
