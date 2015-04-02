@@ -962,8 +962,7 @@ Tan.LevelOne.prototype = {
             }
         });
 
-
-        if (player.position.x > levelTwoStart){
+        if (crabDead == true && player.position.x > levelTwoStart){
             music.stop();
             game.state.start('Loading');
             currentLevel = 2;
