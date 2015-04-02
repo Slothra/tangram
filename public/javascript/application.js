@@ -2259,3 +2259,16 @@ game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
 game.state.add('Credits', Tan.Credits);
 game.state.start('LevelOne');
+
+
+$(function(){
+
+    $('.about').on('click',function(){
+        $('.info').toggleClass('isVisible');
+    })
+
+    $('.info').on('click',function(){
+        $('.info').removeClass('isVisible');
+    })
+
+});

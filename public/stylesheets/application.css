@@ -2,10 +2,11 @@ h1 {
 	font-size: 2em;
   padding: 20px;
   text-align: center;
-  background: aquamarine;
   width: 250px;
   margin: 20px auto;
   border-radius: 5px;
+  padding-top: 23px;
+  color: white;
 }
 
 a {
@@ -22,20 +23,21 @@ a {
 .container {
   height: 800px;
   max-width: 900px;
-  background: green;
+  background: #551A8B;
   margin: auto;
   padding-top: 10px;
 }
 
 #background {
-	background: #cccccc;
+	background-image: url('./../assets/texture.png');
+	margin: 0px;
 }
 
 .tab {
   position: fixed;
   top: 10px;
   right: 0px;
-  background: red;
+  background: #551A8B;
   padding: 20px;
   margin-right: 0px;
   color: white;
@@ -53,9 +55,46 @@ a {
 }
 
 .buttons:hover {
-	text-shadow: 1px 1px 5px green;
+	text-shadow: 1px 1px 5px white;
 }
 
-.poweroff {
+.about {
+	margin-left: 2px;
+	padding-left: 10px;
+}
 
+.info{
+	position: fixed;
+	width: 400px;
+	height: 300px;
+	top: -100%;
+	left: 50%;
+	margin-left: -200px;
+	transition: 1s ease-in-out;
+	background: #551A8B;
+	padding: 10px;
+	height: initial;
+
+}
+
+.info h2{
+		color: white;
+}
+
+#card {
+	background: #eeeeee;
+	padding: 8px;
+	border-radius: 3px;
+	line-height: 1.1;
+}
+
+#card a{
+	color: #551A8B;
+}
+
+.info.isVisible{
+	left: 50%;
+	margin-left: -200px;
+	top: 50%;
+	margin-top: -150px;
 }
