@@ -2049,4 +2049,4 @@ game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
 game.state.add('Credits', Tan.Credits);
-game.state.start('Credits');
+game.state.start('MainMenu');
