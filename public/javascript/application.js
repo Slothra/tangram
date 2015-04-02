@@ -308,7 +308,6 @@ Tan.LevelOne.prototype = {
 
     create: function(){
 
-
         pauseKey = game.input.keyboard.addKey(Phaser.Keyboard.P);
         toggleKey = game.input.keyboard.addKey(Phaser.Keyboard.F);
         muteKey = game.input.keyboard.addKey(Phaser.Keyboard.M);
@@ -1750,6 +1749,8 @@ Tan.Loading.prototype = {
         if (currentLevel === 1) {
             var levelOneText = "Level One"
             var text = game.add.bitmapText(60, 100, 'font', introText, 25);
+            game.time.events.add(Phaser.Timer.SECOND * 6, destroyText, this);
+
 
         } else if (currentLevel === 2){
             cost = 15;
@@ -1840,53 +1841,57 @@ Tan.Loading.prototype = {
     },
 
     update: function(){
+        if (currentLevel == 1){
+            game.time.events.add(Phaser.Timer.SECOND * 6, nextLevel, this);
+        } else if (currentLevel == 2){
 
-        if (hasEnoughCoins){
+            if (hasEnoughCoins){
 
-            if (yesKey.isDown && keyPressed == false){
-                keyPressed = true;
-                purchase = true;
-                selectionMade = true;
-            } else if (noKey.isDown && keyPressed == false) {
-                keyPressed = true;
-                purchase = false;
-                selectionMade = true;
-            } else if (yesKey.isUp && noKey.isUp){
-                keyPressed = false;
-            }
+                if (yesKey.isDown && keyPressed == false){
+                    keyPressed = true;
+                    purchase = true;
+                    selectionMade = true;
+                } else if (noKey.isDown && keyPressed == false) {
+                    keyPressed = true;
+                    purchase = false;
+                    selectionMade = true;
+                } else if (yesKey.isUp && noKey.isUp){
+                    keyPressed = false;
+                }
 
-            if (purchase == true && selectionMade == true){
-                //FOR TESTING DELETE THIS LINE BEFORE DEPLOYMENT
-                // playerGrams.hat = {name: 'hat', displayIndex: 1}
-                selectionMade = false;
-                destroyMart();
-                upgradeGram('hat', martGram);
-                displayNextLevelName();
-                game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
-            } else if (purchase == false && selectionMade == true){
-                selectionMade = false;
-                destroyMart();
-                martGram.destroy();
-                displayNextLevelName();
-                game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
-            }
+                if (purchase == true && selectionMade == true){
+                    //FOR TESTING DELETE THIS LINE BEFORE DEPLOYMENT
+                    // playerGrams.hat = {name: 'hat', displayIndex: 1}
+                    selectionMade = false;
+                    destroyMart();
+                    upgradeGram('hat', martGram);
+                    displayNextLevelName();
+                    game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
+                } else if (purchase == false && selectionMade == true){
+                    selectionMade = false;
+                    destroyMart();
+                    martGram.destroy();
+                    displayNextLevelName();
+                    game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
+                }
 
-        } else {
-            if (yesKey.isDown && keyPressed == false){
-                keyPressed = true;
-                selectionMade = true;
-                purchased = false;
-            } else if (yesKey.isUp){
-                keyPressed = false;
-            }
+            } else {
+                if (yesKey.isDown && keyPressed == false){
+                    keyPressed = true;
+                    selectionMade = true;
+                    purchased = false;
+                } else if (yesKey.isUp){
+                    keyPressed = false;
+                }
 
-            if (purchase == false && selectionMade == true){
-                selectionMade = false;
-                destroyMart();
-                martGram.destroy();
-                displayNextLevelName();
-                game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
+                if (purchase == false && selectionMade == true){
+                    selectionMade = false;
+                    destroyMart();
+                    martGram.destroy();
+                    displayNextLevelName();
+                    game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
 
+                }
             }
         }
 
@@ -2310,7 +2315,7 @@ game.state.add('Loading', Tan.Loading);
 game.state.add('MainMenu', Tan.MainMenu);
 game.state.add('GameOver', Tan.GameOver);
 game.state.add('Credits', Tan.Credits);
-game.state.start('LevelOne');
+game.state.start('MainMenu');
 
 
 $(function(){
