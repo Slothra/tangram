@@ -25,6 +25,13 @@ a {
 	margin-left: -400px;
 }
 
+#title-img{
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 35px;
+}
+
 .container {
   height: 800px;
   max-width: 900px;
