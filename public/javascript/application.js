@@ -43,7 +43,7 @@ var playerCoinsText;
 
 var cursors;
 
-var xStartPos = 4500;
+var xStartPos = 30;
 
 var yStartPos = gameHeight;
 var player;
@@ -1660,13 +1660,25 @@ Tan.Loading.prototype = {
     create: function(){
         yesKey = game.input.keyboard.addKey(Phaser.Keyboard.Y);
         noKey = game.input.keyboard.addKey(Phaser.Keyboard.N);
+        grams = game.add.group();
 
         purchase = false;
         selectionMade = false;
-
-        cost = 15
-        msgText = 'Upgrade your gram for '+ cost.toString() + ' coins? (Y/N)'
         martSignText = 'upgrades';
+
+        if (currentLevel === 1) {
+            var levelOneText = "Level One"
+            var text = game.add.bitmapText(120, 300, 'font', levelOneText, 25);
+        } else if (currentLevel === 2){
+            cost = 15
+            msgText = 'Upgrade your gram for '+ cost.toString() + ' coins? (Y/N)'
+            fallingSound = game.add.audio('falling');
+            fallingSound.play();
+            displayMsgText();
+            displayMart();
+            displayUpGram(310, 240, 'hat_glow', 'superHat', 2);
+            displayPlayerCoins();
+        }
 
         function fadeInTween(object){
             object.alpha = 0
@@ -1697,37 +1709,23 @@ Tan.Loading.prototype = {
             fadeInTween(coin);
         }
 
-        function displayUpGram(xPos, yPos, imgKey, scale){
-            var martGram = game.add.sprite(xPos, yPos, imgKey);
+        function displayUpGram(xPos, yPos, imgKey, gramName, scale){
+
+            martGram = grams.create(xPos, yPos, imgKey);
             martGram.scale.setTo(scale);
+            martGram.name = gramName;
+            martGram.displayed = false;
             var anim = martGram.animations.add('glow');
             anim.play(7, true);
             fadeInTween(martGram);
+            return martGram;
+
         }
 
-
-
-        displayMsgText();
-        displayMart();
-        displayUpGram(310, 240, 'hat_glow', 2);
-        displayPlayerCoins();
-
-
-
-
-
-        // if (currentLevel === 1) {
-        //     var levelOneText = "Level One"
-        //     var text = game.add.bitmapText(120, 300, 'font', levelOneText, 25);
-
-        // } else if (currentLevel === 2){
-        //     var levelTwoText = "Level Two"
-        //     var text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
-        //     fallingSound = game.add.audio('falling');
-        //     fallingSound.play();
-        // }
     },
+
     update: function(){
+
 
         if (yesKey.isDown && keyPressed == false){
             keyPressed = true;
@@ -1744,15 +1742,19 @@ Tan.Loading.prototype = {
 
         if (purchase == true && selectionMade == true){
             selectionMade = false;
-            console.log('you chose yes');
             destroyMart();
+            upgradeGram('hat', martGram);
+            displayNextLevelName();
+            game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
         } else if (purchase == false && selectionMade == true){
             selectionMade = false;
-            console.log('you chose no');
+            destroyMart();
+            martGram.destroy();
+            displayNextLevelName();
+            game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
         }
 
-        function upgradeGram(){
-        }
+
 
         function destroyMart(){
             mart.destroy();
@@ -1763,9 +1765,32 @@ Tan.Loading.prototype = {
             playerCoinsText.destroy();
         }
 
+        function displayNextLevelName(){
+            if (currentLevel === 1) {
+                var levelOneText = "Level One"
+                var text = game.add.bitmapText(120, 300, 'font', levelOneText, 25);
+
+            } else if (currentLevel === 2){
+                var levelTwoText = "Level Two"
+                var text = game.add.bitmapText(120, 300, 'font', levelTwoText, 25);
+            }
+
+        }
+
+        function upgradeGram(oldGramName, newGram){
+            var oldGram = playerGrams[oldGramName];
+            var gramIndex = oldGram.displayIndex;
+            newGram.displayIndex = gramIndex;
+            playerGrams[oldGramName] = newGram;
+
+            gramSound.play();
+            coinSound.play();
+
+            martGram.destroy();
+            coinCount -= cost;
+        }
 
 
-        // game.time.events.add(Phaser.Timer.SECOND * 4, nextLevel, this);
 
         function nextLevel(){
             if (currentLevel === 1){
