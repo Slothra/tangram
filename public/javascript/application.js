@@ -1437,11 +1437,11 @@ Tan.LevelTwo.prototype = {
         }
 
         function moveAsSuperHat(){
-            movePlayer(15, 'walkSuperHat', 'jumpSuperHat', playerSpeed, -400);
-        }
-
-        function moveAsDrill(){
-            movePlayer(18, 'drill', 'jumpDrill', playerSpeed, -400);
+            if (player.drilling){
+                movePlayer(18, 'drill', 'jumpDrill', playerSpeed, -400);
+            } else {
+                movePlayer(15, 'walkSuperHat', 'jumpSuperHat', playerSpeed, -400);
+            }
         }
 
         // Player Movement
@@ -1458,9 +1458,6 @@ Tan.LevelTwo.prototype = {
             break;
           case 'parallel':
             moveAsCandle();
-            break;
-          case 'drill':
-            moveAsDrill();
             break;
           default:
             moveAsBrick();
@@ -1663,7 +1660,7 @@ Tan.LevelTwo.prototype = {
 
         function collideBreakable(player, wall){
             if (playerForm == 'superHat'){
-                player.animations.play('drill')
+                drillAnimation();
                 game.time.events.add(Phaser.Timer.SECOND * .75, wallBreak, this);
                 function wallBreak(){
                     poofSound.play();
@@ -1687,6 +1684,15 @@ Tan.LevelTwo.prototype = {
                 game.time.events.add(Phaser.Timer.SECOND * 3, hideHint, this);
             
             }
+        }
+
+        function drillAnimation(){
+            player.drilling = true;
+            game.time.events.add(Phaser.Timer.SECOND * 1.5, switchToSuperHat, this);
+        }
+
+        function switchToSuperHat(){
+            player.drilling = false;
         }
 
         function hideHint(){
