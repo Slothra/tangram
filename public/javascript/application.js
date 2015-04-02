@@ -975,18 +975,14 @@ Tan.LevelOne.prototype = {
 };
 
 
-
-
-
-
 Tan.LevelTwo = function(game){};
 
 Tan.LevelTwo.prototype = {
     
     preload: function(){
         // load level two assets
-        game.load.image('underground', 'assets/underground.png');
-        game.load.image('rock', 'assets/rock.png');
+        // game.load.image('underground', 'assets/underground.png');
+        // game.load.image('rock', 'assets/rock.png');
         game.load.spritesheet('shade', 'assets/sprites/shade.png', 1200, 900, 2);
         // game.load.spritesheet('moleMan', 'assets/sprites/mole.png', 247, 102, 2);
         game.load.spritesheet('moleMan-resize', 'assets/sprites/resized-mole.png', 141, 72, 2);
@@ -1054,9 +1050,6 @@ Tan.LevelTwo.prototype = {
             muteKey = game.input.keyboard.addKey(Phaser.Keyboard.M);
 
             game.physics.startSystem(Phaser.Physics.ARCADE);
-
-            // background = game.add.tileSprite(0, 0, xWorldBounds, gameHeight + 200, 'sky');
-            // var clouds = game.add.group();
 
             game.world.setBounds(0, 0, xWorldBounds, yWorldBounds);
 
